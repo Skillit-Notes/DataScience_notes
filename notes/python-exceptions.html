@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Exceptions - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --error: #ff7b72;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --error: #dc2626;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: 1fr 56px;
+      direction: rtl;
+    }
+    
+    .conversation:nth-child(even) > * { direction: ltr; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+    .exception { color: #ff7b72; font-weight: 600; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    .tip.warning::before {
+      content: '⚠️';
+    }
+
+    .tip.error::before {
+      content: '❌';
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Error demonstration box */
+    .error-demo {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--error);
+      background: 
+        linear-gradient(180deg, rgba(255, 123, 114, 0.1), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+
+    .error-demo::before {
+      content: '🚨';
+      position: absolute;
+      left: var(--space-3);
+      top: var(--space-3);
+      font-size: 1.2rem;
+    }
+
+    .error-demo strong {
+      color: var(--error);
+      display: block;
+      margin-bottom: .3rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Exception type cards */
+    .exception-card {
+      padding: var(--space-3);
+      background: linear-gradient(180deg, rgba(255,123,114,.05), transparent);
+      border: 1px solid rgba(255,123,114,.3);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+    }
+
+    .exception-card h4 {
+      margin: 0 0 var(--space-1) 0;
+      color: var(--error);
+      font-size: .95rem;
+    }
+
+    .exception-card p {
+      margin: 0;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 33.33%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+        direction: ltr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+
+    /* Conversation alignment fix */
+    .conversation {
+      display: grid !important;
+      grid-template-columns: 56px minmax(0, 1fr) !important;
+      gap: 1rem !important;
+      align-items: start !important;
+      direction: ltr !important;
+    }
+    .conversation > .avatar   { grid-column: 1 !important; }
+    .conversation > .dialogue { grid-column: 2 !important; width: 100% !important; }
+
+    /* Even rows: dialogue on left, avatar on right */
+    .chapter .conversation:nth-of-type(even) {
+      grid-template-columns: minmax(0, 1fr) 56px !important;
+    }
+    .chapter .conversation:nth-of-type(even) > .dialogue { grid-column: 1 !important; }
+    .chapter .conversation:nth-of-type(even) > .avatar   { grid-column: 2 !important; }
+
+    /* Remove any inherited RTL or width constraints */
+    .chapter .conversation:nth-of-type(even) { direction: ltr !important; }
+    .chapter .conversation:nth-of-type(even) > * { direction: ltr !important; }
+    .dialogue { max-width: none !important; }
+    .dialogue-text { white-space: normal !important; }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">⚠️ Python Exceptions Mastery</h1>
+        <p class="book-sub">Join Alex and Sam as they learn to handle errors like Python pros!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">What Are Exceptions?</button>
+        <button class="tab" onclick="showChapter(1)">Handling Exceptions</button>
+        <button class="tab" onclick="showChapter(2)">Custom Exceptions</button>
+      </nav>
+
+      <!-- Chapter 1: What Are Exceptions? -->
+      <section class="chapter active">
+        <h2>Chapter 1: What Are Exceptions? Why Do They Exist?</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Sam, I keep running into errors in my Python programs. Sometimes they just crash with scary red text! What's going on?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              Those "scary red messages" are called exceptions! They're actually Python's way of being helpful. When something goes wrong, Python raises an exception to tell you exactly what happened and where.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              But why does the program have to crash? Can't it just... ignore the error?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Think of exceptions like fire alarms! If there's a problem, you want to know about it immediately, not let it spread silently. Let me show you some common exceptions:
+
+              <div class="code"><pre><span class="comment"># These would cause exceptions (commented to avoid crashes)</span>
+
+<span class="comment"># print(10 / 0)            # ZeroDivisionError</span>
+<span class="comment"># int("hello")             # ValueError</span>
+<span class="comment"># [1, 2, 3][10]           # IndexError</span>
+<span class="comment"># {"name": "Alex"}["age"]  # KeyError</span>
+<span class="comment"># len(5)                   # TypeError</span>
+
+<span class="comment"># But you can raise your own exceptions too!</span>
+<span class="keyword">def</span> <span class="function">set_age</span>(age):
+    <span class="keyword">if</span> age <span class="operator">&lt;</span> <span class="number">0</span>:
+        <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string">"Age cannot be negative!"</span>)
+    <span class="keyword">return</span> age
+
+<span class="function">print</span>(<span class="function">set_age</span>(<span class="number">15</span>))  <span class="comment"># Works fine</span>
+<span class="comment"># print(set_age(-5))  # Would raise ValueError</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🚨 Common Exception Types</h3>
+            <div class="exception-card">
+              <h4>ValueError</h4>
+              <p>Wrong value type (like int("abc"))</p>
+            </div>
+            <div class="exception-card">
+              <h4>TypeError</h4>
+              <p>Wrong type for operation (like len(5))</p>
+            </div>
+            <div class="exception-card">
+              <h4>IndexError / KeyError</h4>
+              <p>Missing list index or dict key</p>
+            </div>
+            <div class="exception-card">
+              <h4>ZeroDivisionError</h4>
+              <p>Division by zero</p>
+            </div>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Why Exceptions Exist</h3>
+            <ul>
+              <li>🛑 <strong>Stop</strong> at the exact problem point</li>
+              <li>📋 <strong>Describe</strong> what went wrong clearly</li>
+              <li>🔧 <strong>Allow</strong> programmatic responses</li>
+              <li>🐛 <strong>Help</strong> debug with traceback info</li>
+              <li>🔒 <strong>Prevent</strong> silent corruption</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This makes sense! So exceptions are actually trying to help me find problems. But what if I want my program to keep running even when there's an error?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect question! That's where exception <em>handling</em> comes in. Instead of letting the exception crash your program, you can catch it and decide what to do. It's like having a fire extinguisher ready!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Key Insight!</strong>
+          Exceptions aren't bugs in Python - they're features! They help you write more reliable programs by making problems visible instead of hidden.
+        </div>
+      </section>
+
+      <!-- Chapter 2: Exception Handling -->
+      <section class="chapter">
+        <h2>Chapter 2: Exception Handling - Catching and Responding</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Okay Sam, I'm ready to learn how to handle exceptions! How do I catch them before they crash my program?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great attitude! The magic words are <code>try</code> and <code>except</code>. Think of it like this: "try this risky thing, except if this specific problem happens, do this instead." Let me show you:
+
+              <div class="code"><pre><span class="comment"># Basic try/except</span>
+<span class="keyword">try</span>:
+    user_input = <span class="function">input</span>(<span class="string">"Enter a number: "</span>)
+    number = <span class="function">int</span>(user_input)
+    <span class="function">print</span>(<span class="string">f"You entered: {number}"</span>)
+<span class="keyword">except</span> <span class="exception">ValueError</span> <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"That's not a valid number! Error: {e}"</span>)
+    
+<span class="function">print</span>(<span class="string">"Program continues running!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! So the program won't crash even if I type "hello" instead of a number. What's that <code>as e</code> part?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <code>as e</code> captures the exception object so you can read its message or other details. But there's more to exception handling! Let me show you the full toolbox:
+
+              <div class="code"><pre><span class="keyword">def</span> <span class="function">safe_divide</span>(a, b):
+    <span class="keyword">try</span>:
+        result = a <span class="operator">/</span> b
+    <span class="keyword">except</span> <span class="exception">ZeroDivisionError</span> <span class="keyword">as</span> e:
+        <span class="function">print</span>(<span class="string">f"Cannot divide by zero: {e}"</span>)
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    <span class="keyword">except</span> <span class="exception">TypeError</span> <span class="keyword">as</span> e:
+        <span class="function">print</span>(<span class="string">f"Invalid types for division: {e}"</span>)
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    <span class="keyword">else</span>:
+        <span class="comment"># Only runs if NO exception occurred</span>
+        <span class="function">print</span>(<span class="string">"Division successful!"</span>)
+        <span class="keyword">return</span> result
+    <span class="keyword">finally</span>:
+        <span class="comment"># ALWAYS runs (cleanup, logging, etc.)</span>
+        <span class="function">print</span>(<span class="string">"Division attempt finished"</span>)
+
+<span class="comment"># Test it out</span>
+<span class="function">print</span>(<span class="string">"Result:"</span>, <span class="function">safe_divide</span>(<span class="number">10</span>, <span class="number">2</span>))
+<span class="function">print</span>(<span class="string">"Result:"</span>, <span class="function">safe_divide</span>(<span class="number">10</span>, <span class="number">0</span>))</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Wow, there's <code>else</code> and <code>finally</code> too? When would I use those?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <code>else</code> is perfect for "success-only" code - things you only want to do if everything went well. <code>finally</code> is great for cleanup - closing files, releasing resources, or logging - stuff that must happen regardless. Here are more patterns:
+
+              <div class="code"><pre><span class="comment"># Catching multiple exception types at once</span>
+<span class="keyword">try</span>:
+    data = {<span class="string">"items"</span>: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]}
+    <span class="function">print</span>(data[<span class="string">"missing_key"</span>][<span class="number">10</span>])
+<span class="keyword">except</span> (<span class="exception">KeyError</span>, <span class="exception">IndexError</span>) <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"Data access error: {e}"</span>)
+
+<span class="comment"># Exception chaining (for context)</span>
+<span class="keyword">def</span> <span class="function">parse_user_age</span>(text):
+    <span class="keyword">try</span>:
+        age = <span class="function">int</span>(text)
+        <span class="keyword">if</span> age <span class="operator">&lt;</span> <span class="number">0</span> <span class="keyword">or</span> age <span class="operator">></span> <span class="number">150</span>:
+            <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string">"Age must be between 0 and 150"</span>)
+        <span class="keyword">return</span> age
+    <span class="keyword">except</span> <span class="exception">ValueError</span> <span class="keyword">as</span> e:
+        <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string">f"Invalid age '{text}'"</span>) <span class="keyword">from</span> e
+
+<span class="keyword">try</span>:
+    <span class="function">parse_user_age</span>(<span class="string">"not a number"</span>)
+<span class="keyword">except</span> <span class="exception">ValueError</span> <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"Parsing failed: {e}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔧 Exception Handling Blocks</h3>
+            <ul>
+              <li><strong>try:</strong> Code that might fail</li>
+              <li><strong>except:</strong> What to do when it fails</li>
+              <li><strong>else:</strong> Success-only code</li>
+              <li><strong>finally:</strong> Always runs (cleanup)</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Best Practices</h3>
+            <ul>
+              <li>Catch <strong>specific</strong> exceptions, not all</li>
+              <li>Use <code>as e</code> to access error details</li>
+              <li>Keep <code>try</code> blocks focused and small</li>
+              <li>Don't silently ignore exceptions</li>
+              <li>Log errors for debugging</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip warning">
+          <strong>Common Mistake!</strong>
+          Never use bare <code>except:</code> without specifying exception types. It can hide serious problems and make debugging nearly impossible!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is really powerful! I can see how this would make my programs much more robust. Can I create my own exception types too?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Custom exceptions are one of the most professional touches you can add to your code. Let's explore that next!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chapter 3: Custom Exceptions -->
+      <section class="chapter">
+        <h2>Chapter 3: Custom Exceptions - Making Errors Meaningful</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, why would I want to create my own exceptions? Aren't the built-in ones enough?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! Custom exceptions make your code self-documenting and help other programmers (including future you) understand what went wrong. Compare these two approaches:
+
+              <div class="code"><pre><span class="comment"># Generic approach - not very helpful</span>
+<span class="keyword">def</span> <span class="function">withdraw_money</span>(amount, balance):
+    <span class="keyword">if</span> amount <span class="operator">></span> balance:
+        <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string">"Not enough money"</span>)
+    <span class="keyword">if</span> amount <span class="operator">&lt;=</span> <span class="number">0</span>:
+        <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string">"Invalid amount"</span>)
+
+<span class="comment"># Custom exceptions - crystal clear!</span>
+<span class="keyword">class</span> <span class="function">InsufficientFundsError</span>(<span class="exception">Exception</span>):
+    <span class="keyword">pass</span>
+
+<span class="keyword">class</span> <span class="function">InvalidAmountError</span>(<span class="exception">Exception</span>):
+    <span class="keyword">pass</span>
+
+<span class="keyword">def</span> <span class="function">withdraw_money_v2</span>(amount, balance):
+    <span class="keyword">if</span> amount <span class="operator">></span> balance:
+        <span class="keyword">raise</span> <span class="function">InsufficientFundsError</span>(<span class="string">f"Cannot withdraw ${amount}, only ${balance} available"</span>)
+    <span class="keyword">if</span> amount <span class="operator">&lt;=</span> <span class="number">0</span>:
+        <span class="keyword">raise</span> <span class="function">InvalidAmountError</span>(<span class="string">f"Amount must be positive, got {amount}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I see! The second version tells me exactly what kind of problem occurred. How do I catch these custom exceptions?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly the same way as built-in exceptions! But now you can handle different problems differently:
+
+              <div class="code"><pre><span class="keyword">try</span>:
+    <span class="function">withdraw_money_v2</span>(<span class="number">150</span>, <span class="number">100</span>)
+<span class="keyword">except</span> <span class="function">InsufficientFundsError</span> <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"💸 {e}"</span>)
+    <span class="function">print</span>(<span class="string">"Would you like to check your balance?"</span>)
+<span class="keyword">except</span> <span class="function">InvalidAmountError</span> <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"❌ {e}"</span>)
+    <span class="function">print</span>(<span class="string">"Please enter a positive amount."</span>)
+
+<span class="comment"># You can also catch all your custom exceptions</span>
+<span class="keyword">try</span>:
+    <span class="function">withdraw_money_v2</span>(<span class="operator">-</span><span class="number">50</span>, <span class="number">100</span>)
+<span class="keyword">except</span> (<span class="function">InsufficientFundsError</span>, <span class="function">InvalidAmountError</span>) <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"Transaction failed: {e}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is awesome! Can I add more information to my custom exceptions, like error codes or extra data?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! You can make exceptions as sophisticated as you need. Here's a more advanced example:
+
+              <div class="code"><pre><span class="keyword">class</span> <span class="function">TemperatureError</span>(<span class="exception">Exception</span>):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, temperature, min_temp=<span class="operator">-</span><span class="number">50</span>, max_temp=<span class="number">60</span>):
+        <span class="keyword">self</span>.temperature = temperature
+        <span class="keyword">self</span>.min_temp = min_temp
+        <span class="keyword">self</span>.max_temp = max_temp
+        
+        <span class="keyword">if</span> temperature <span class="operator">&lt;</span> min_temp:
+            message = <span class="string">f"Temperature {temperature}°C is too cold (minimum: {min_temp}°C)"</span>
+            <span class="keyword">self</span>.error_type = <span class="string">"TOO_COLD"</span>
+        <span class="keyword">elif</span> temperature <span class="operator">></span> max_temp:
+            message = <span class="string">f"Temperature {temperature}°C is too hot (maximum: {max_temp}°C)"</span>
+            <span class="keyword">self</span>.error_type = <span class="string">"TOO_HOT"</span>
+        <span class="keyword">else</span>:
+            message = <span class="string">f"Invalid temperature: {temperature}°C"</span>
+            <span class="keyword">self</span>.error_type = <span class="string">"INVALID"</span>
+            
+        <span class="function">super</span>().__init__(message)
+
+<span class="keyword">def</span> <span class="function">set_thermostat</span>(celsius):
+    <span class="keyword">if</span> <span class="keyword">not</span> (<span class="operator">-</span><span class="number">50</span> <span class="operator">&lt;=</span> celsius <span class="operator">&lt;=</span> <span class="number">60</span>):
+        <span class="keyword">raise</span> <span class="function">TemperatureError</span>(celsius)
+    <span class="function">print</span>(<span class="string">f"🌡️ Thermostat set to {celsius}°C"</span>)
+
+<span class="comment"># Using the advanced custom exception</span>
+<span class="keyword">try</span>:
+    <span class="function">set_thermostat</span>(<span class="number">22</span>)    <span class="comment"># Works fine</span>
+    <span class="function">set_thermostat</span>(<span class="number">100</span>)   <span class="comment"># Too hot!</span>
+<span class="keyword">except</span> <span class="function">TemperatureError</span> <span class="keyword">as</span> e:
+    <span class="function">print</span>(<span class="string">f"Error: {e}"</span>)
+    <span class="function">print</span>(<span class="string">f"Error type: {e.error_type}"</span>)
+    <span class="function">print</span>(<span class="string">f"Attempted temperature: {e.temperature}°C"</span>)
+    
+    <span class="keyword">if</span> e.error_type == <span class="string">"TOO_HOT"</span>:
+        <span class="function">print</span>(<span class="string">"💡 Try a cooler setting"</span>)
+    <span class="keyword">elif</span> e.error_type == <span class="string">"TOO_COLD"</span>:
+        <span class="function">print</span>(<span class="string">"💡 Try a warmer setting"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🏗️ Creating Custom Exceptions</h3>
+            <ul>
+              <li>Inherit from <code>Exception</code> or a specific base</li>
+              <li>Use descriptive, specific names</li>
+              <li>Add custom attributes for extra info</li>
+              <li>Provide clear error messages</li>
+              <li>Group related exceptions in hierarchies</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>✨ Benefits of Custom Exceptions</h3>
+            <ul>
+              <li><strong>Clarity:</strong> Self-documenting error types</li>
+              <li><strong>Specificity:</strong> Handle different errors differently</li>
+              <li><strong>Maintainability:</strong> Easy to update error handling</li>
+              <li><strong>Professionalism:</strong> Shows thoughtful design</li>
+              <li><strong>Debugging:</strong> More informative tracebacks</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is incredible! I feel like I can handle any error situation now. One more question - should I create custom exceptions for everything?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! Use custom exceptions when they add real value - when you need to distinguish between different error types, when you want to attach extra data, or when the domain-specific name makes code clearer. For simple cases, built-in exceptions like <code>ValueError</code> are perfectly fine.
+
+              <br><br>
+              The key is to think about who will be catching your exceptions and what they need to know!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Design Principle!</strong>
+          Create custom exceptions that tell a story about what went wrong and provide actionable information for fixing the problem.
+        </div>
+
+        <div class="error-demo">
+          <strong>Real-World Example</strong>
+          Instead of generic <code>ValueError("Invalid input")</code>, use <code>InvalidEmailFormatError("Email must contain @ symbol")</code> - much more helpful for both users and developers!
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-3 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 3 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

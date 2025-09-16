@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Advanced Topics - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+      direction: ltr !important;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: minmax(0, 1fr) 56px;
+    }
+    
+    .conversation:nth-child(even) > .dialogue { grid-column: 1; }
+    .conversation:nth-child(even) > .avatar { grid-column: 2; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+      max-width: none !important;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+      white-space: normal !important;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 10%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🚀 Python Advanced Concepts</h1>
+        <p class="book-sub">Master the powerful features that make Python extraordinary!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">List Comprehension</button>
+        <button class="tab" onclick="showChapter(1)">Lambda Functions</button>
+        <button class="tab" onclick="showChapter(2)">Iterators</button>
+        <button class="tab" onclick="showChapter(3)">Generators</button>
+        <button class="tab" onclick="showChapter(4)">Namespaces & Scope</button>
+        <button class="tab" onclick="showChapter(5)">Closures</button>
+        <button class="tab" onclick="showChapter(6)">Decorators</button>
+        <button class="tab" onclick="showChapter(7)">@property</button>
+        <button class="tab" onclick="showChapter(8)">RegEx</button>
+        <button class="tab" onclick="showChapter(9)">Built-in Functions</button>
+      </nav>
+
+      <!-- Chapter 1: List Comprehension -->
+      <section class="chapter active">
+        <h2>📋 List Comprehension</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Now Learning Advanced Topics!)</div>
+            <div class="dialogue-text">
+              Sam, I keep writing these for loops with append(). Is there a more elegant way?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              Yes! List comprehensions are Python's superpower for creating lists! They're compact, readable, and often faster than traditional loops. It's like compressing a whole loop into a single, elegant line!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Show me the difference!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me demonstrate the transformation:
+              
+              <div class="code"><pre><span class="comment"># Traditional way (4 lines)</span>
+squares = []
+<span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">6</span>):
+    squares.<span class="function">append</span>(n<span class="operator">*</span>n)
+<span class="function">print</span>(<span class="string">"Squares (loop):"</span>, squares)
+
+<span class="comment"># List comprehension (1 line!)</span>
+squares_comp = [n<span class="operator">*</span>n <span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">6</span>)]
+<span class="function">print</span>(<span class="string">"Squares (LC):"</span>, squares_comp)
+
+<span class="comment"># With condition - only even squares</span>
+evens = [n<span class="operator">**</span><span class="number">2</span> <span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>) <span class="keyword">if</span> n <span class="operator">%</span> <span class="number">2</span> <span class="operator">==</span> <span class="number">0</span>]
+<span class="function">print</span>(<span class="string">"Even squares:"</span>, evens)
+
+<span class="comment"># Nested comprehensions (flattening)</span>
+matrix = [[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>], [<span class="number">5</span>, <span class="number">6</span>]]
+flat = [item <span class="keyword">for</span> row <span class="keyword">in</span> matrix <span class="keyword">for</span> item <span class="keyword">in</span> row]
+<span class="function">print</span>(<span class="string">"Flattened:"</span>, flat)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>✨ Why Use List Comprehensions?</h3>
+            <ul>
+              <li>More concise and readable</li>
+              <li>Often faster than loops</li>
+              <li>Clearly expresses intent</li>
+              <li>Reduces chance of bugs</li>
+              <li>Pythonic way of coding</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Common Patterns</h3>
+            <ul>
+              <li>Transform: <code>[f(x) for x in items]</code></li>
+              <li>Filter: <code>[x for x in items if condition]</code></li>
+              <li>Transform + Filter combined</li>
+              <li>Nested loops for 2D data</li>
+              <li>Works with any iterable</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          List comprehensions also work for sets {} and dictionaries {:}. For generators, use parentheses ()!
+        </div>
+      </section>
+
+      <!-- Chapter 2: Lambda Functions -->
+      <section class="chapter">
+        <h2>🔍 Lambda Functions (Anonymous Functions)</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I see <code>lambda</code> everywhere in Python code. What's that about?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Lambda functions are like disposable, mini-functions! Imagine you need a tiny function just once - instead of formally defining it with <code>def</code>, you can write it inline with <code>lambda</code>. They're perfect for quick, one-time operations!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              When would I use them instead of regular functions?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! Here are the key scenarios:
+              
+              <div class="code"><pre><span class="comment"># Regular function (when you need a name or multiple lines)</span>
+<span class="keyword">def</span> <span class="function">add</span>(a, b):
+    <span class="keyword">return</span> a <span class="operator">+</span> b
+
+<span class="comment"># Lambda (for simple, one-time use)</span>
+add_lambda = <span class="keyword">lambda</span> a, b: a <span class="operator">+</span> b
+
+<span class="function">print</span>(<span class="string">"add(2,3):"</span>, <span class="function">add</span>(<span class="number">2</span>, <span class="number">3</span>))
+<span class="function">print</span>(<span class="string">"lambda(2,3):"</span>, add_lambda(<span class="number">2</span>, <span class="number">3</span>))
+
+<span class="comment"># Perfect with map/filter/sorted!</span>
+nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]
+squared = <span class="function">list</span>(<span class="function">map</span>(<span class="keyword">lambda</span> x: x<span class="operator">**</span><span class="number">2</span>, nums))
+evens = <span class="function">list</span>(<span class="function">filter</span>(<span class="keyword">lambda</span> x: x <span class="operator">%</span> <span class="number">2</span> <span class="operator">==</span> <span class="number">0</span>, nums))
+
+<span class="comment"># Sorting with custom key</span>
+students = [(<span class="string">"Alice"</span>, <span class="number">85</span>), (<span class="string">"Bob"</span>, <span class="number">92</span>), (<span class="string">"Charlie"</span>, <span class="number">78</span>)]
+by_grade = <span class="function">sorted</span>(students, key=<span class="keyword">lambda</span> s: s[<span class="number">1</span>])
+<span class="function">print</span>(<span class="string">"By grade:"</span>, by_grade)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Remember!</strong>
+          Lambda functions can only contain expressions, not statements. Keep them simple - if it gets complex, use a regular function!
+        </div>
+      </section>
+
+      <!-- Chapter 3: Iterators -->
+      <section class="chapter">
+        <h2>🔄 Python Iterators</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's an iterator? I hear it's important for understanding how loops work.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              An iterator is like a bookmark that remembers where you are in a sequence! It gives you one item at a time, moving forward through the data. This is actually how <code>for</code> loops work behind the scenes!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me how they work internally?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Let me reveal the magic:
+              
+              <div class="code"><pre><span class="comment"># What a for loop actually does behind the scenes</span>
+nums = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]
+
+<span class="comment"># Manual iteration (what for loop does internally)</span>
+it = <span class="function">iter</span>(nums)  <span class="comment"># Get an iterator</span>
+<span class="function">print</span>(<span class="function">next</span>(it))  <span class="comment"># 10 - Get first item</span>
+<span class="function">print</span>(<span class="function">next</span>(it))  <span class="comment"># 20 - Get next item</span>
+<span class="function">print</span>(<span class="function">next</span>(it))  <span class="comment"># 30 - Get last item</span>
+<span class="comment"># next(it)  # Would raise StopIteration!</span>
+
+<span class="comment"># Creating your own iterator</span>
+<span class="keyword">class</span> <span class="function">Counter</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, start, end):
+        self.current = start
+        self.end = end
+    
+    <span class="keyword">def</span> <span class="function">__iter__</span>(self):
+        <span class="keyword">return</span> self
+    
+    <span class="keyword">def</span> <span class="function">__next__</span>(self):
+        <span class="keyword">if</span> self.current < self.end:
+            num = self.current
+            self.current <span class="operator">+=</span> <span class="number">1</span>
+            <span class="keyword">return</span> num
+        <span class="keyword">raise</span> StopIteration
+
+<span class="comment"># Use it in a for loop!</span>
+<span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">Counter</span>(<span class="number">1</span>, <span class="number">4</span>):
+    <span class="function">print</span>(n)  <span class="comment"># Prints 1, 2, 3</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Iterator Protocol</h3>
+            <ul>
+              <li><code>iter()</code> - Get an iterator</li>
+              <li><code>next()</code> - Get next item</li>
+              <li>StopIteration - Signal the end</li>
+              <li>Remembers position</li>
+              <li>One-way, forward only</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>💡 Why Important?</h3>
+            <ul>
+              <li>Powers all for loops</li>
+              <li>Memory efficient</li>
+              <li>Works with infinite sequences</li>
+              <li>Lazy evaluation</li>
+              <li>Common interface for all iterables</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Fun Fact!</strong>
+          Files are iterators too! When you loop through a file, you're using the iterator protocol to read one line at a time, saving memory!
+        </div>
+      </section>
+
+      <!-- Chapter 4: Generators -->
+      <section class="chapter">
+        <h2>🔄 Python Generators</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, how are generators different from regular iterators?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Generators are like smart, lazy iterators! Instead of creating all values at once and storing them in memory, they generate values on-the-fly using the <code>yield</code> keyword. Think of them as a "pause and resume" function!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That sounds powerful! When would I need this?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me show you some amazing use cases:
+              
+              <div class="code"><pre><span class="comment"># Simple generator function</span>
+<span class="keyword">def</span> <span class="function">countdown</span>(n):
+    <span class="keyword">while</span> n > <span class="number">0</span>:
+        <span class="keyword">yield</span> n  <span class="comment"># Pause here and return n</span>
+        n <span class="operator">-=</span> <span class="number">1</span>
+
+<span class="comment"># Use it like any iterator</span>
+<span class="keyword">for</span> num <span class="keyword">in</span> <span class="function">countdown</span>(<span class="number">3</span>):
+    <span class="function">print</span>(num)  <span class="comment"># 3, 2, 1</span>
+
+<span class="comment"># Generator for infinite sequence!</span>
+<span class="keyword">def</span> <span class="function">fibonacci</span>():
+    a, b = <span class="number">0</span>, <span class="number">1</span>
+    <span class="keyword">while</span> <span class="keyword">True</span>:  <span class="comment"># Infinite loop!</span>
+        <span class="keyword">yield</span> a
+        a, b = b, a <span class="operator">+</span> b
+
+<span class="comment"># Get first 10 Fibonacci numbers</span>
+fib = <span class="function">fibonacci</span>()
+<span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>):
+    <span class="function">print</span>(<span class="function">next</span>(fib), end=<span class="string">" "</span>)
+
+<span class="comment"># Generator expression (like list comprehension)</span>
+squares_gen = (x<span class="operator">**</span><span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1000000</span>))
+<span class="comment"># This uses almost no memory!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>💾 Memory Efficiency</h3>
+            <ul>
+              <li>Generate values on-demand</li>
+              <li>Perfect for large datasets</li>
+              <li>Can represent infinite sequences</li>
+              <li>Lazy evaluation</li>
+              <li>Minimal memory footprint</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Real-World Uses</h3>
+            <ul>
+              <li>Reading large files line by line</li>
+              <li>Streaming data processing</li>
+              <li>Pipeline operations</li>
+              <li>API pagination</li>
+              <li>Sensor data streams</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Generator vs List!</strong>
+          Use generators when you don't need all values at once. A list of 1 million items uses lots of memory, but a generator uses almost none!
+        </div>
+      </section>
+
+      <!-- Chapter 5: Namespaces and Scope -->
+      <section class="chapter">
+        <h2>🎯 Namespaces and Scope</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I sometimes get confused about why variables work in some places but not others. What's going on?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's about scope! Think of scope as different "rooms" in your program. Variables in one room might not be visible from another room. Python follows the LEGB rule to find variables!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              LEGB? That sounds like a secret code!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              It is! It's Python's search order for variables:
+              
+              <div class="code"><pre><span class="comment"># LEGB: Local → Enclosing → Global → Built-in</span>
+
+<span class="comment"># Built-in scope (Python's built-in names)</span>
+<span class="function">print</span>(<span class="function">len</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]))  <span class="comment"># len is built-in</span>
+
+<span class="comment"># Global scope (module level)</span>
+x = <span class="string">"global"</span>
+
+<span class="keyword">def</span> <span class="function">outer</span>():
+    <span class="comment"># Enclosing scope</span>
+    x = <span class="string">"enclosing"</span>
+    
+    <span class="keyword">def</span> <span class="function">inner</span>():
+        <span class="comment"># Local scope</span>
+        x = <span class="string">"local"</span>
+        <span class="function">print</span>(<span class="string">"Inner sees:"</span>, x)  <span class="comment"># local</span>
+    
+    <span class="function">inner</span>()
+    <span class="function">print</span>(<span class="string">"Outer sees:"</span>, x)  <span class="comment"># enclosing</span>
+
+<span class="function">outer</span>()
+<span class="function">print</span>(<span class="string">"Global sees:"</span>, x)  <span class="comment"># global</span>
+
+<span class="comment"># Using global and nonlocal keywords</span>
+count = <span class="number">0</span>  <span class="comment"># Global</span>
+
+<span class="keyword">def</span> <span class="function">increment</span>():
+    <span class="keyword">global</span> count
+    count <span class="operator">+=</span> <span class="number">1</span>  <span class="comment"># Modifies global count</span>
+
+<span class="keyword">def</span> <span class="function">outer_with_nonlocal</span>():
+    x = <span class="number">10</span>
+    <span class="keyword">def</span> <span class="function">inner</span>():
+        <span class="keyword">nonlocal</span> x
+        x <span class="operator">+=</span> <span class="number">5</span>  <span class="comment"># Modifies enclosing x</span>
+    <span class="function">inner</span>()
+    <span class="keyword">return</span> x  <span class="comment"># Returns 15</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Debugging Tip!</strong>
+          If you get a "NameError", Python couldn't find your variable in any scope. Check your spelling and make sure the variable is defined in an accessible scope!
+        </div>
+      </section>
+
+      <!-- Chapter 6: Closures -->
+      <section class="chapter">
+        <h2>🧩 Python Closures</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's a closure? It sounds mysterious!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              A closure is like a function with a backpack! When you return a function from another function, it carries along (in its backpack) all the variables it needs from the outer function. Even after the outer function finishes!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That sounds like magic! Show me how it works!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me demonstrate the power of closures:
+              
+              <div class="code"><pre><span class="comment"># Simple closure example</span>
+<span class="keyword">def</span> <span class="function">make_multiplier</span>(factor):
+    <span class="comment"># This inner function "remembers" factor</span>
+    <span class="keyword">def</span> <span class="function">multiply</span>(x):
+        <span class="keyword">return</span> x <span class="operator">*</span> factor
+    <span class="keyword">return</span> multiply
+
+<span class="comment"># Create specialized functions</span>
+times2 = <span class="function">make_multiplier</span>(<span class="number">2</span>)
+times3 = <span class="function">make_multiplier</span>(<span class="number">3</span>)
+
+<span class="function">print</span>(<span class="function">times2</span>(<span class="number">5</span>))  <span class="comment"># 10 (remembers factor=2)</span>
+<span class="function">print</span>(<span class="function">times3</span>(<span class="number">5</span>))  <span class="comment"># 15 (remembers factor=3)</span>
+
+<span class="comment"># More practical example: Counter with memory</span>
+<span class="keyword">def</span> <span class="function">make_counter</span>():
+    count = <span class="number">0</span>
+    
+    <span class="keyword">def</span> <span class="function">increment</span>():
+        <span class="keyword">nonlocal</span> count
+        count <span class="operator">+=</span> <span class="number">1</span>
+        <span class="keyword">return</span> count
+    
+    <span class="keyword">return</span> increment
+
+<span class="comment"># Each counter has its own memory!</span>
+counter1 = <span class="function">make_counter</span>()
+counter2 = <span class="function">make_counter</span>()
+
+<span class="function">print</span>(<span class="function">counter1</span>())  <span class="comment"># 1</span>
+<span class="function">print</span>(<span class="function">counter1</span>())  <span class="comment"># 2</span>
+<span class="function">print</span>(<span class="function">counter2</span>())  <span class="comment"># 1 (independent!)</span>
+
+<span class="comment"># Configuration closure</span>
+<span class="keyword">def</span> <span class="function">make_prefix_function</span>(prefix):
+    <span class="keyword">def</span> <span class="function">add_prefix</span>(text):
+        <span class="keyword">return</span> <span class="string">f"{prefix}: {text}"</span>
+    <span class="keyword">return</span> add_prefix
+
+error_msg = <span class="function">make_prefix_function</span>(<span class="string">"ERROR"</span>)
+info_msg = <span class="function">make_prefix_function</span>(<span class="string">"INFO"</span>)
+
+<span class="function">print</span>(<span class="function">error_msg</span>(<span class="string">"File not found"</span>))
+<span class="function">print</span>(<span class="function">info_msg</span>(<span class="string">"Process started"</span>))</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎒 Closure Components</h3>
+            <ul>
+              <li>Nested function structure</li>
+              <li>Access to outer variables</li>
+              <li>Returned inner function</li>
+              <li>Persistent state</li>
+              <li>Each closure is independent</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>💡 Why Use Closures?</h3>
+            <ul>
+              <li>Data privacy/encapsulation</li>
+              <li>Factory functions</li>
+              <li>Callbacks with state</li>
+              <li>Decorators foundation</li>
+              <li>Avoiding global variables</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Mental Model!</strong>
+          Think of closures as "function + environment". The function carries its birth environment wherever it goes!
+        </div>
+      </section>
+
+      <!-- Chapter 7: Decorators -->
+      <section class="chapter">
+        <h2>🛠️ Python Decorators</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I see <code>@something</code> above functions. What are those @ symbols doing?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Those are decorators - they're like gift wrappers for functions! They add extra features to your functions without changing the function's code. It's like putting a tracking device on a package without opening it!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That sounds useful! How do I create my own?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me show you the decorator magic:
+              
+              <div class="code"><pre><span class="comment"># Simple decorator</span>
+<span class="keyword">def</span> <span class="function">my_decorator</span>(func):
+    <span class="keyword">def</span> <span class="function">wrapper</span>():
+        <span class="function">print</span>(<span class="string">"🎁 Before function"</span>)
+        result = <span class="function">func</span>()
+        <span class="function">print</span>(<span class="string">"✨ After function"</span>)
+        <span class="keyword">return</span> result
+    <span class="keyword">return</span> wrapper
+
+<span class="comment"># Apply decorator with @</span>
+<span class="operator">@</span>my_decorator
+<span class="keyword">def</span> <span class="function">say_hello</span>():
+    <span class="function">print</span>(<span class="string">"Hello!"</span>)
+
+<span class="function">say_hello</span>()
+<span class="comment"># Output:</span>
+<span class="comment"># 🎁 Before function</span>
+<span class="comment"># Hello!</span>
+<span class="comment"># ✨ After function</span>
+
+<span class="comment"># Decorator with arguments</span>
+<span class="keyword">def</span> <span class="function">timer</span>(func):
+    <span class="keyword">import</span> time
+    <span class="keyword">def</span> <span class="function">wrapper</span>(*args, **kwargs):
+        start = time.<span class="function">time</span>()
+        result = <span class="function">func</span>(*args, **kwargs)
+        end = time.<span class="function">time</span>()
+        <span class="function">print</span>(<span class="string">f"⏱️ {func.__name__} took {end-start:.4f}s"</span>)
+        <span class="keyword">return</span> result
+    <span class="keyword">return</span> wrapper
+
+<span class="operator">@</span>timer
+<span class="keyword">def</span> <span class="function">slow_function</span>(n):
+    <span class="keyword">import</span> time
+    time.<span class="function">sleep</span>(n)
+    <span class="keyword">return</span> <span class="string">"Done!"</span>
+
+<span class="comment"># Decorator with parameters</span>
+<span class="keyword">def</span> <span class="function">repeat</span>(times):
+    <span class="keyword">def</span> <span class="function">decorator</span>(func):
+        <span class="keyword">def</span> <span class="function">wrapper</span>(*args, **kwargs):
+            <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(times):
+                result = <span class="function">func</span>(*args, **kwargs)
+            <span class="keyword">return</span> result
+        <span class="keyword">return</span> wrapper
+    <span class="keyword">return</span> decorator
+
+<span class="operator">@</span><span class="function">repeat</span>(<span class="number">3</span>)
+<span class="keyword">def</span> <span class="function">greet</span>(name):
+    <span class="function">print</span>(<span class="string">f"Hello {name}!"</span>)
+
+<span class="function">greet</span>(<span class="string">"Alex"</span>)  <span class="comment"># Prints 3 times!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Common Decorators!</strong>
+          Python has built-in decorators like @property, @staticmethod, @classmethod, and frameworks like Flask use @app.route!
+        </div>
+      </section>
+
+      <!-- Chapter 8: @property Decorator -->
+      <section class="chapter">
+        <h2>🏷️ The @property Decorator</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I've seen <code>@property</code> in classes. Is it different from other decorators?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! <code>@property</code> is special - it lets you create "smart attributes" in classes. You can make methods behave like attributes, adding logic behind simple dot notation. It's like having a security guard for your data!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Why not just use regular attributes?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me show you the power of controlled access:
+              
+              <div class="code"><pre><span class="comment"># Without @property (problems!)</span>
+<span class="keyword">class</span> <span class="function">Circle</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, radius):
+        self.radius = radius  <span class="comment"># Anyone can set negative!</span>
+
+<span class="comment"># With @property (controlled access)</span>
+<span class="keyword">class</span> <span class="function">BetterCircle</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, radius):
+        self._radius = radius
+    
+    <span class="operator">@</span>property
+    <span class="keyword">def</span> <span class="function">radius</span>(self):
+        <span class="string">"""Get the radius value"""</span>
+        <span class="keyword">return</span> self._radius
+    
+    <span class="operator">@</span>radius.setter
+    <span class="keyword">def</span> <span class="function">radius</span>(self, value):
+        <span class="string">"""Set radius with validation"""</span>
+        <span class="keyword">if</span> value < <span class="number">0</span>:
+            <span class="keyword">raise</span> <span class="function">ValueError</span>(<span class="string">"Radius must be positive!"</span>)
+        self._radius = value
+    
+    <span class="operator">@</span>property
+    <span class="keyword">def</span> <span class="function">area</span>(self):
+        <span class="string">"""Calculated property - no setter!"""</span>
+        <span class="keyword">import</span> math
+        <span class="keyword">return</span> math.pi <span class="operator">*</span> self._radius <span class="operator">**</span> <span class="number">2</span>
+    
+    <span class="operator">@</span>property
+    <span class="keyword">def</span> <span class="function">diameter</span>(self):
+        <span class="keyword">return</span> self._radius <span class="operator">*</span> <span class="number">2</span>
+
+<span class="comment"># Use it naturally!</span>
+circle = <span class="function">BetterCircle</span>(<span class="number">5</span>)
+<span class="function">print</span>(circle.radius)     <span class="comment"># 5</span>
+<span class="function">print</span>(circle.area)       <span class="comment"># 78.54...</span>
+<span class="function">print</span>(circle.diameter)   <span class="comment"># 10</span>
+
+circle.radius = <span class="number">10</span>        <span class="comment"># Uses setter</span>
+<span class="comment"># circle.radius = -5     # Raises ValueError!</span>
+<span class="comment"># circle.area = 100      # Error! No setter!</span>
+
+<span class="comment"># Temperature converter example</span>
+<span class="keyword">class</span> <span class="function">Temperature</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        self._celsius = <span class="number">0</span>
+    
+    <span class="operator">@</span>property
+    <span class="keyword">def</span> <span class="function">celsius</span>(self):
+        <span class="keyword">return</span> self._celsius
+    
+    <span class="operator">@</span>celsius.setter
+    <span class="keyword">def</span> <span class="function">celsius</span>(self, value):
+        self._celsius = value
+    
+    <span class="operator">@</span>property
+    <span class="keyword">def</span> <span class="function">fahrenheit</span>(self):
+        <span class="keyword">return</span> self._celsius <span class="operator">*</span> <span class="number">9</span><span class="operator">/</span><span class="number">5</span> <span class="operator">+</span> <span class="number">32</span>
+    
+    <span class="operator">@</span>fahrenheit.setter
+    <span class="keyword">def</span> <span class="function">fahrenheit</span>(self, value):
+        self._celsius = (value <span class="operator">-</span> <span class="number">32</span>) <span class="operator">*</span> <span class="number">5</span><span class="operator">/</span><span class="number">9</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>✨ Benefits of @property</h3>
+            <ul>
+              <li>Data validation</li>
+              <li>Computed attributes</li>
+              <li>Backward compatibility</li>
+              <li>Clean interface</li>
+              <li>Lazy evaluation</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Common Uses</h3>
+            <ul>
+              <li>Validate before setting</li>
+              <li>Log attribute access</li>
+              <li>Calculate on-the-fly</li>
+              <li>Convert between formats</li>
+              <li>Maintain invariants</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Best Practice!</strong>
+          Use a single underscore prefix (_attribute) for internal attributes that are controlled by properties. This signals "don't touch directly!"
+        </div>
+      </section>
+
+      <!-- Chapter 9: Regular Expressions -->
+      <section class="chapter">
+        <h2>🔎 Regular Expressions (RegEx)</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              RegEx looks like random symbols! Is it really that useful?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              RegEx is like a metal detector for text! Instead of finding exact words, you describe patterns. Want to find all email addresses in a document? All phone numbers? All dates? RegEx can do it in one line!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That does sound powerful! Can you decode the symbols for me?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let's start with the essential patterns:
+              
+              <div class="code"><pre><span class="keyword">import</span> re
+
+<span class="comment"># Basic Pattern Symbols</span>
+<span class="comment"># \d = digit (0-9)</span>
+<span class="comment"># \w = word character (a-z, A-Z, 0-9, _)</span>
+<span class="comment"># \s = whitespace (space, tab, newline)</span>
+<span class="comment"># . = any character except newline</span>
+<span class="comment"># ^ = start of string</span>
+<span class="comment"># $ = end of string</span>
+
+text = <span class="string">"My email is alex@example.com and phone is 123-456-7890"</span>
+
+<span class="comment"># Find email pattern</span>
+email_pattern = <span class="string">r"[\w.-]+@[\w.-]+"</span>
+email = re.<span class="function">search</span>(email_pattern, text)
+<span class="function">print</span>(<span class="string">"Email found:"</span>, email.<span class="function">group</span>())
+
+<span class="comment"># Find all numbers</span>
+numbers = re.<span class="function">findall</span>(<span class="string">r"\d+"</span>, text)
+<span class="function">print</span>(<span class="string">"Numbers:"</span>, numbers)
+
+<span class="comment"># Phone number pattern</span>
+phone_pattern = <span class="string">r"\d{3}-\d{3}-\d{4}"</span>
+phone = re.<span class="function">search</span>(phone_pattern, text)
+<span class="function">print</span>(<span class="string">"Phone:"</span>, phone.<span class="function">group</span>())
+
+<span class="comment"># Replace/Masking</span>
+masked = re.<span class="function">sub</span>(<span class="string">r"\d"</span>, <span class="string">"X"</span>, text)
+<span class="function">print</span>(<span class="string">"Masked:"</span>, masked)
+
+<span class="comment"># Validation examples</span>
+<span class="keyword">def</span> <span class="function">is_valid_email</span>(email):
+    pattern = <span class="string">r"^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$"</span>
+    <span class="keyword">return</span> <span class="function">bool</span>(re.<span class="function">match</span>(pattern, email))
+
+<span class="keyword">def</span> <span class="function">is_strong_password</span>(password):
+    <span class="comment"># At least 8 chars, 1 upper, 1 lower, 1 digit, 1 special</span>
+    patterns = [
+        <span class="string">r".{8,}"</span>,              <span class="comment"># 8+ characters</span>
+        <span class="string">r"[A-Z]"</span>,              <span class="comment"># uppercase</span>
+        <span class="string">r"[a-z]"</span>,              <span class="comment"># lowercase</span>
+        <span class="string">r"\d"</span>,                 <span class="comment"># digit</span>
+        <span class="string">r"[!@#$%^&*(),.?\":{}|<>]"</span>  <span class="comment"># special</span>
+    ]
+    <span class="keyword">return</span> <span class="function">all</span>(re.<span class="function">search</span>(p, password) <span class="keyword">for</span> p <span class="keyword">in</span> patterns)
+
+<span class="comment"># Extract data from text</span>
+log = <span class="string">"2024-03-15 10:30:45 ERROR: File not found"</span>
+pattern = <span class="string">r"(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) (\w+): (.+)"</span>
+match = re.<span class="function">match</span>(pattern, log)
+<span class="keyword">if</span> match:
+    date, time, level, message = match.<span class="function">groups</span>()
+    <span class="function">print</span>(<span class="string">f"Date: {date}, Level: {level}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📝 Common Patterns</h3>
+            <ul>
+              <li><code>\d+</code> - One or more digits</li>
+              <li><code>\w+</code> - One or more word chars</li>
+              <li><code>.*</code> - Any characters</li>
+              <li><code>[a-z]+</code> - Lowercase letters</li>
+              <li><code>{n,m}</code> - Between n and m times</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Real-World Uses</h3>
+            <ul>
+              <li>Validate user input</li>
+              <li>Extract data from logs</li>
+              <li>Clean text data</li>
+              <li>Find and replace patterns</li>
+              <li>Parse structured text</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>RegEx Tip!</strong>
+          Start simple and build up. Test your patterns on regex101.com with sample data. Remember: readable code > clever regex!
+        </div>
+      </section>
+
+      <!-- Chapter 10: Built-in Functions -->
+      <section class="chapter">
+        <h2>🧰 Built-in Functions: map, filter, zip, enumerate</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I keep seeing <code>map</code>, <code>filter</code>, <code>zip</code> in code. What do they do?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              These are Python's power tools for working with sequences! They're like specialized machines in a factory - each does one job really well. Let me show you their superpowers!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Show me what each one does!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here's your toolkit for data transformation:
+              
+              <div class="code"><pre><span class="comment"># 1. map() - Transform every element</span>
+<span class="comment"># Like a painting machine that colors every item</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+squares = <span class="function">map</span>(<span class="keyword">lambda</span> x: x<span class="operator">**</span><span class="number">2</span>, numbers)
+<span class="function">print</span>(<span class="string">"Squares:"</span>, <span class="function">list</span>(squares))  <span class="comment"># [1, 4, 9, 16, 25]</span>
+
+<span class="comment"># Convert strings to integers</span>
+str_nums = [<span class="string">"1"</span>, <span class="string">"2"</span>, <span class="string">"3"</span>]
+int_nums = <span class="function">list</span>(<span class="function">map</span>(<span class="function">int</span>, str_nums))
+<span class="function">print</span>(<span class="string">"Integers:"</span>, int_nums)
+
+<span class="comment"># 2. filter() - Keep only what passes the test</span>
+<span class="comment"># Like a security checkpoint that only lets certain items through</span>
+nums = [<span class="number">10</span>, <span class="number">15</span>, <span class="number">20</span>, <span class="number">25</span>, <span class="number">30</span>]
+evens = <span class="function">filter</span>(<span class="keyword">lambda</span> x: x <span class="operator">%</span> <span class="number">2</span> <span class="operator">==</span> <span class="number">0</span>, nums)
+<span class="function">print</span>(<span class="string">"Even numbers:"</span>, <span class="function">list</span>(evens))  <span class="comment"># [10, 20, 30]</span>
+
+<span class="comment"># Filter out empty strings</span>
+words = [<span class="string">"hello"</span>, <span class="string">""</span>, <span class="string">"world"</span>, <span class="string">""</span>, <span class="string">"python"</span>]
+non_empty = <span class="function">list</span>(<span class="function">filter</span>(<span class="keyword">None</span>, words))  <span class="comment"># Filters falsy values</span>
+<span class="function">print</span>(<span class="string">"Non-empty:"</span>, non_empty)
+
+<span class="comment"># 3. zip() - Pair up elements from multiple lists</span>
+<span class="comment"># Like a zipper that joins two sides together</span>
+names = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Charlie"</span>]
+scores = [<span class="number">85</span>, <span class="number">92</span>, <span class="number">78</span>]
+grades = [<span class="string">"B"</span>, <span class="string">"A"</span>, <span class="string">"C"</span>]
+
+<span class="comment"># Combine into tuples</span>
+students = <span class="function">list</span>(<span class="function">zip</span>(names, scores, grades))
+<span class="function">print</span>(<span class="string">"Students:"</span>, students)
+<span class="comment"># [('Alice', 85, 'B'), ('Bob', 92, 'A'), ('Charlie', 78, 'C')]</span>
+
+<span class="comment"># Create dictionary from two lists</span>
+keys = [<span class="string">"name"</span>, <span class="string">"age"</span>, <span class="string">"city"</span>]
+values = [<span class="string">"Alex"</span>, <span class="number">25</span>, <span class="string">"NYC"</span>]
+person = <span class="function">dict</span>(<span class="function">zip</span>(keys, values))
+<span class="function">print</span>(<span class="string">"Person:"</span>, person)
+
+<span class="comment"># 4. enumerate() - Add index counters</span>
+<span class="comment"># Like numbering items on a list</span>
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+
+<span class="keyword">for</span> index, fruit <span class="keyword">in</span> <span class="function">enumerate</span>(fruits):
+    <span class="function">print</span>(<span class="string">f"{index}: {fruit}"</span>)
+
+<span class="comment"># Start counting from 1</span>
+<span class="keyword">for</span> num, fruit <span class="keyword">in</span> <span class="function">enumerate</span>(fruits, start=<span class="number">1</span>):
+    <span class="function">print</span>(<span class="string">f"{num}. {fruit}"</span>)
+
+<span class="comment"># Practical example: Find positions of items</span>
+data = [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>, <span class="string">"b"</span>, <span class="string">"d"</span>]
+b_positions = [i <span class="keyword">for</span> i, x <span class="keyword">in</span> <span class="function">enumerate</span>(data) <span class="keyword">if</span> x <span class="operator">==</span> <span class="string">"b"</span>]
+<span class="function">print</span>(<span class="string">"'b' found at:"</span>, b_positions)  <span class="comment"># [1, 3]</span>
+
+<span class="comment"># Combine them all!</span>
+nums1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+nums2 = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>]
+
+<span class="comment"># Add corresponding elements and filter > 25</span>
+sums = <span class="function">map</span>(<span class="keyword">lambda</span> pair: pair[<span class="number">0</span>] <span class="operator">+</span> pair[<span class="number">1</span>], <span class="function">zip</span>(nums1, nums2))
+large_sums = <span class="function">filter</span>(<span class="keyword">lambda</span> x: x > <span class="number">25</span>, sums)
+<span class="function">print</span>(<span class="string">"Large sums:"</span>, <span class="function">list</span>(large_sums))</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔧 Function Summary</h3>
+            <ul>
+              <li><code>map()</code> - Transform all items</li>
+              <li><code>filter()</code> - Keep matching items</li>
+              <li><code>zip()</code> - Combine sequences</li>
+              <li><code>enumerate()</code> - Add indices</li>
+              <li>All return iterators (lazy!)</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>💡 When to Use</h3>
+            <ul>
+              <li>map: Apply same operation to all</li>
+              <li>filter: Remove unwanted items</li>
+              <li>zip: Parallel iteration</li>
+              <li>enumerate: Need index + value</li>
+              <li>Chain them for complex operations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Performance Tip!</strong>
+          These functions return iterators, not lists. They're lazy - they don't compute values until needed. Use list() if you need all values at once!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Wow! These advanced concepts really make Python powerful. Thanks for the journey, Sam!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              You're welcome, Alex! Remember, you don't need to master everything at once. Pick one concept, practice it, then move to the next. These tools will make your code more elegant and efficient. Keep coding and have fun! 🚀
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          nextChapter();
+        } else {
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

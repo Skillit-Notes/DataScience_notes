@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Functions - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: minmax(0, 1fr) 56px;
+    }
+    
+    .conversation:nth-child(even) > .dialogue { grid-column: 1; }
+    .conversation:nth-child(even) > .avatar   { grid-column: 2; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+      height: 100%;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 12.5%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🔧 Python Functions</h1>
+        <p class="book-sub">Build reusable code blocks with Alex and Sam!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">Functions</button>
+        <button class="tab" onclick="showChapter(1)">Arguments</button>
+        <button class="tab" onclick="showChapter(2)">Scope</button>
+        <button class="tab" onclick="showChapter(3)">Global</button>
+        <button class="tab" onclick="showChapter(4)">Recursion</button>
+        <button class="tab" onclick="showChapter(5)">Modules</button>
+        <button class="tab" onclick="showChapter(6)">Packages</button>
+        <button class="tab" onclick="showChapter(7)">Main</button>
+      </nav>
+
+      <!-- Chapter 1: Functions -->
+      <section class="chapter active">
+        <h2>Chapter 1: Functions - Reusable Code Blocks</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Sam, I've been writing code, but I keep repeating the same lines over and over. There must be a better way!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              You've discovered one of programming's golden rules: <strong>Don't Repeat Yourself (DRY)</strong>! That's where <strong>functions</strong> come to the rescue. Think of functions as little machines that do specific jobs!
+              
+              <div class="code"><pre><span class="comment"># Define a function with 'def'</span>
+<span class="keyword">def</span> <span class="function">greet</span>():
+    <span class="function">print</span>(<span class="string">"Hello, welcome to Python!"</span>)
+    <span class="function">print</span>(<span class="string">"Hope you're having a great day!"</span>)
+
+<span class="comment"># Call the function</span>
+<span class="function">greet</span>()
+<span class="function">greet</span>()  <span class="comment"># We can use it multiple times!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's so much cleaner! But what if I want my function to work with different data?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where <strong>parameters</strong> come in! They're like input slots for your function:
+              
+              <div class="code"><pre><span class="comment"># Function with parameters</span>
+<span class="keyword">def</span> <span class="function">greet_person</span>(name):
+    <span class="function">print</span>(<span class="string">f"Hello, {name}!"</span>)
+    <span class="function">print</span>(<span class="string">f"Welcome to Python, {name}!"</span>)
+
+<span class="comment"># Call with different arguments</span>
+<span class="function">greet_person</span>(<span class="string">"Alex"</span>)
+<span class="function">greet_person</span>(<span class="string">"Sam"</span>)
+<span class="function">greet_person</span>(<span class="string">"Python Student"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can functions give me back results, not just print things?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Use the <strong>return</strong> statement to send data back:
+              
+              <div class="code"><pre><span class="comment"># Functions that return values</span>
+<span class="keyword">def</span> <span class="function">add</span>(a, b):
+    result = a + b
+    <span class="keyword">return</span> result  <span class="comment"># Send the result back</span>
+
+<span class="keyword">def</span> <span class="function">calculate_area</span>(length, width):
+    <span class="keyword">return</span> length * width  <span class="comment"># Direct return</span>
+
+<span class="comment"># Use the returned values</span>
+sum_result = <span class="function">add</span>(<span class="number">5</span>, <span class="number">3</span>)
+<span class="function">print</span>(<span class="string">f"5 + 3 = {sum_result}"</span>)
+
+area = <span class="function">calculate_area</span>(<span class="number">10</span>, <span class="number">5</span>)
+<span class="function">print</span>(<span class="string">f"Room area: {area} square meters"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Why Use Functions?</h3>
+            <ul>
+              <li><strong>DRY Principle:</strong> Don't Repeat Yourself</li>
+              <li><strong>Organization:</strong> Break big problems into small pieces</li>
+              <li><strong>Reusability:</strong> Write once, use many times</li>
+              <li><strong>Testing:</strong> Easier to test small functions</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Function Structure</h3>
+            <ul>
+              <li><code>def</code> keyword starts the definition</li>
+              <li>Function name followed by parentheses</li>
+              <li>Parameters go inside parentheses</li>
+              <li>Colon (:) and indented code block</li>
+              <li><code>return</code> sends data back (optional)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Function Naming!</strong>
+          Use descriptive names that tell you what the function does. <code>calculate_area()</code> is better than <code>calc()</code>!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a more practical example?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Sure! Let's create a temperature converter:
+              
+              <div class="code"><pre><span class="comment"># Practical function example</span>
+<span class="keyword">def</span> <span class="function">celsius_to_fahrenheit</span>(celsius):
+    <span class="string">"""Convert Celsius to Fahrenheit"""</span>
+    fahrenheit = (celsius * <span class="number">9/5</span>) + <span class="number">32</span>
+    <span class="keyword">return</span> fahrenheit
+
+<span class="keyword">def</span> <span class="function">fahrenheit_to_celsius</span>(fahrenheit):
+    <span class="string">"""Convert Fahrenheit to Celsius"""</span>
+    celsius = (fahrenheit - <span class="number">32</span>) * <span class="number">5/9</span>
+    <span class="keyword">return</span> celsius
+
+<span class="comment"># Use our functions</span>
+temp_c = <span class="number">25</span>
+temp_f = <span class="function">celsius_to_fahrenheit</span>(temp_c)
+<span class="function">print</span>(<span class="string">f"{temp_c}°C is {temp_f}°F"</span>)
+
+temp_f2 = <span class="number">77</span>
+temp_c2 = <span class="function">fahrenheit_to_celsius</span>(temp_f2)
+<span class="function">print</span>(<span class="string">f"{temp_f2}°F is {temp_c2:.1f}°C"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chapter 2: Function Arguments -->
+      <section class="chapter">
+        <h2>Chapter 2: Function Arguments - Flexible Input Methods</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I want to make my functions more flexible. What if I don't always want to provide all the information?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python has several ways to make functions flexible! Let's explore <strong>default arguments</strong> first:
+              
+              <div class="code"><pre><span class="comment"># Default arguments</span>
+<span class="keyword">def</span> <span class="function">greet</span>(name, greeting=<span class="string">"Hello"</span>, punctuation=<span class="string">"!"</span>):
+    <span class="function">print</span>(<span class="string">f"{greeting}, {name}{punctuation}"</span>)
+
+<span class="comment"># Different ways to call it</span>
+<span class="function">greet</span>(<span class="string">"Alex"</span>)                           <span class="comment"># Uses defaults</span>
+<span class="function">greet</span>(<span class="string">"Sam"</span>, <span class="string">"Hi"</span>)                      <span class="comment"># Custom greeting</span>
+<span class="function">greet</span>(<span class="string">"Python"</span>, <span class="string">"Welcome"</span>, <span class="string">"!!!"</span>)      <span class="comment"># All custom</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What if I want to be more specific about which argument is which?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Use <strong>keyword arguments</strong>! You can specify parameters by name:
+              
+              <div class="code"><pre><span class="comment"># Keyword arguments</span>
+<span class="keyword">def</span> <span class="function">create_profile</span>(name, age, city=<span class="string">"Unknown"</span>, job=<span class="string">"Student"</span>):
+    <span class="function">print</span>(<span class="string">f"Name: {name}"</span>)
+    <span class="function">print</span>(<span class="string">f"Age: {age}"</span>)
+    <span class="function">print</span>(<span class="string">f"City: {city}"</span>)
+    <span class="function">print</span>(<span class="string">f"Job: {job}\n"</span>)
+
+<span class="comment"># Different calling styles</span>
+<span class="function">create_profile</span>(<span class="string">"Alex"</span>, <span class="number">16</span>)                    <span class="comment"># Positional</span>
+<span class="function">create_profile</span>(name=<span class="string">"Sam"</span>, age=<span class="number">17</span>, city=<span class="string">"NYC"</span>) <span class="comment"># Keywords</span>
+<span class="function">create_profile</span>(<span class="string">"Pat"</span>, <span class="number">18</span>, job=<span class="string">"Intern"</span>)        <span class="comment"># Mixed</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What if I don't know how many arguments I'll need?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where <strong>*args</strong> and <strong>**kwargs</strong> shine! They handle variable numbers of arguments:
+              
+              <div class="code"><pre><span class="comment"># *args for multiple positional arguments</span>
+<span class="keyword">def</span> <span class="function">add_numbers</span>(*args):
+    <span class="string">"""Add any number of numbers"""</span>
+    total = <span class="number">0</span>
+    <span class="keyword">for</span> num <span class="keyword">in</span> args:
+        total += num
+    <span class="keyword">return</span> total
+
+<span class="function">print</span>(<span class="function">add_numbers</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>))           <span class="comment"># 6</span>
+<span class="function">print</span>(<span class="function">add_numbers</span>(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>))    <span class="comment"># 100</span>
+
+<span class="comment"># **kwargs for flexible keyword arguments</span>
+<span class="keyword">def</span> <span class="function">create_character</span>(name, **kwargs):
+    <span class="function">print</span>(<span class="string">f"Character: {name}"</span>)
+    <span class="keyword">for</span> attribute, value <span class="keyword">in</span> kwargs.items():
+        <span class="function">print</span>(<span class="string">f"  {attribute}: {value}"</span>)
+
+<span class="function">create_character</span>(<span class="string">"Hero"</span>, health=<span class="number">100</span>, strength=<span class="number">85</span>)
+<span class="function">create_character</span>(<span class="string">"Wizard"</span>, mana=<span class="number">200</span>, spell=<span class="string">"Fireball"</span>, level=<span class="number">5</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📝 Argument Types</h3>
+            <ul>
+              <li><strong>Positional:</strong> <code>func(a, b)</code></li>
+              <li><strong>Keyword:</strong> <code>func(a=1, b=2)</code></li>
+              <li><strong>Default:</strong> <code>def func(a=10)</code></li>
+              <li><strong>*args:</strong> Variable positional</li>
+              <li><strong>**kwargs:</strong> Variable keyword</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚡ Best Practices</h3>
+            <ul>
+              <li>Use default arguments for optional parameters</li>
+              <li>Keywords make calls more readable</li>
+              <li>*args for flexible number of inputs</li>
+              <li>**kwargs for configuration options</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Parameter Order!</strong>
+          Remember: positional args, *args, default args, **kwargs. Python enforces this order!
+        </div>
+      </section>
+
+      <!-- Chapter 3: Variable Scope -->
+      <section class="chapter">
+        <h2>Chapter 3: Variable Scope - Where Variables Live</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I'm getting confused about variables. Sometimes I can use them everywhere, sometimes I can't. What's going on?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              You've discovered <strong>variable scope</strong>! Think of it like rooms in a house - some things are only available in certain rooms. Python follows the <strong>LEGB rule</strong>:
+              <br><br>
+              • <strong>L</strong>ocal - Inside the current function<br>
+              • <strong>E</strong>nclosing - In parent functions<br>
+              • <strong>G</strong>lobal - At the top level of the file<br>
+              • <strong>B</strong>uilt-in - Python's built-in names<br>
+              
+              <div class="code"><pre><span class="comment"># Global scope - available everywhere</span>
+global_var = <span class="string">"I'm global!"</span>
+
+<span class="keyword">def</span> <span class="function">outer_function</span>():
+    <span class="comment"># Enclosing scope</span>
+    enclosing_var = <span class="string">"I'm in the enclosing scope!"</span>
+    
+    <span class="keyword">def</span> <span class="function">inner_function</span>():
+        <span class="comment"># Local scope</span>
+        local_var = <span class="string">"I'm local!"</span>
+        
+        <span class="comment"># Can access all scopes from here</span>
+        <span class="function">print</span>(local_var)      <span class="comment"># Local</span>
+        <span class="function">print</span>(enclosing_var)  <span class="comment"># Enclosing</span>
+        <span class="function">print</span>(global_var)     <span class="comment"># Global</span>
+        <span class="function">print</span>(<span class="function">len</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]))       <span class="comment"># Built-in</span>
+    
+    <span class="function">inner_function</span>()
+
+<span class="function">outer_function</span>()</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🏠 Scope Types</h3>
+            <ul>
+              <li><strong>Local:</strong> Inside current function</li>
+              <li><strong>Enclosing:</strong> Parent function scopes</li>
+              <li><strong>Global:</strong> Module level</li>
+              <li><strong>Built-in:</strong> Python's built-in names</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Best Practices</h3>
+            <ul>
+              <li>Minimize global variables</li>
+              <li>Pass data as parameters</li>
+              <li>Return values instead of modifying globals</li>
+              <li>Use descriptive names to avoid confusion</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Scope Debugging!</strong>
+          If you get unexpected variable behavior, check the scope! Use descriptive names and avoid variable shadowing.
+        </div>
+      </section>
+
+      <!-- Chapter 4: Global Keyword -->
+      <section class="chapter">
+        <h2>Chapter 4: Global Keyword - Modifying Global Variables</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, what if I really do need to modify a global variable from inside a function? Is there a way?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! That's what the <strong>global</strong> keyword is for. It tells Python "I want to modify the global variable, not create a local one":
+              
+              <div class="code"><pre><span class="comment"># Using the global keyword</span>
+counter = <span class="number">0</span>  <span class="comment"># Global variable</span>
+
+<span class="keyword">def</span> <span class="function">increment</span>():
+    <span class="keyword">global</span> counter  <span class="comment"># Tell Python we want the global one</span>
+    counter += <span class="number">1</span>
+    <span class="function">print</span>(<span class="string">f"Counter is now: {counter}"</span>)
+
+<span class="keyword">def</span> <span class="function">decrement</span>():
+    <span class="keyword">global</span> counter
+    counter -= <span class="number">1</span>
+    <span class="function">print</span>(<span class="string">f"Counter is now: {counter}"</span>)
+
+<span class="comment"># Now we can modify the global variable</span>
+<span class="function">print</span>(<span class="string">f"Starting counter: {counter}"</span>)
+<span class="function">increment</span>()  <span class="comment"># 1</span>
+<span class="function">increment</span>()  <span class="comment"># 2</span>
+<span class="function">decrement</span>()  <span class="comment"># 1</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              When would I actually want to use global variables?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Global variables are useful for <strong>application state</strong>, <strong>configuration</strong>, or <strong>shared data</strong>. Here are some legitimate uses:
+              
+              <div class="code"><pre><span class="comment"># Example 1: Game state</span>
+player_score = <span class="number">0</span>
+player_lives = <span class="number">3</span>
+game_level = <span class="number">1</span>
+
+<span class="keyword">def</span> <span class="function">collect_coin</span>():
+    <span class="keyword">global</span> player_score
+    player_score += <span class="number">10</span>
+    <span class="function">print</span>(<span class="string">f"Score: {player_score}"</span>)
+
+<span class="keyword">def</span> <span class="function">lose_life</span>():
+    <span class="keyword">global</span> player_lives
+    player_lives -= <span class="number">1</span>
+    <span class="function">print</span>(<span class="string">f"Lives remaining: {player_lives}"</span>)
+    <span class="keyword">if</span> player_lives <= <span class="number">0</span>:
+        <span class="function">print</span>(<span class="string">"Game Over!"</span>)
+
+<span class="comment"># Example 2: Application settings</span>
+DEBUG_MODE = <span class="keyword">True</span>
+
+<span class="keyword">def</span> <span class="function">debug_log</span>(message):
+    <span class="keyword">if</span> DEBUG_MODE:
+        <span class="function">print</span>(<span class="string">f"[DEBUG] {message}"</span>)
+
+<span class="function">collect_coin</span>()
+<span class="function">lose_life</span>()
+<span class="function">debug_log</span>(<span class="string">"Player collected coin"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>✅ When to Use Global</h3>
+            <ul>
+              <li>Application-wide settings</li>
+              <li>Shared counters or caches</li>
+              <li>Game state (score, lives)</li>
+              <li>Configuration constants</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>❌ Global Pitfalls</h3>
+            <ul>
+              <li>Makes functions harder to test</li>
+              <li>Creates hidden dependencies</li>
+              <li>Can cause unexpected side effects</li>
+              <li>Makes code harder to understand</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Best Practice!</strong>
+          Use globals sparingly. When you do, separate pure logic functions from state-modifying functions for easier testing.
+        </div>
+      </section>
+
+      <!-- Chapter 5: Recursion -->
+      <section class="chapter">
+        <h2>Chapter 5: Recursion - Functions That Call Themselves</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I heard about something called recursion where functions call themselves. That sounds confusing and maybe dangerous!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Recursion is like looking into a mirror that reflects another mirror! It's when a function calls itself to solve smaller versions of the same problem. The key is having a <strong>base case</strong> to stop the recursion:
+              
+              <div class="code"><pre><span class="comment"># Classic example: factorial</span>
+<span class="comment"># 5! = 5 × 4 × 3 × 2 × 1 = 120</span>
+<span class="keyword">def</span> <span class="function">factorial</span>(n):
+    <span class="comment"># Base case: stop the recursion</span>
+    <span class="keyword">if</span> n == <span class="number">0</span> <span class="keyword">or</span> n == <span class="number">1</span>:
+        <span class="keyword">return</span> <span class="number">1</span>
+    <span class="comment"># Recursive case: function calls itself</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> n * <span class="function">factorial</span>(n - <span class="number">1</span>)
+
+<span class="comment"># Let's trace factorial(4):</span>
+<span class="comment"># factorial(4) = 4 * factorial(3)</span>
+<span class="comment"># factorial(3) = 3 * factorial(2)</span>
+<span class="comment"># factorial(2) = 2 * factorial(1)</span>
+<span class="comment"># factorial(1) = 1 (base case)</span>
+<span class="comment"># Working backwards: 2*1 = 2, 3*2 = 6, 4*6 = 24</span>
+
+<span class="function">print</span>(<span class="string">f"4! = {factorial(4)}"</span>)  <span class="comment"># 24</span>
+<span class="function">print</span>(<span class="string">f"5! = {factorial(5)}"</span>)  <span class="comment"># 120</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What happens if I forget the base case?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              You get infinite recursion and eventually a <strong>RecursionError</strong>! Python has a recursion limit to prevent crashes:
+              
+              <div class="code"><pre><span class="comment"># ❌ DANGER: Infinite recursion (don't run this!)</span>
+<span class="keyword">def</span> <span class="function">broken_countdown</span>(n):
+    <span class="function">print</span>(n)
+    <span class="keyword">return</span> <span class="function">broken_countdown</span>(n - <span class="number">1</span>)  <span class="comment"># No base case!</span>
+
+<span class="comment"># ✅ CORRECT: Proper base case</span>
+<span class="keyword">def</span> <span class="function">countdown</span>(n):
+    <span class="keyword">if</span> n <= <span class="number">0</span>:  <span class="comment"># Base case</span>
+        <span class="function">print</span>(<span class="string">"Blast off! 🚀"</span>)
+    <span class="keyword">else</span>:  <span class="comment"># Recursive case</span>
+        <span class="function">print</span>(n)
+        <span class="function">countdown</span>(n - <span class="number">1</span>)
+
+<span class="function">countdown</span>(<span class="number">5</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              When would I use recursion instead of a loop?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Recursion is great for problems that naturally break down into smaller versions of themselves:
+              
+              <div class="code"><pre><span class="comment"># Example: Fibonacci sequence</span>
+<span class="keyword">def</span> <span class="function">fibonacci</span>(n):
+    <span class="keyword">if</span> n <= <span class="number">1</span>:  <span class="comment"># Base cases</span>
+        <span class="keyword">return</span> n
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="function">fibonacci</span>(n-<span class="number">1</span>) + <span class="function">fibonacci</span>(n-<span class="number">2</span>)
+
+<span class="comment"># Generate first 8 Fibonacci numbers</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">8</span>):
+    <span class="function">print</span>(<span class="string">f"F({i}) = {fibonacci(i)}"</span>, end=<span class="string">" "</span>)
+<span class="function">print</span>()
+
+<span class="comment"># Example: Power calculation</span>
+<span class="keyword">def</span> <span class="function">power</span>(base, exponent):
+    <span class="keyword">if</span> exponent == <span class="number">0</span>:  <span class="comment"># Base case</span>
+        <span class="keyword">return</span> <span class="number">1</span>
+    <span class="keyword">elif</span> exponent > <span class="number">0</span>:
+        <span class="keyword">return</span> base * <span class="function">power</span>(base, exponent - <span class="number">1</span>)
+
+<span class="function">print</span>(<span class="string">f"2^3 = {power(2, 3)}"</span>)    <span class="comment"># 8</span>
+<span class="function">print</span>(<span class="string">f"5^0 = {power(5, 0)}"</span>)    <span class="comment"># 1</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🌳 When to Use Recursion</h3>
+            <ul>
+              <li>Tree structures (files, family trees)</li>
+              <li>Mathematical sequences (Fibonacci, factorial)</li>
+              <li>Divide-and-conquer problems</li>
+              <li>Nested data processing</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚠️ Recursion Rules</h3>
+            <ul>
+              <li>Always have a base case</li>
+              <li>Make progress toward the base case</li>
+              <li>Watch out for infinite recursion</li>
+              <li>Consider iterative alternatives for performance</li>
+            </ul>
+          </div>
+        </features>
+
+        <div class="tip">
+          <strong>Recursion vs Iteration!</strong>
+          Recursion is elegant for tree-like problems, but loops are often faster and use less memory for simple counting.
+        </div>
+      </section>
+
+      <!-- Chapter 6: Modules -->
+      <section class="chapter">
+        <h2>Chapter 6: Modules - Organizing Code in Files</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, my Python files are getting really long! Is there a way to organize my code better?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where <strong>modules</strong> come in! A module is just a Python file containing functions, classes, and variables. You can split your code across multiple files and import what you need:
+              
+              <div class="code"><pre><span class="comment"># Using Python's built-in modules</span>
+<span class="keyword">import</span> math
+
+<span class="function">print</span>(<span class="string">f"Pi is {math.pi}"</span>)
+<span class="function">print</span>(<span class="string">f"Square root of 16: {math.sqrt(16)}"</span>)
+<span class="function">print</span>(<span class="string">f"5 factorial: {math.factorial(5)}"</span>)
+
+<span class="comment"># Import specific functions</span>
+<span class="keyword">from</span> math <span class="keyword">import</span> cos, sin, pi
+<span class="function">print</span>(<span class="string">f"cos(pi) = {cos(pi)}"</span>)
+
+<span class="comment"># Import with an alias</span>
+<span class="keyword">import</span> datetime <span class="keyword">as</span> dt
+now = dt.datetime.now()
+<span class="function">print</span>(<span class="string">f"Current time: {now}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I create my own modules?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Let's create a practical example:
+              
+              <div class="code"><pre><span class="comment"># File: math_utils.py</span>
+<span class="string">"""Utility functions for mathematical operations"""</span>
+
+<span class="keyword">def</span> <span class="function">is_even</span>(number):
+    <span class="string">"""Check if a number is even"""</span>
+    <span class="keyword">return</span> number % <span class="number">2</span> == <span class="number">0</span>
+
+<span class="keyword">def</span> <span class="function">is_prime</span>(number):
+    <span class="string">"""Check if a number is prime"""</span>
+    <span class="keyword">if</span> number < <span class="number">2</span>:
+        <span class="keyword">return</span> <span class="keyword">False</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">2</span>, <span class="function">int</span>(number ** <span class="number">0.5</span>) + <span class="number">1</span>):
+        <span class="keyword">if</span> number % i == <span class="number">0</span>:
+            <span class="keyword">return</span> <span class="keyword">False</span>
+    <span class="keyword">return</span> <span class="keyword">True</span>
+
+<span class="comment"># Module-level constant</span>
+GOLDEN_RATIO = <span class="number">1.618033988749</span>
+
+<span class="comment"># Then import it:</span>
+<span class="comment"># import math_utils</span>
+<span class="comment"># print(math_utils.is_prime(17))  # True</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📁 Module Benefits</h3>
+            <ul>
+              <li><strong>Organization:</strong> Split code logically</li>
+              <li><strong>Reusability:</strong> Use code in multiple projects</li>
+              <li><strong>Collaboration:</strong> Team members work on different files</li>
+              <li><strong>Testing:</strong> Easier to test individual modules</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Popular Built-in Modules</h3>
+            <ul>
+              <li><strong>math:</strong> Mathematical functions</li>
+              <li><strong>random:</strong> Random number generation</li>
+              <li><strong>datetime:</strong> Date and time handling</li>
+              <li><strong>json:</strong> JSON data processing</li>
+              <li><strong>os:</strong> Operating system interface</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Import Style!</strong>
+          Use specific imports (<code>from module import function</code>) when you only need a few things. Import the whole module when you need many functions.
+        </div>
+      </section>
+
+      <!-- Chapter 7: Packages -->
+      <section class="chapter">
+        <h2>Chapter 7: Packages - Organizing Multiple Modules</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, what if I have lots of modules? Is there a way to organize them into groups?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where <strong>packages</strong> come in! A package is a directory containing multiple modules, with a special <code>__init__.py</code> file:
+              
+              <div class="code"><pre><span class="comment"># Package structure example</span>
+
+<span class="comment"># my_game_package/</span>
+<span class="comment">#     __init__.py      # Makes it a package</span>
+<span class="comment">#     player.py        # Player-related functions</span>
+<span class="comment">#     enemies.py       # Enemy-related functions</span>
+<span class="comment">#     weapons.py       # Weapon system</span>
+<span class="comment">#     utils/           # Sub-package</span>
+<span class="comment">#         __init__.py</span>
+<span class="comment">#         math_helpers.py</span>
+
+<span class="comment"># How to import from packages</span>
+<span class="keyword">import</span> my_game_package.player
+<span class="keyword">from</span> my_game_package <span class="keyword">import</span> enemies
+<span class="keyword">from</span> my_game_package.weapons <span class="keyword">import</span> sword_attack</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What goes in the __init__.py file?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The __init__.py file can be empty (just to mark the directory as a package) or contain initialization code:
+              
+              <div class="code"><pre><span class="comment"># game_engine/__init__.py</span>
+<span class="string">"""
+Game Engine Package
+A simple 2D game engine for learning Python
+"""</span>
+
+<span class="comment"># Package metadata</span>
+__version__ = <span class="string">"1.0.0"</span>
+__author__ = <span class="string">"Alex & Sam"</span>
+
+<span class="comment"># Import commonly used classes/functions</span>
+<span class="keyword">from</span> .player <span class="keyword">import</span> Player
+<span class="keyword">from</span> .enemies <span class="keyword">import</span> Goblin, Dragon
+<span class="keyword">from</span> .weapons <span class="keyword">import</span> Sword, Bow
+
+<span class="comment"># Package-level constants</span>
+GAME_WIDTH = <span class="number">800</span>
+GAME_HEIGHT = <span class="number">600</span>
+
+<span class="comment"># Then you can use it like:</span>
+<span class="comment"># import game_engine</span>
+<span class="comment"># player = game_engine.Player("Alex")</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do I install packages that other people created?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python has a package manager called <strong>pip</strong> that lets you install packages from PyPI:
+              
+              <div class="code"><pre><span class="comment"># Install packages using pip (run in terminal)</span>
+<span class="comment"># pip install requests      # Popular HTTP library</span>
+<span class="comment"># pip install numpy         # Scientific computing</span>
+<span class="comment"># pip install pandas        # Data analysis</span>
+
+<span class="comment"># Then use them in your code</span>
+<span class="keyword">import</span> requests
+
+<span class="comment"># Example: Get data from an API</span>
+response = requests.get(<span class="string">"https://api.github.com/users/octocat"</span>)
+<span class="keyword">if</span> response.status_code == <span class="number">200</span>:
+    data = response.json()
+    <span class="function">print</span>(<span class="string">f"User: {data['name']}"</span>)
+
+<span class="comment"># List installed packages: pip list</span>
+<span class="comment"># Get package info: pip show requests</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📦 Package Benefits</h3>
+            <ul>
+              <li><strong>Organization:</strong> Group related modules</li>
+              <li><strong>Namespacing:</strong> Avoid name conflicts</li>
+              <li><strong>Distribution:</strong> Easy to share and install</li>
+              <li><strong>Modularity:</strong> Import only what you need</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Package Structure Tips</h3>
+            <ul>
+              <li>Always include <code>__init__.py</code></li>
+              <li>Use descriptive directory names</li>
+              <li>Group related functionality together</li>
+              <li>Document your package structure</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Package Management!</strong>
+          Use virtual environments (<code>python -m venv myenv</code>) to keep project dependencies separate and avoid conflicts.
+        </div>
+      </section>
+
+      <!-- Chapter 8: Main Function -->
+      <section class="chapter">
+        <h2>Chapter 8: Main Function - Controlling Script Execution</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I keep seeing this weird line: <code>if __name__ == "__main__":</code> in Python code. What does it do?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's Python's way of asking "Am I being run directly, or am I being imported by another file?" It's super useful for creating files that work as both modules and standalone scripts!
+              
+              <div class="code"><pre><span class="comment"># When Python runs a file directly:</span>
+<span class="comment"># __name__ is set to "__main__"</span>
+
+<span class="comment"># When Python imports the file:</span>
+<span class="comment"># __name__ is set to the module name</span>
+
+<span class="function">print</span>(<span class="string">f"The value of __name__ is: {__name__}"</span>)
+
+<span class="keyword">def</span> <span class="function">greet</span>(name):
+    <span class="function">print</span>(<span class="string">f"Hello, {name}!"</span>)
+
+<span class="comment"># This only runs when executed directly</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">print</span>(<span class="string">"This file is being run directly!"</span>)
+    <span class="function">greet</span>(<span class="string">"Alex"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"This file was imported as a module!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a practical example of why this matters?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Sure! Let's create a calculator module that can also be used as a standalone program:
+              
+              <div class="code"><pre><span class="comment"># calculator.py</span>
+<span class="string">"""A simple calculator module"""</span>
+
+<span class="keyword">def</span> <span class="function">add</span>(a, b):
+    <span class="string">"""Add two numbers"""</span>
+    <span class="keyword">return</span> a + b
+
+<span class="keyword">def</span> <span class="function">subtract</span>(a, b):
+    <span class="string">"""Subtract b from a"""</span>
+    <span class="keyword">return</span> a - b
+
+<span class="keyword">def</span> <span class="function">multiply</span>(a, b):
+    <span class="string">"""Multiply two numbers"""</span>
+    <span class="keyword">return</span> a * b
+
+<span class="keyword">def</span> <span class="function">divide</span>(a, b):
+    <span class="string">"""Divide a by b"""</span>
+    <span class="keyword">if</span> b == <span class="number">0</span>:
+        <span class="keyword">return</span> <span class="string">"Error: Cannot divide by zero!"</span>
+    <span class="keyword">return</span> a / b
+
+<span class="keyword">def</span> <span class="function">main</span>():
+    <span class="string">"""Main function for interactive calculator"""</span>
+    <span class="function">print</span>(<span class="string">"Welcome to the Python Calculator!"</span>)
+    <span class="function">print</span>(<span class="string">"Available operations: +, -, *, /"</span>)
+    
+    <span class="comment"># Interactive calculator logic here</span>
+    num1 = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Enter first number: "</span>))
+    op = <span class="function">input</span>(<span class="string">"Enter operation (+, -, *, /): "</span>)
+    num2 = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Enter second number: "</span>))
+    
+    <span class="keyword">if</span> op == <span class="string">"+"</span>:
+        result = <span class="function">add</span>(num1, num2)
+    <span class="keyword">elif</span> op == <span class="string">"-"</span>:
+        result = <span class="function">subtract</span>(num1, num2)
+    <span class="keyword">elif</span> op == <span class="string">"*"</span>:
+        result = <span class="function">multiply</span>(num1, num2)
+    <span class="keyword">elif</span> op == <span class="string">"/"</span>:
+        result = <span class="function">divide</span>(num1, num2)
+    
+    <span class="function">print</span>(<span class="string">f"Result: {result}"</span>)
+
+<span class="comment"># This is the magic line!</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">main</span>()</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So this file can work both ways?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! Here's how it works both ways:
+              
+              <div class="code"><pre><span class="comment"># Using as a standalone program:</span>
+<span class="comment"># python calculator.py</span>
+<span class="comment"># This runs main() and starts the interactive calculator</span>
+
+<span class="comment"># Using as a module in another file:</span>
+<span class="keyword">import</span> calculator
+
+result = calculator.add(<span class="number">5</span>, <span class="number">3</span>)
+<span class="function">print</span>(<span class="string">f"5 + 3 = {result}"</span>)  <span class="comment"># 8</span>
+
+division = calculator.divide(<span class="number">10</span>, <span class="number">2</span>)
+<span class="function">print</span>(<span class="string">f"10 / 2 = {division}"</span>)  <span class="comment"># 5.0</span>
+
+<span class="comment"># The main() function doesn't run when imported!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about command-line arguments? How do I handle those?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python's <code>sys.argv</code> gives you access to command-line arguments. For advanced cases, there's <code>argparse</code>:
+              
+              <div class="code"><pre><span class="comment"># text_analyzer.py - Complete example</span>
+<span class="keyword">import</span> sys
+<span class="keyword">import</span> argparse
+
+<span class="keyword">def</span> <span class="function">analyze_text</span>(text):
+    <span class="string">"""Analyze text and return statistics"""</span>
+    words = text.lower().split()
+    
+    <span class="keyword">return</span> {
+        <span class="string">'characters'</span>: <span class="function">len</span>(text),
+        <span class="string">'words'</span>: <span class="function">len</span>(words),
+        <span class="string">'lines'</span>: text.count(<span class="string">'\n'</span>) + <span class="number">1</span>,
+        <span class="string">'sentences'</span>: text.count(<span class="string">'.'</span>) + text.count(<span class="string">'!'</span>) + text.count(<span class="string">'?'</span>)
+    }
+
+<span class="keyword">def</span> <span class="function">main</span>():
+    <span class="string">"""Command-line interface"""</span>
+    parser = argparse.ArgumentParser(description=<span class="string">"Analyze text files"</span>)
+    parser.add_argument(<span class="string">"file"</span>, help=<span class="string">"Text file to analyze"</span>)
+    parser.add_argument(<span class="string">"-v"</span>, <span class="string">"--verbose"</span>, action=<span class="string">"store_true"</span>)
+    
+    args = parser.parse_args()
+    
+    <span class="keyword">try</span>:
+        <span class="keyword">with</span> <span class="function">open</span>(args.file, <span class="string">'r'</span>) <span class="keyword">as</span> f:
+            text = f.read()
+        
+        stats = <span class="function">analyze_text</span>(text)
+        <span class="function">print</span>(<span class="string">f"Analysis for: {args.file}"</span>)
+        <span class="function">print</span>(<span class="string">f"Characters: {stats['characters']}"</span>)
+        <span class="function">print</span>(<span class="string">f"Words: {stats['words']}"</span>)
+        <span class="function">print</span>(<span class="string">f"Lines: {stats['lines']}"</span>)
+        <span class="function">print</span>(<span class="string">f"Sentences: {stats['sentences']}"</span>)
+        
+    <span class="keyword">except</span> FileNotFoundError:
+        <span class="function">print</span>(<span class="string">f"Error: File '{args.file}' not found!"</span>)
+        sys.exit(<span class="number">1</span>)
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">main</span>()
+
+<span class="comment"># Usage: python text_analyzer.py document.txt</span>
+<span class="comment"># Or import: import text_analyzer; stats = text_analyzer.analyze_text("text")</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Main Function Benefits</h3>
+            <ul>
+              <li><strong>Dual Purpose:</strong> Script and module in one</li>
+              <li><strong>Clean Testing:</strong> Import functions without running main code</li>
+              <li><strong>Command Line:</strong> Easy CLI tool creation</li>
+              <li><strong>Professional:</strong> Standard Python practice</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Best Practices</h3>
+            <ul>
+              <li>Always put main logic in a <code>main()</code> function</li>
+              <li>Use command-line arguments for flexibility</li>
+              <li>Handle errors gracefully</li>
+              <li>Keep the <code>if __name__</code> block simple</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Professional Tip!</strong>
+          Always include a main() function even in simple scripts. It makes your code more testable and follows Python conventions.
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-8 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 8 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

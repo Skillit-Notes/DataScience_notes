@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python OOP - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --error: #ff7b72;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --error: #dc2626;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: 1fr 56px;
+      direction: rtl;
+    }
+    
+    .conversation:nth-child(even) > * { direction: ltr; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+    .class { color: #79c0ff; font-weight: 600; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    .tip.warning::before {
+      content: '⚠️';
+    }
+
+    .tip.oop::before {
+      content: '🏗️';
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 20%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+        direction: ltr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+
+    /* Conversation alignment fix */
+    .conversation {
+      display: grid !important;
+      grid-template-columns: 56px minmax(0, 1fr) !important;
+      gap: 1rem !important;
+      align-items: start !important;
+      direction: ltr !important;
+    }
+    .conversation > .avatar   { grid-column: 1 !important; }
+    .conversation > .dialogue { grid-column: 2 !important; width: 100% !important; }
+
+    /* Even rows: dialogue on left, avatar on right */
+    .chapter .conversation:nth-of-type(even) {
+      grid-template-columns: minmax(0, 1fr) 56px !important;
+    }
+    .chapter .conversation:nth-of-type(even) > .dialogue { grid-column: 1 !important; }
+    .chapter .conversation:nth-of-type(even) > .avatar   { grid-column: 2 !important; }
+
+    /* Remove any inherited RTL or width constraints */
+    .chapter .conversation:nth-of-type(even) { direction: ltr !important; }
+    .chapter .conversation:nth-of-type(even) > * { direction: ltr !important; }
+    .dialogue { max-width: none !important; }
+    .dialogue-text { white-space: normal !important; }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🏗️ Python OOP Mastery</h1>
+        <p class="book-sub">Join Alex and Sam as they build amazing things with classes and objects!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">Objects & Classes</button>
+        <button class="tab" onclick="showChapter(1)">Inheritance</button>
+        <button class="tab" onclick="showChapter(2)">Multiple Inheritance</button>
+        <button class="tab" onclick="showChapter(3)">Polymorphism</button>
+        <button class="tab" onclick="showChapter(4)">Operator Overloading</button>
+      </nav>
+
+<!-- Chapter 1: Objects and Classes -->
+      <section class="chapter active">
+        <h2>Chapter 1: Objects and Classes - Building Blocks of OOP</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Sam, I keep hearing about "object-oriented programming" and classes. What exactly are objects and classes? And why should I care about them?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              Think of it this way - everything in Python is actually an object! That string "hello" you typed? It's an object. That list [1, 2, 3]? Object. Even numbers are objects! A <strong>class</strong> is like a blueprint for creating objects, and an <strong>object</strong> (or instance) is a specific thing built from that blueprint.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Hmm, like a cookie cutter and cookies?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect analogy! The cookie cutter is the class, and each cookie is an object. Let me show you how to make your first class:
+
+              <div class="code"><pre><span class="comment"># A simple Student class</span>
+<span class="keyword">class</span> <span class="class">Student</span>:
+    <span class="comment"># Class attribute - shared by all students</span>
+    school_name = <span class="string">"Green Valley High"</span>
+    
+    <span class="comment"># The __init__ method runs when creating a new student</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name, year):
+        <span class="keyword">self</span>.name = name      <span class="comment"># Instance attribute</span>
+        <span class="keyword">self</span>.year = year      <span class="comment"># Instance attribute</span>
+    
+    <span class="comment"># A method - behavior that students can do</span>
+    <span class="keyword">def</span> <span class="function">description</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> (Year <span class="operator">{</span><span class="keyword">self</span>.year<span class="operator">}</span>) @ <span class="operator">{</span>Student.school_name<span class="operator">}</span>"</span>
+
+<span class="comment"># Create instances (objects) from the class</span>
+maya = <span class="class">Student</span>(<span class="string">"Maya"</span>, <span class="number">10</span>)
+omar = <span class="class">Student</span>(<span class="string">"Omar"</span>, <span class="number">11</span>)
+
+<span class="function">print</span>(maya.description())
+<span class="function">print</span>(omar.description())</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's that <code>self</code> thing in every method? And why do some attributes belong to the class vs the instance?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great questions! <code>self</code> refers to the specific instance you're working with. When you call <code>maya.description()</code>, inside that method, <code>self</code> refers to maya. Here's the difference between instance and class attributes:
+
+              <div class="code"><pre><span class="comment"># Continuing with our students...</span>
+
+<span class="comment"># Instance attributes are unique to each student</span>
+<span class="function">print</span>(<span class="string">"Maya's name:"</span>, maya.name)
+<span class="function">print</span>(<span class="string">"Omar's name:"</span>, omar.name)
+
+<span class="comment"># Class attributes are shared by all instances</span>
+<span class="function">print</span>(<span class="string">"Maya's school:"</span>, maya.school_name)
+<span class="function">print</span>(<span class="string">"Omar's school:"</span>, omar.school_name)
+
+<span class="comment"># Change instance attribute - only affects that instance</span>
+maya.year = <span class="number">12</span>
+<span class="function">print</span>(<span class="string">"After promotion:"</span>, maya.description())
+<span class="function">print</span>(<span class="string">"Omar unchanged:"</span>, omar.description())
+
+<span class="comment"># Change class attribute - affects ALL instances</span>
+Student.school_name = <span class="string">"Riverdale High"</span>
+<span class="function">print</span>(<span class="string">"Both students moved schools:"</span>)
+<span class="function">print</span>(maya.description())
+<span class="function">print</span>(omar.description())</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🏗️ Key OOP Concepts</h3>
+            <ul>
+              <li><strong>Class:</strong> Blueprint for creating objects</li>
+              <li><strong>Object/Instance:</strong> Specific thing created from class</li>
+              <li><strong>self:</strong> Reference to the current instance</li>
+              <li><strong>__init__:</strong> Constructor that runs when creating objects</li>
+              <li><strong>Method:</strong> Function defined inside a class</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>📊 Attributes Types</h3>
+            <ul>
+              <li><strong>Instance attributes:</strong> Unique to each object (self.name)</li>
+              <li><strong>Class attributes:</strong> Shared by all instances (school_name)</li>
+              <li><strong>Instance methods:</strong> Can access both instance and class data</li>
+              <li><strong>Access:</strong> object.attribute or ClassName.class_attribute</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is starting to make sense! Can I add more behavior to my classes? Like make students take tests or change grades?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Let's create a more sophisticated student class with behaviors:
+
+              <div class="code"><pre><span class="keyword">class</span> <span class="class">Student</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name, year):
+        <span class="keyword">self</span>.name = name
+        <span class="keyword">self</span>.year = year
+        <span class="keyword">self</span>.grades = []  <span class="comment"># Start with empty grades</span>
+        <span class="keyword">self</span>.gpa = <span class="number">0.0</span>
+    
+    <span class="keyword">def</span> <span class="function">add_grade</span>(<span class="keyword">self</span>, subject, grade):
+        <span class="keyword">self</span>.grades.append({<span class="string">"subject"</span>: subject, <span class="string">"grade"</span>: grade})
+        <span class="keyword">self</span>._calculate_gpa()  <span class="comment"># Update GPA when grades change</span>
+    
+    <span class="keyword">def</span> <span class="function">_calculate_gpa</span>(<span class="keyword">self</span>):  <span class="comment"># _ means "internal method"</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">self</span>.grades:
+            <span class="keyword">self</span>.gpa = <span class="number">0.0</span>
+            <span class="keyword">return</span>
+        
+        total = <span class="function">sum</span>(g[<span class="string">"grade"</span>] <span class="keyword">for</span> g <span class="keyword">in</span> <span class="keyword">self</span>.grades)
+        <span class="keyword">self</span>.gpa = total <span class="operator">/</span> <span class="function">len</span>(<span class="keyword">self</span>.grades)
+    
+    <span class="keyword">def</span> <span class="function">report_card</span>(<span class="keyword">self</span>):
+        report = <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span>'s Report Card:\n"</span>
+        <span class="keyword">for</span> grade_info <span class="keyword">in</span> <span class="keyword">self</span>.grades:
+            report <span class="operator">+=</span> <span class="string">f"  <span class="operator">{</span>grade_info[<span class="string">'subject'</span>]<span class="operator">}</span>: <span class="operator">{</span>grade_info[<span class="string">'grade'</span>]<span class="operator">}</span>\n"</span>
+        report <span class="operator">+=</span> <span class="string">f"GPA: <span class="operator">{</span><span class="keyword">self</span>.gpa<span class="operator">:</span>.2f<span class="operator">}</span>"</span>
+        <span class="keyword">return</span> report
+
+<span class="comment"># Let's use our enhanced student</span>
+alex = <span class="class">Student</span>(<span class="string">"Alex"</span>, <span class="number">11</span>)
+alex.add_grade(<span class="string">"Math"</span>, <span class="number">92</span>)
+alex.add_grade(<span class="string">"Science"</span>, <span class="number">88</span>)
+alex.add_grade(<span class="string">"English"</span>, <span class="number">95</span>)
+
+<span class="function">print</span>(alex.report_card())</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip oop">
+          <strong>Design Principle!</strong>
+          Classes should bundle related data and behavior together. If you find yourself passing the same data to many functions, consider making it a class instead!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is powerful! I love how the object keeps track of its own data and can do things with it. What's that underscore in <code>_calculate_gpa</code>?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The underscore is a Python convention meaning "this is internal - don't call it directly from outside the class." It's like a private helper method. Users of your Student class should call <code>add_grade()</code>, not <code>_calculate_gpa()</code> directly.
+
+              <br><br>
+              OOP is all about organizing code in a way that mirrors real-world relationships. Your Student class models what a real student can do - have grades, calculate GPA, generate reports. This makes your code easier to understand and maintain!
+            </div>
+          </div>
+        </div>
+      </section>
+
+<!-- Chapter 2: Inheritance -->
+      <section class="chapter">
+        <h2>Chapter 2: Inheritance - Building on Existing Classes</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, what if I want to create different types of students - like art students, science students, athletes? Do I have to write completely separate classes for each?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where inheritance comes in! Think of it like a family tree - children inherit traits from their parents but can also have their own unique characteristics. In programming, a child class can inherit attributes and methods from a parent class, then add or modify them.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So I could have a basic Student class and then create specialized versions that inherit from it?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! Let me show you with a classic example - animals. We'll start with a base Animal class, then create specific animal types:
+
+              <div class="code"><pre><span class="comment"># Base class (parent)</span>
+<span class="keyword">class</span> <span class="class">Animal</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name):
+        <span class="keyword">self</span>.name = name
+    
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"(generic animal sound)"</span>
+    
+    <span class="keyword">def</span> <span class="function">introduce</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"Hi, I'm <span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span>!"</span>
+
+<span class="comment"># Child classes (inherit from Animal)</span>
+<span class="keyword">class</span> <span class="class">Dog</span>(Animal):  <span class="comment"># Dog inherits from Animal</span>
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):  <span class="comment"># Override parent's method</span>
+        <span class="keyword">return</span> <span class="string">"Woof!"</span>
+
+<span class="keyword">class</span> <span class="class">Cat</span>(Animal):
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):  <span class="comment"># Override parent's method</span>
+        <span class="keyword">return</span> <span class="string">"Meow!"</span>
+
+<span class="comment"># Create instances</span>
+buddy = <span class="class">Dog</span>(<span class="string">"Buddy"</span>)
+whiskers = <span class="class">Cat</span>(<span class="string">"Whiskers"</span>)
+
+<span class="comment"># They inherit introduce() but have their own speak()</span>
+<span class="function">print</span>(buddy.introduce())    <span class="comment"># From Animal</span>
+<span class="function">print</span>(buddy.speak())       <span class="comment"># Overridden in Dog</span>
+<span class="function">print</span>(whiskers.introduce()) <span class="comment"># From Animal</span>
+<span class="function">print</span>(whiskers.speak())     <span class="comment"># Overridden in Cat</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! So Dog and Cat get the <code>introduce()</code> method for free, but they can customize <code>speak()</code>. What if I want to add more to the child class's <code>__init__</code> method?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! You use <code>super()</code> to call the parent's method first, then add your own stuff:
+
+              <div class="code"><pre><span class="keyword">class</span> <span class="class">Bird</span>(Animal):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name, can_fly=<span class="keyword">True</span>):
+        <span class="function">super</span>().__init__(name)  <span class="comment"># Call Animal's __init__</span>
+        <span class="keyword">self</span>.can_fly = can_fly     <span class="comment"># Add bird-specific attribute</span>
+    
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"Tweet!"</span>
+    
+    <span class="keyword">def</span> <span class="function">fly_status</span>(<span class="keyword">self</span>):  <span class="comment"># Bird-specific method</span>
+        <span class="keyword">if</span> <span class="keyword">self</span>.can_fly:
+            <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> can fly!"</span>
+        <span class="keyword">else</span>:
+            <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> is a flightless bird."</span>
+
+<span class="comment"># Different types of birds</span>
+robin = <span class="class">Bird</span>(<span class="string">"Robin"</span>)
+penguin = <span class="class">Bird</span>(<span class="string">"Pingu"</span>, can_fly=<span class="keyword">False</span>)
+
+<span class="function">print</span>(robin.fly_status())
+<span class="function">print</span>(penguin.fly_status())
+<span class="function">print</span>(penguin.speak())  <span class="comment"># Still has all Animal and Bird methods</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is so elegant! I can see how this saves a lot of code duplication. Can I go deeper - like have a WaterBird that inherits from Bird?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! You can create inheritance hierarchies as deep as you need. Here's a practical example with our students:
+
+              <div class="code"><pre><span class="comment"># Base Student class</span>
+<span class="keyword">class</span> <span class="class">Student</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name, year):
+        <span class="keyword">self</span>.name = name
+        <span class="keyword">self</span>.year = year
+        <span class="keyword">self</span>.grades = {}
+    
+    <span class="keyword">def</span> <span class="function">add_grade</span>(<span class="keyword">self</span>, subject, grade):
+        <span class="keyword">self</span>.grades[subject] = grade
+    
+    <span class="keyword">def</span> <span class="function">get_gpa</span>(<span class="keyword">self</span>):
+        <span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">self</span>.grades:
+            <span class="keyword">return</span> <span class="number">0.0</span>
+        <span class="keyword">return</span> <span class="function">sum</span>(<span class="keyword">self</span>.grades.values()) <span class="operator">/</span> <span class="function">len</span>(<span class="keyword">self</span>.grades)
+
+<span class="comment"># Specialized student types</span>
+<span class="keyword">class</span> <span class="class">ScienceStudent</span>(Student):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name, year, lab_partner=<span class="keyword">None</span>):
+        <span class="function">super</span>().__init__(name, year)
+        <span class="keyword">self</span>.lab_partner = lab_partner
+        <span class="keyword">self</span>.experiments_completed = <span class="number">0</span>
+    
+    <span class="keyword">def</span> <span class="function">complete_experiment</span>(<span class="keyword">self</span>, experiment_name):
+        <span class="keyword">self</span>.experiments_completed <span class="operator">+=</span> <span class="number">1</span>
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> completed <span class="operator">{</span>experiment_name<span class="operator">}</span>!"</span>
+
+<span class="keyword">class</span> <span class="class">MathStudent</span>(Student):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name, year):
+        <span class="function">super</span>().__init__(name, year)
+        <span class="keyword">self</span>.competitions_won = []
+    
+    <span class="keyword">def</span> <span class="function">win_competition</span>(<span class="keyword">self</span>, competition_name):
+        <span class="keyword">self</span>.competitions_won.append(competition_name)
+        <span class="keyword">return</span> <span class="string">f"Congratulations! <span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> won <span class="operator">{</span>competition_name<span class="operator">}</span>!"</span>
+
+<span class="comment"># Create specialized students</span>
+maya = <span class="class">ScienceStudent</span>(<span class="string">"Maya"</span>, <span class="number">11</span>, <span class="string">"Alex"</span>)
+carlos = <span class="class">MathStudent</span>(<span class="string">"Carlos"</span>, <span class="number">10</span>)
+
+<span class="comment"># They have all Student methods plus their own</span>
+maya.add_grade(<span class="string">"Chemistry"</span>, <span class="number">95</span>)
+<span class="function">print</span>(<span class="string">f"Maya's GPA: <span class="operator">{</span>maya.get_gpa()<span class="operator">}</span>"</span>)  <span class="comment"># From Student</span>
+<span class="function">print</span>(maya.complete_experiment(<span class="string">"Volcano Lab"</span>))  <span class="comment"># From ScienceStudent</span>
+
+carlos.add_grade(<span class="string">"Calculus"</span>, <span class="number">98</span>)
+<span class="function">print</span>(carlos.win_competition(<span class="string">"State Math Bowl"</span>))  <span class="comment"># From MathStudent</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🌳 Inheritance Benefits</h3>
+            <ul>
+              <li><strong>Code Reuse:</strong> Don't repeat common functionality</li>
+              <li><strong>Organization:</strong> Model real-world relationships</li>
+              <li><strong>Extensibility:</strong> Add features without changing base</li>
+              <li><strong>Polymorphism:</strong> Treat different objects the same way</li>
+              <li><strong>Maintenance:</strong> Fix bugs in one place</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Key Inheritance Tools</h3>
+            <ul>
+              <li><strong>super():</strong> Call parent class methods</li>
+              <li><strong>Override:</strong> Replace parent method with new version</li>
+              <li><strong>Extend:</strong> Add new methods to child class</li>
+              <li><strong>isinstance():</strong> Check object type</li>
+              <li><strong>issubclass():</strong> Check class inheritance</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is amazing! I can see how inheritance models real relationships. What if I need something to inherit from multiple parents though?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Ah, you're thinking about multiple inheritance! That's our next topic - it's more advanced but incredibly powerful when you need it.
+            </div>
+          </div>
+        </div>
+
+        <div class="tip oop">
+          <strong>Inheritance Principle!</strong>
+          Use inheritance when you have a genuine "is-a" relationship. A Dog IS-A Animal, a ScienceStudent IS-A Student. If it's more "has-a" or "uses-a", consider composition instead.
+        </div>
+      </section>
+
+<!-- Chapter 3: Multiple Inheritance -->
+      <section class="chapter">
+        <h2>Chapter 3: Multiple Inheritance - Learning from Multiple Parents</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, you mentioned multiple inheritance. What if I have something that needs features from more than one parent class?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect example would be a Duck! A duck can fly AND swim. Instead of cramming all abilities into one class, we can create separate "ability" classes and mix them together:
+
+              <div class="code"><pre><span class="comment"># Mixin classes for abilities</span>
+<span class="keyword">class</span> <span class="class">Flyer</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, *args, **kwargs):
+        <span class="function">super</span>().__init__(*args, **kwargs)  <span class="comment"># Cooperative inheritance</span>
+        <span class="keyword">self</span>.wings = <span class="number">2</span>
+    
+    <span class="keyword">def</span> <span class="function">fly</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> is flying!"</span>
+
+<span class="keyword">class</span> <span class="class">Swimmer</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, *args, **kwargs):
+        <span class="function">super</span>().__init__(*args, **kwargs)  <span class="comment"># Cooperative inheritance</span>
+        <span class="keyword">self</span>.fins = <span class="number">2</span>
+    
+    <span class="keyword">def</span> <span class="function">swim</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> is swimming!"</span>
+
+<span class="keyword">class</span> <span class="class">Animal</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name):
+        <span class="keyword">self</span>.name = name
+
+<span class="comment"># Multiple inheritance - Duck inherits from all three!</span>
+<span class="keyword">class</span> <span class="class">Duck</span>(Flyer, Swimmer, Animal):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name):
+        <span class="function">super</span>().__init__(name=name)  <span class="comment"># Call all parent __init__ methods</span>
+    
+    <span class="keyword">def</span> <span class="function">describe_abilities</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> has <span class="operator">{</span><span class="keyword">self</span>.wings<span class="operator">}</span> wings and <span class="operator">{</span><span class="keyword">self</span>.fins<span class="operator">}</span> fins!"</span>
+
+<span class="comment"># Create a duck with abilities from all parents</span>
+donald = <span class="class">Duck</span>(<span class="string">"Donald"</span>)
+<span class="function">print</span>(donald.fly())                <span class="comment"># From Flyer</span>
+<span class="function">print</span>(donald.swim())               <span class="comment"># From Swimmer</span>
+<span class="function">print</span>(donald.describe_abilities()) <span class="comment"># Uses attributes from both</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's clever! But how does Python decide which parent's method to call if they have the same name?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python uses something called Method Resolution Order (MRO). Let me show you:
+
+              <div class="code"><pre><span class="comment"># See the method resolution order</span>
+<span class="function">print</span>(<span class="string">"Duck MRO:"</span>, [cls.__name__ <span class="keyword">for</span> cls <span class="keyword">in</span> Duck.mro()])
+
+<span class="comment"># What if parents have conflicting methods?</span>
+<span class="keyword">class</span> <span class="class">Loud</span>:
+    <span class="keyword">def</span> <span class="function">make_sound</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"ROAR!"</span>
+
+<span class="keyword">class</span> <span class="class">Quiet</span>:
+    <span class="keyword">def</span> <span class="function">make_sound</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"whisper..."</span>
+
+<span class="keyword">class</span> <span class="class">MixedPersonality</span>(Loud, Quiet):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, name):
+        <span class="keyword">self</span>.name = name
+    
+    <span class="keyword">def</span> <span class="function">both_sounds</span>(<span class="keyword">self</span>):
+        <span class="comment"># Explicitly call both parent methods</span>
+        loud_sound = Loud.make_sound(<span class="keyword">self</span>)
+        quiet_sound = Quiet.make_sound(<span class="keyword">self</span>)
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.name<span class="operator">}</span> can be {loud_sound} or {quiet_sound}"</span>
+
+person = <span class="class">MixedPersonality</span>(<span class="string">"Jamie"</span>)
+<span class="function">print</span>(person.make_sound())    <span class="comment"># Uses first parent (Loud)</span>
+<span class="function">print</span>(person.both_sounds())   <span class="comment"># Uses both explicitly</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip warning">
+          <strong>Multiple Inheritance Warning!</strong>
+          Multiple inheritance can get complex. Use it when you have genuine "mixin" behaviors, but don't overdo it. Sometimes composition (having objects as attributes) is clearer than inheritance.
+        </div>
+      </section>
+
+      <!-- Chapter 4: Polymorphism -->
+      <section class="chapter">
+        <h2>Chapter 4: Polymorphism - One Interface, Many Forms</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I keep hearing about polymorphism. What does that mean exactly?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Polymorphism means "many forms." It's about treating different objects the same way if they can do the same thing. Python has a saying: "If it walks like a duck and quacks like a duck, it's a duck." This is called duck typing!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me what that looks like in practice?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Here's a function that works with any object that can "speak":
+
+<div class="code"><pre><span class="comment"># This function is polymorphic - works with any "speaker"</span>
+<span class="keyword">def</span> <span class="function">have_conversation</span>(speaker):
+    <span class="function">print</span>(<span class="string">f"Me: Hello there!"</span>)
+    <span class="function">print</span>(<span class="string">f"<span class="operator">{</span>speaker.__class__.__name__<span class="operator">}</span>: <span class="operator">{</span>speaker.speak()<span class="operator">}</span>"</span>)
+
+<span class="comment"># Different classes, but they all have speak() method</span>
+<span class="keyword">class</span> <span class="class">Dog</span>:
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"Woof! Want to play?"</span>
+
+<span class="keyword">class</span> <span class="class">Robot</span>:
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"BEEP BOOP. GREETINGS, HUMAN."</span>
+
+<span class="keyword">class</span> <span class="class">Person</span>:
+    <span class="keyword">def</span> <span class="function">speak</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">"Hi! How are you doing today?"</span>
+
+<span class="comment"># Same function works with all of them!</span>
+speakers = [<span class="class">Dog</span>(), <span class="class">Robot</span>(), <span class="class">Person</span>()]
+<span class="keyword">for</span> speaker <span class="keyword">in</span> speakers:
+    <span class="function">have_conversation</span>(speaker)
+    <span class="function">print</span>(<span class="string">"---"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's amazing! The function doesn't care what type of object it gets, as long as it can speak. Is this similar to how len() works with different types?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! len() is a perfect example of polymorphism in action:
+
+              <div class="code"><pre><span class="comment"># len() works polymorphically</span>
+<span class="function">print</span>(<span class="function">len</span>(<span class="string">"Hello"</span>))      <span class="comment"># String length: 5</span>
+<span class="function">print</span>(<span class="function">len</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]))    <span class="comment"># List length: 3</span>
+<span class="function">print</span>(<span class="function">len</span>({<span class="string">'a'</span>: <span class="number">1</span>}))     <span class="comment"># Dict length: 1</span>
+
+<span class="comment"># Behind the scenes, len() calls each object's __len__ method</span>
+<span class="keyword">class</span> <span class="class">Playlist</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>):
+        <span class="keyword">self</span>.songs = []
+    
+    <span class="keyword">def</span> <span class="function">add_song</span>(<span class="keyword">self</span>, song):
+        <span class="keyword">self</span>.songs.append(song)
+    
+    <span class="keyword">def</span> <span class="function">__len__</span>(<span class="keyword">self</span>):  <span class="comment"># Makes len() work!</span>
+        <span class="keyword">return</span> <span class="function">len</span>(<span class="keyword">self</span>.songs)
+
+my_playlist = <span class="class">Playlist</span>()
+my_playlist.add_song(<span class="string">"Bohemian Rhapsody"</span>)
+my_playlist.add_song(<span class="string">"Imagine"</span>)
+<span class="function">print</span>(<span class="function">len</span>(my_playlist))  <span class="comment"># Works just like built-in types!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔄 Types of Polymorphism</h3>
+            <ul>
+              <li><strong>Duck Typing:</strong> If it acts like a duck, it is one</li>
+              <li><strong>Method Overriding:</strong> Subclasses change parent behavior</li>
+              <li><strong>Interface Polymorphism:</strong> Same method name, different implementations</li>
+              <li><strong>Operator Polymorphism:</strong> + works with numbers, strings, lists</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>✨ Benefits of Polymorphism</h3>
+            <ul>
+              <li><strong>Flexibility:</strong> Code works with future types</li>
+              <li><strong>Reusability:</strong> Same function, many types</li>
+              <li><strong>Maintainability:</strong> Add new types without changing code</li>
+              <li><strong>Abstraction:</strong> Focus on what, not how</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip oop">
+          <strong>Polymorphism Principle!</strong>
+          Write code that depends on what objects can DO, not what they ARE. This makes your code more flexible and easier to extend.
+        </div>
+      </section>
+
+      <!-- Chapter 5: Operator Overloading -->
+      <section class="chapter">
+        <h2>Chapter 5: Operator Overloading - Making Objects Work with Operators</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, can I make my custom objects work with operators like + and ==? It would be cool if I could add two vectors together with just a + sign!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's exactly what operator overloading is for! Python uses special "dunder" methods (double underscore) to define how operators work with your objects. Let me show you with a Vector class:
+
+              <div class="code"><pre><span class="keyword">class</span> <span class="class">Vector2D</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, x, y):
+        <span class="keyword">self</span>.x = x
+        <span class="keyword">self</span>.y = y
+    
+    <span class="keyword">def</span> <span class="function">__repr__</span>(<span class="keyword">self</span>):  <span class="comment"># How object appears when printed</span>
+        <span class="keyword">return</span> <span class="string">f"Vector2D(<span class="operator">{</span><span class="keyword">self</span>.x<span class="operator">}</span>, <span class="operator">{</span><span class="keyword">self</span>.y<span class="operator">}</span>)"</span>
+    
+    <span class="keyword">def</span> <span class="function">__add__</span>(<span class="keyword">self</span>, other):  <span class="comment"># Defines + operator</span>
+        <span class="keyword">if</span> <span class="keyword">isinstance</span>(other, Vector2D):
+            <span class="keyword">return</span> <span class="class">Vector2D</span>(<span class="keyword">self</span>.x + other.x, <span class="keyword">self</span>.y + other.y)
+        <span class="keyword">return</span> <span class="keyword">NotImplemented</span>
+    
+    <span class="keyword">def</span> <span class="function">__eq__</span>(<span class="keyword">self</span>, other):   <span class="comment"># Defines == operator</span>
+        <span class="keyword">if</span> <span class="keyword">isinstance</span>(other, Vector2D):
+            <span class="keyword">return</span> <span class="keyword">self</span>.x == other.x <span class="keyword">and</span> <span class="keyword">self</span>.y == other.y
+        <span class="keyword">return</span> <span class="keyword">False</span>
+
+<span class="comment"># Now we can use operators naturally!</span>
+v1 = <span class="class">Vector2D</span>(<span class="number">3</span>, <span class="number">4</span>)
+v2 = <span class="class">Vector2D</span>(<span class="number">1</span>, <span class="number">2</span>)
+
+<span class="function">print</span>(v1)           <span class="comment"># Uses __repr__</span>
+<span class="function">print</span>(v1 + v2)      <span class="comment"># Uses __add__ - Vector addition!</span>
+<span class="function">print</span>(v1 == v2)     <span class="comment"># Uses __eq__ - Vector comparison!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is so cool! What other operators can I overload?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Tons of them! Let me extend our Vector class with more operators:
+
+              <div class="code"><pre><span class="keyword">class</span> <span class="class">Vector2D</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, x, y):
+        <span class="keyword">self</span>.x = x
+        <span class="keyword">self</span>.y = y
+    
+    <span class="keyword">def</span> <span class="function">__repr__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"Vector2D(<span class="operator">{</span><span class="keyword">self</span>.x<span class="operator">}</span>, <span class="operator">{</span><span class="keyword">self</span>.y<span class="operator">}</span>)"</span>
+    
+    <span class="comment"># Arithmetic operators</span>
+    <span class="keyword">def</span> <span class="function">__add__</span>(<span class="keyword">self</span>, other):
+        <span class="keyword">return</span> <span class="class">Vector2D</span>(<span class="keyword">self</span>.x + other.x, <span class="keyword">self</span>.y + other.y)
+    
+    <span class="keyword">def</span> <span class="function">__mul__</span>(<span class="keyword">self</span>, scalar):  <span class="comment"># Vector * number</span>
+        <span class="keyword">if</span> <span class="keyword">isinstance</span>(scalar, (<span class="keyword">int</span>, <span class="keyword">float</span>)):
+            <span class="keyword">return</span> <span class="class">Vector2D</span>(<span class="keyword">self</span>.x * scalar, <span class="keyword">self</span>.y * scalar)
+        <span class="keyword">return</span> <span class="keyword">NotImplemented</span>
+    
+    <span class="keyword">def</span> <span class="function">__rmul__</span>(<span class="keyword">self</span>, scalar): <span class="comment"># number * Vector</span>
+        <span class="keyword">return</span> <span class="keyword">self</span>.__mul__(scalar)
+    
+    <span class="comment"># Comparison operators</span>
+    <span class="keyword">def</span> <span class="function">__eq__</span>(<span class="keyword">self</span>, other):
+        <span class="keyword">return</span> <span class="keyword">self</span>.x == other.x <span class="keyword">and</span> <span class="keyword">self</span>.y == other.y
+    
+    <span class="keyword">def</span> <span class="function">__lt__</span>(<span class="keyword">self</span>, other):  <span class="comment"># Less than (by magnitude)</span>
+        <span class="keyword">return</span> <span class="keyword">self</span>.magnitude() < other.magnitude()
+    
+    <span class="comment"># Container-like behavior</span>
+    <span class="keyword">def</span> <span class="function">__len__</span>(<span class="keyword">self</span>):     <span class="comment"># Makes len(vector) work</span>
+        <span class="keyword">return</span> <span class="keyword">int</span>(<span class="keyword">self</span>.magnitude())
+    
+    <span class="keyword">def</span> <span class="function">__getitem__</span>(<span class="keyword">self</span>, index):  <span class="comment"># Makes vector[0] work</span>
+        <span class="keyword">if</span> index == <span class="number">0</span>:
+            <span class="keyword">return</span> <span class="keyword">self</span>.x
+        <span class="keyword">elif</span> index == <span class="number">1</span>:
+            <span class="keyword">return</span> <span class="keyword">self</span>.y
+        <span class="keyword">else</span>:
+            <span class="keyword">raise</span> <span class="keyword">IndexError</span>(<span class="string">"Vector index out of range"</span>)
+    
+    <span class="keyword">def</span> <span class="function">magnitude</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> (<span class="keyword">self</span>.x ** <span class="number">2</span> + <span class="keyword">self</span>.y ** <span class="number">2</span>) ** <span class="number">0.5</span>
+
+<span class="comment"># Test all our operators!</span>
+v1 = <span class="class">Vector2D</span>(<span class="number">3</span>, <span class="number">4</span>)
+v2 = <span class="class">Vector2D</span>(<span class="number">1</span>, <span class="number">2</span>)
+
+<span class="function">print</span>(<span class="string">f"v1 + v2 = <span class="operator">{</span>v1 + v2<span class="operator">}</span>"</span>)
+<span class="function">print</span>(<span class="string">f"v1 * 3 = <span class="operator">{</span>v1 * <span class="number">3</span><span class="operator">}</span>"</span>)
+<span class="function">print</span>(<span class="string">f"2 * v2 = <span class="operator">{</span><span class="number">2</span> * v2<span class="operator">}</span>"</span>)
+<span class="function">print</span>(<span class="string">f"len(v1) = <span class="operator">{</span><span class="function">len</span>(v1)<span class="operator">}</span>"</span>)
+<span class="function">print</span>(<span class="string">f"v1[0] = <span class="operator">{</span>v1[<span class="number">0</span>]<span class="operator">}</span>, v1[1] = <span class="operator">{</span>v1[<span class="number">1</span>]<span class="operator">}</span>"</span>)
+<span class="function">print</span>(<span class="string">f"v1 < v2: <span class="operator">{</span>v1 < v2<span class="operator">}</span>"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This makes my Vector class feel like a built-in Python type! Are there any gotchas I should watch out for?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              A few important tips! Always return <code>NotImplemented</code> (not an exception) when you can't handle an operation - this lets Python try other approaches. Be consistent - if you define <code>__eq__</code>, consider defining <code>__hash__</code> too. And remember that operator overloading should make sense - don't make + do something weird just because you can!
+
+              <div class="code"><pre><span class="comment"># Example of a practical class using operator overloading</span>
+<span class="keyword">class</span> <span class="class">Money</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, amount, currency=<span class="string">"USD"</span>):
+        <span class="keyword">self</span>.amount = amount
+        <span class="keyword">self</span>.currency = currency
+    
+    <span class="keyword">def</span> <span class="function">__str__</span>(<span class="keyword">self</span>):
+        <span class="keyword">return</span> <span class="string">f"<span class="operator">{</span><span class="keyword">self</span>.currency<span class="operator">}</span> <span class="operator">{</span><span class="keyword">self</span>.amount<span class="operator">:</span>.2f<span class="operator">}</span>"</span>
+    
+    <span class="keyword">def</span> <span class="function">__add__</span>(<span class="keyword">self</span>, other):
+        <span class="keyword">if</span> <span class="keyword">isinstance</span>(other, Money) <span class="keyword">and</span> <span class="keyword">self</span>.currency == other.currency:
+            <span class="keyword">return</span> <span class="class">Money</span>(<span class="keyword">self</span>.amount + other.amount, <span class="keyword">self</span>.currency)
+        <span class="keyword">return</span> <span class="keyword">NotImplemented</span>
+    
+    <span class="keyword">def</span> <span class="function">__lt__</span>(<span class="keyword">self</span>, other):
+        <span class="keyword">if</span> <span class="keyword">isinstance</span>(other, Money) <span class="keyword">and</span> <span class="keyword">self</span>.currency == other.currency:
+            <span class="keyword">return</span> <span class="keyword">self</span>.amount < other.amount
+        <span class="keyword">return</span> <span class="keyword">NotImplemented</span>
+
+salary = <span class="class">Money</span>(<span class="number">5000</span>)
+bonus = <span class="class">Money</span>(<span class="number">1000</span>)
+total = salary + bonus
+
+<span class="function">print</span>(<span class="string">f"Total income: <span class="operator">{</span>total<span class="operator">}</span>"</span>)
+<span class="function">print</span>(<span class="string">f"Bonus bigger than $500? <span class="operator">{</span>bonus > <span class="class">Money</span>(<span class="number">500</span>)<span class="operator">}</span>"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔧 Common Dunder Methods</h3>
+            <ul>
+              <li><strong>__init__:</strong> Constructor</li>
+              <li><strong>__str__, __repr__:</strong> String representation</li>
+              <li><strong>__add__, __sub__, __mul__:</strong> Arithmetic</li>
+              <li><strong>__eq__, __lt__, __gt__:</strong> Comparisons</li>
+              <li><strong>__len__, __getitem__:</strong> Container behavior</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>✨ Best Practices</h3>
+            <ul>
+              <li><strong>Intuitive:</strong> Make operators do what users expect</li>
+              <li><strong>Consistent:</strong> Follow mathematical/logical rules</li>
+              <li><strong>Return NotImplemented:</strong> Let Python handle type mismatches</li>
+              <li><strong>Type checking:</strong> Use isinstance() for safety</li>
+              <li><strong>Immutability:</strong> Consider returning new objects vs modifying self</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip oop">
+          <strong>Operator Overloading Principle!</strong>
+          Make your objects behave like natural extensions of Python's built-in types. Users should feel like your custom classes "belong" in the language.
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-5 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 5 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>
+

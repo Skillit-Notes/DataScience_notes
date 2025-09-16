@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python File Handling - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+      direction: ltr;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: minmax(0, 1fr) 56px;
+    }
+    .conversation:nth-child(even) > .dialogue { grid-column: 1; }
+    .conversation:nth-child(even) > .avatar { grid-column: 2; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+      height: 100%;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 16.66%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">📁 Python File Handling Adventure</h1>
+        <p class="book-sub">Master file operations, CSV handling, and encodings with Alex and Sam!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">Why Files?</button>
+        <button class="tab" onclick="showChapter(1)">Reading Files</button>
+        <button class="tab" onclick="showChapter(2)">Writing Files</button>
+        <button class="tab" onclick="showChapter(3)">CSV Files</button>
+        <button class="tab" onclick="showChapter(4)">Encodings</button>
+        <button class="tab" onclick="showChapter(5)">Best Practices</button>
+      </nav>
+
+      <!-- Chapter 1: Why Files? -->
+      <section class="chapter active">
+        <h2>Chapter 1: Why Files? Understanding with open()</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Hey Sam! I keep seeing code that looks like <code>with open(...) as f:</code> everywhere. What's this all about? Why can't I just work with data in variables?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (File Expert)</div>
+            <div class="dialogue-text">
+              Great question, Alex! Files are like permanent storage boxes for your data. When your program ends, variables disappear, but files stay on your computer forever! Think of files as a way to save your work, share data, or read information that already exists.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That makes sense! But why do I need this <code>with open()</code> thing? Can't I just open files directly?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <code>with open()</code> is like having a responsible friend who always remembers to close doors behind them! Here's why it's the safest way:
+
+              <div class="code"><pre><span class="comment"># The SAFE way - always use this!</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'myfile.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    content = f.<span class="function">read</span>()
+    <span class="function">print</span>(content)
+<span class="comment"># File automatically closes here - even if errors happen!</span>
+
+<span class="comment"># The RISKY way - don't do this!</span>
+f = <span class="function">open</span>(<span class="string">'myfile.txt'</span>, <span class="string">'r'</span>)
+content = f.<span class="function">read</span>()
+f.<span class="function">close</span>()  <span class="comment"># What if you forget this?</span></pre></div>
+
+              The <code>with</code> statement automatically closes files even if something goes wrong!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔒 Why with open() Rocks</h3>
+            <ul>
+              <li>Automatically closes files</li>
+              <li>Works even if errors happen</li>
+              <li>Prevents memory leaks</li>
+              <li>Makes code shorter and clearer</li>
+              <li>Industry best practice</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>📝 Common File Modes</h3>
+            <ul>
+              <li><code>'r'</code> - Read (default, file must exist)</li>
+              <li><code>'w'</code> - Write (creates/overwrites)</li>
+              <li><code>'a'</code> - Append (add to end)</li>
+              <li><code>'x'</code> - Create (fails if exists)</li>
+              <li><code>'b'</code> - Binary mode (e.g., <code>'rb'</code>)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about that <code>encoding='utf-8'</code> part? Do I really need it?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Think of encoding like choosing the right language dictionary. Without it, Python might guess wrong and turn "café" into gibberish. UTF-8 is like a universal translator that understands all languages and symbols:
+
+              <div class="code"><pre><span class="comment"># Always specify encoding for text files!</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'international.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"Hello: café, naïve, jalapeño! 🎉"</span>)</pre></div>
+
+              Without <code>encoding='utf-8'</code>, you might get weird characters or crashes!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Golden Rule!</strong>
+          Always use <code>with open(filename, mode, encoding='utf-8') as f:</code> for text files. This prevents 99% of file-related problems!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What kinds of things can I store in files?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Almost anything! Text files are great for human-readable data like notes, logs, or configuration. You can store stories, data tables (CSV), web pages (HTML), or even code itself. Binary files can hold images, videos, or any non-text data. Files are your program's way of remembering things between runs!
+            </div>
+          </div>
+        </div>
+      </section>
+
+<!-- Chapter 2: Reading Files -->
+      <section class="chapter">
+        <h2>Chapter 2: Reading Text Files - Different Ways to Get Data</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Now I understand why files are useful! But how do I actually read the content from a file? Are there different ways to do it?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Python gives you several ways to read files, each perfect for different situations. Think of it like different ways to eat a pizza - you can eat the whole thing at once, take one slice at a time, or share slices with friends!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's a fun analogy! What are the different ways?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here are the four main methods:
+
+              <div class="code"><pre><span class="comment"># Method 1: .read() - Read the ENTIRE file at once</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'story.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    entire_content = f.<span class="function">read</span>()
+    <span class="function">print</span>(<span class="function">type</span>(entire_content))  <span class="comment"># <class 'str'></span>
+
+<span class="comment"># Method 2: .readline() - Read ONE line at a time</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'story.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    first_line = f.<span class="function">readline</span>()
+    second_line = f.<span class="function">readline</span>()
+
+<span class="comment"># Method 3: Loop through lines (BEST for large files!)</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'story.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    <span class="keyword">for</span> line_num, line <span class="keyword">in</span> <span class="function">enumerate</span>(f, start=<span class="number">1</span>):
+        <span class="function">print</span>(<span class="string">f"{line_num}: {line.strip()}"</span>)
+
+<span class="comment"># Method 4: .readlines() - All lines as a LIST</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'story.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    all_lines = f.<span class="function">readlines</span>()
+    <span class="function">print</span>(<span class="function">type</span>(all_lines))  <span class="comment"># <class 'list'></span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📖 When to Use Each Method</h3>
+            <ul>
+              <li><strong>.read()</strong> - Small files, need everything at once</li>
+              <li><strong>.readline()</strong> - Processing files step by step</li>
+              <li><strong>for line in file</strong> - Large files, memory efficient</li>
+              <li><strong>.readlines()</strong> - Need random access to lines</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚡ Performance Tips</h3>
+            <ul>
+              <li>Use loops for files larger than 100MB</li>
+              <li>Strip whitespace with <code>.strip()</code></li>
+              <li>Check if files exist with <code>Path(file).exists()</code></li>
+              <li>Handle empty files gracefully</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I notice you use <code>.strip()</code> a lot. What does that do?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great catch! <code>.strip()</code> removes invisible characters like spaces, tabs, and newlines from the beginning and end of a string. When you read lines from a file, they usually include the newline character at the end:
+
+              <div class="code"><pre><span class="comment"># Without .strip() - notice the newline characters</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'sample.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    <span class="keyword">for</span> line <span class="keyword">in</span> f:
+        <span class="function">print</span>(<span class="function">repr</span>(line))  <span class="comment"># Shows 'Hello\n', 'World\n'</span>
+
+<span class="comment"># With .strip() - clean text</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'sample.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    <span class="keyword">for</span> line <span class="keyword">in</span> f:
+        <span class="function">print</span>(<span class="function">repr</span>(line.<span class="function">strip</span>()))  <span class="comment"># Shows 'Hello', 'World'</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What happens if the file doesn't exist? Will my program crash?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes, it will raise a <code>FileNotFoundError</code>! But we can handle this gracefully with try/except or by checking first:
+
+              <div class="code"><pre><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># Method 1: Check if file exists first</span>
+file_path = Path(<span class="string">'maybe_missing.txt'</span>)
+<span class="keyword">if</span> file_path.<span class="function">exists</span>():
+    <span class="keyword">with</span> <span class="function">open</span>(file_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        content = f.<span class="function">read</span>()
+        <span class="function">print</span>(<span class="string">"Found the file!"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"File doesn't exist yet."</span>)
+
+<span class="comment"># Method 2: Try/except approach</span>
+<span class="keyword">try</span>:
+    <span class="keyword">with</span> <span class="function">open</span>(<span class="string">'maybe_missing.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        content = f.<span class="function">read</span>()
+        <span class="function">print</span>(<span class="string">"Successfully read file!"</span>)
+<span class="keyword">except</span> FileNotFoundError:
+    <span class="function">print</span>(<span class="string">"Oops! That file doesn't exist."</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Memory Wisdom!</strong>
+          For files larger than your available RAM, always use the <code>for line in file:</code> approach. It only loads one line at a time, so even gigabyte files won't crash your program!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a practical example? Like reading a real file with some processing?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Sure! Here's a practical example that reads a log file and finds important entries:
+
+              <div class="code"><pre><span class="comment"># Reading and processing a log file</span>
+<span class="keyword">def</span> <span class="function">analyze_log</span>(filename):
+    errors = []
+    warnings = []
+    line_count = <span class="number">0</span>
+    
+    <span class="keyword">try</span>:
+        <span class="keyword">with</span> <span class="function">open</span>(filename, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            <span class="keyword">for</span> line_num, line <span class="keyword">in</span> <span class="function">enumerate</span>(f, start=<span class="number">1</span>):
+                line = line.<span class="function">strip</span>()
+                line_count += <span class="number">1</span>
+                
+                <span class="keyword">if</span> <span class="string">'ERROR'</span> <span class="keyword">in</span> line:
+                    errors.<span class="function">append</span>(<span class="string">f"Line {line_num}: {line}"</span>)
+                <span class="keyword">elif</span> <span class="string">'WARNING'</span> <span class="keyword">in</span> line:
+                    warnings.<span class="function">append</span>(<span class="string">f"Line {line_num}: {line}"</span>)
+    
+    <span class="keyword">except</span> FileNotFoundError:
+        <span class="function">print</span>(<span class="string">f"Log file '{filename}' not found!"</span>)
+        <span class="keyword">return</span>
+    
+    <span class="function">print</span>(<span class="string">f"📊 Log Analysis Complete!"</span>)
+    <span class="function">print</span>(<span class="string">f"Total lines: {line_count}"</span>)
+    <span class="function">print</span>(<span class="string">f"Errors found: {len(errors)}"</span>)
+    <span class="function">print</span>(<span class="string">f"Warnings found: {len(warnings)}"</span>)
+
+<span class="comment"># Usage</span>
+<span class="function">analyze_log</span>(<span class="string">'server.log'</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+<!-- Chapter 3: Writing Files -->
+      <section class="chapter">
+        <h2>Chapter 3: Writing Text Files - Saving Your Data</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Reading files is useful, but how do I create my own files? I want to save data that my program generates!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Writing files is just as important as reading them! Python gives you several modes for writing, each with different behaviors. Think of them like different pens - some overwrite completely, others add to what's already there.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What are the different writing modes?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here are the main writing modes and how they behave:
+
+              <div class="code"><pre><span class="comment"># Mode 'w' - WRITE (creates new or OVERWRITES existing)</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'output.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"This replaces everything!\n"</span>)
+    f.<span class="function">write</span>(<span class="string">"Line two\n"</span>)
+
+<span class="comment"># Mode 'a' - APPEND (adds to the end)</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'output.txt'</span>, <span class="string">'a'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"This gets added to the end\n"</span>)
+
+<span class="comment"># Mode 'x' - EXCLUSIVE CREATE (fails if file exists)</span>
+<span class="keyword">try</span>:
+    <span class="keyword">with</span> <span class="function">open</span>(<span class="string">'new_file.txt'</span>, <span class="string">'x'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        f.<span class="function">write</span>(<span class="string">"I'm a brand new file!\n"</span>)
+<span class="keyword">except</span> FileExistsError:
+    <span class="function">print</span>(<span class="string">"File already exists!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>✏️ Writing Mode Guide</h3>
+            <ul>
+              <li><code>'w'</code> - Write (overwrites existing files)</li>
+              <li><code>'a'</code> - Append (adds to end of file)</li>
+              <li><code>'x'</code> - Exclusive create (safe creation)</li>
+              <li><code>'r+'</code> - Read and write (advanced)</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚠️ Important Notes</h3>
+            <ul>
+              <li>Python doesn't add newlines automatically</li>
+              <li>Mode 'w' deletes existing content</li>
+              <li>Mode 'a' creates file if missing</li>
+              <li>Always specify encoding for text files</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I notice you always add <code>\n</code> at the end. What happens if I don't?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Without <code>\n</code>, everything runs together on one line! Let me show you:
+
+              <div class="code"><pre><span class="comment"># Without newlines - everything runs together</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'messy.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"First line"</span>)
+    f.<span class="function">write</span>(<span class="string">"Second line"</span>)
+    f.<span class="function">write</span>(<span class="string">"Third line"</span>)
+<span class="comment"># Result: "First lineSecond lineThird line"</span>
+
+<span class="comment"># With newlines - properly formatted</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'clean.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"First line\n"</span>)
+    f.<span class="function">write</span>(<span class="string">"Second line\n"</span>)
+    f.<span class="function">write</span>(<span class="string">"Third line\n"</span>)
+<span class="comment"># Result: Each line on its own line!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Is there an easier way to write multiple lines at once?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! Python has <code>writelines()</code> and you can also use <code>print()</code> to write to files:
+
+              <div class="code"><pre><span class="comment"># Method 1: writelines() with a list</span>
+lines = [<span class="string">"Line 1\n"</span>, <span class="string">"Line 2\n"</span>, <span class="string">"Line 3\n"</span>]
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'multiple.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">writelines</span>(lines)
+
+<span class="comment"># Method 2: List comprehension with writelines</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'numbers.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    lines = [<span class="string">f"Number {i}\n"</span> <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">6</span>)]
+    f.<span class="function">writelines</span>(lines)
+
+<span class="comment"># Method 3: Using print() to write to files</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'print_output.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    <span class="function">print</span>(<span class="string">"Hello, file!"</span>, file=f)
+    <span class="function">print</span>(<span class="string">"This automatically adds newlines"</span>, file=f)
+    <span class="function">print</span>(<span class="string">f"The answer is {42}"</span>, file=f)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          Use <code>print(content, file=f)</code> when you want automatic newlines and easy formatting. Use <code>f.write()</code> when you need exact control over spacing and formatting.
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about appending to files? When would I use that?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Appending is perfect for logs, collecting data over time, or adding to existing files without losing what's already there:
+
+              <div class="code"><pre><span class="comment"># Creating a simple logging system</span>
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+
+<span class="keyword">def</span> <span class="function">log_event</span>(message):
+    timestamp = datetime.<span class="function">now</span>().<span class="function">strftime</span>(<span class="string">"%Y-%m-%d %H:%M:%S"</span>)
+    log_entry = <span class="string">f"{timestamp} - {message}\n"</span>
+    
+    <span class="keyword">with</span> <span class="function">open</span>(<span class="string">'app.log'</span>, <span class="string">'a'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        f.<span class="function">write</span>(log_entry)
+    
+    <span class="function">print</span>(<span class="string">f"Logged: {message}"</span>)
+
+<span class="comment"># Usage</span>
+<span class="function">log_event</span>(<span class="string">"Application started"</span>)
+<span class="function">log_event</span>(<span class="string">"User logged in"</span>)
+<span class="function">log_event</span>(<span class="string">"Data processing complete"</span>)
+
+<span class="comment"># Each run adds to the log without overwriting!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a practical example that combines reading and writing?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here's a useful example - a program that processes a text file and creates a summary:
+
+              <div class="code"><pre><span class="comment"># Text file analyzer and report generator</span>
+<span class="keyword">def</span> <span class="function">analyze_text_file</span>(input_file, output_file):
+    <span class="keyword">try</span>:
+        <span class="comment"># Read and analyze the input file</span>
+        <span class="keyword">with</span> <span class="function">open</span>(input_file, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            lines = f.<span class="function">readlines</span>()
+        
+        <span class="comment"># Process the data</span>
+        total_lines = <span class="function">len</span>(lines)
+        non_empty_lines = <span class="function">len</span>([line <span class="keyword">for</span> line <span class="keyword">in</span> lines <span class="keyword">if</span> line.<span class="function">strip</span>()])
+        total_words = <span class="function">sum</span>(<span class="function">len</span>(line.<span class="function">split</span>()) <span class="keyword">for</span> line <span class="keyword">in</span> lines)
+        total_chars = <span class="function">sum</span>(<span class="function">len</span>(line) <span class="keyword">for</span> line <span class="keyword">in</span> lines)
+        
+        <span class="comment"># Write the analysis report</span>
+        <span class="keyword">with</span> <span class="function">open</span>(output_file, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            <span class="function">print</span>(<span class="string">"📊 TEXT ANALYSIS REPORT"</span>, file=f)
+            <span class="function">print</span>(<span class="string">"=" * 30</span>, file=f)
+            <span class="function">print</span>(<span class="string">f"Input file: {input_file}"</span>, file=f)
+            <span class="function">print</span>(<span class="string">f"Total lines: {total_lines}"</span>, file=f)
+            <span class="function">print</span>(<span class="string">f"Non-empty lines: {non_empty_lines}"</span>, file=f)
+            <span class="function">print</span>(<span class="string">f"Total words: {total_words}"</span>, file=f)
+            <span class="function">print</span>(<span class="string">f"Total characters: {total_chars}"</span>, file=f)
+            <span class="function">print</span>(<span class="string">""</span>, file=f)
+            <span class="function">print</span>(<span class="string">"First 3 lines preview:"</span>, file=f)
+            <span class="keyword">for</span> i, line <span class="keyword">in</span> <span class="function">enumerate</span>(lines[:3], <span class="number">1</span>):
+                <span class="function">print</span>(<span class="string">f"{i}: {line.strip()}"</span>, file=f)
+        
+        <span class="function">print</span>(<span class="string">f"Analysis complete! Report saved to {output_file}"</span>)
+        
+    <span class="keyword">except</span> FileNotFoundError:
+        <span class="function">print</span>(<span class="string">f"Error: Could not find {input_file}"</span>)
+
+<span class="comment"># Usage</span>
+<span class="function">analyze_text_file</span>(<span class="string">'story.txt'</span>, <span class="string">'story_analysis.txt'</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Safety First!</strong>
+          Always use mode <code>'x'</code> when you don't want to accidentally overwrite important files. It will raise a <code>FileExistsError</code> if the file already exists, protecting your data.
+        </div>
+      </section>
+<!-- Chapter 4: CSV Files -->
+      <section class="chapter">
+        <h2>Chapter 4: Working with CSV Files - Structured Data Made Easy</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I keep hearing about CSV files. What makes them special compared to regular text files?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              CSV stands for "Comma-Separated Values" - they're like spreadsheets in text form! Perfect for storing tables of data. Python has a built-in <code>csv</code> module that makes working with them super easy. Think of CSV files as the universal language for data exchange!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Show me how to read a CSV file properly!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here are the main ways to read CSV files:
+
+              <div class="code"><pre><span class="keyword">import</span> csv
+
+<span class="comment"># Method 1: csv.reader() - Returns lists</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'students.csv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    reader = csv.<span class="function">reader</span>(f)
+    header = <span class="function">next</span>(reader)  <span class="comment"># Skip/read header row</span>
+    <span class="function">print</span>(<span class="string">f"Headers: {header}"</span>)
+    
+    <span class="keyword">for</span> row <span class="keyword">in</span> reader:
+        <span class="function">print</span>(row)  <span class="comment"># Each row is a list</span>
+
+<span class="comment"># Method 2: csv.DictReader() - Returns dictionaries!</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'students.csv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    reader = csv.<span class="function">DictReader</span>(f)
+    
+    <span class="keyword">for</span> row <span class="keyword">in</span> reader:
+        <span class="function">print</span>(<span class="string">f"{row['name']} scored {row['score']}"</span>)
+        <span class="comment"># Access by column name!</span>
+
+<span class="comment"># Method 3: Reading into a list for processing</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'data.csv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    reader = csv.<span class="function">DictReader</span>(f)
+    data = <span class="function">list</span>(reader)  <span class="comment"># Convert to list of dicts</span>
+    
+<span class="comment"># Now you can process data multiple times</span>
+average = <span class="function">sum</span>(<span class="function">float</span>(row[<span class="string">'score'</span>]) <span class="keyword">for</span> row <span class="keyword">in</span> data) / <span class="function">len</span>(data)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📊 CSV Reader Types</h3>
+            <ul>
+              <li><strong>csv.reader()</strong> - Simple list-based rows</li>
+              <li><strong>csv.DictReader()</strong> - Dictionary rows with named fields</li>
+              <li><strong>pandas.read_csv()</strong> - For data analysis (external library)</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 When to Use Each</h3>
+            <ul>
+              <li><strong>reader()</strong> - Simple data, known positions</li>
+              <li><strong>DictReader()</strong> - Complex data, named columns</li>
+              <li><strong>pandas</strong> - Large datasets, analysis needed</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do I create and write to CSV files?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Writing CSVs is just as easy! Here are the main approaches:
+
+              <div class="code"><pre><span class="keyword">import</span> csv
+
+<span class="comment"># Method 1: csv.writer() - Write lists</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'output.csv'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> f:
+    writer = csv.<span class="function">writer</span>(f)
+    
+    <span class="comment"># Write header</span>
+    writer.<span class="function">writerow</span>([<span class="string">'Name'</span>, <span class="string">'Age'</span>, <span class="string">'City'</span>])
+    
+    <span class="comment"># Write data rows</span>
+    writer.<span class="function">writerow</span>([<span class="string">'Alice'</span>, <span class="number">25</span>, <span class="string">'New York'</span>])
+    writer.<span class="function">writerow</span>([<span class="string">'Bob'</span>, <span class="number">30</span>, <span class="string">'London'</span>])
+    
+    <span class="comment"># Write multiple rows at once</span>
+    rows = [
+        [<span class="string">'Charlie'</span>, <span class="number">35</span>, <span class="string">'Paris'</span>],
+        [<span class="string">'Diana'</span>, <span class="number">28</span>, <span class="string">'Tokyo'</span>]
+    ]
+    writer.<span class="function">writerows</span>(rows)
+
+<span class="comment"># Method 2: csv.DictWriter() - Write dictionaries</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'employees.csv'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> f:
+    fieldnames = [<span class="string">'name'</span>, <span class="string">'department'</span>, <span class="string">'salary'</span>]
+    writer = csv.<span class="function">DictWriter</span>(f, fieldnames=fieldnames)
+    
+    <span class="comment"># Write header</span>
+    writer.<span class="function">writeheader</span>()
+    
+    <span class="comment"># Write dictionary rows</span>
+    writer.<span class="function">writerow</span>({<span class="string">'name'</span>: <span class="string">'Alice'</span>, <span class="string">'department'</span>: <span class="string">'IT'</span>, <span class="string">'salary'</span>: <span class="number">75000</span>})
+    writer.<span class="function">writerow</span>({<span class="string">'name'</span>: <span class="string">'Bob'</span>, <span class="string">'department'</span>: <span class="string">'HR'</span>, <span class="string">'salary'</span>: <span class="number">65000</span>})</pre></div>
+
+              Notice the <code>newline=''</code> parameter? That prevents extra blank lines on Windows!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>CSV Gotcha!</strong>
+          Always use <code>newline=''</code> when opening CSV files for writing on Windows. This prevents the annoying blank lines between rows!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What if my data has commas in it? Won't that break the CSV?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! The CSV module handles this automatically by using quotes:
+
+              <div class="code"><pre><span class="comment"># CSV module handles special characters automatically!</span>
+data = [
+    [<span class="string">'Company'</span>, <span class="string">'Location'</span>, <span class="string">'Revenue'</span>],
+    [<span class="string">'Tech, Inc.'</span>, <span class="string">'San Francisco, CA'</span>, <span class="string">'$1,000,000'</span>],
+    [<span class="string">'Data "Analytics" Corp'</span>, <span class="string">'New York'</span>, <span class="string">'$500,000'</span>]
+]
+
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'companies.csv'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> f:
+    writer = csv.<span class="function">writer</span>(f)
+    writer.<span class="function">writerows</span>(data)
+
+<span class="comment"># The CSV will look like:</span>
+<span class="comment"># Company,Location,Revenue</span>
+<span class="comment"># "Tech, Inc.","San Francisco, CA","$1,000,000"</span>
+<span class="comment"># "Data ""Analytics"" Corp",New York,"$500,000"</span>
+
+<span class="comment"># You can also use different delimiters</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'data.tsv'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> f:
+    writer = csv.<span class="function">writer</span>(f, delimiter=<span class="string">'\t'</span>)  <span class="comment"># Tab-separated</span>
+    writer.<span class="function">writerows</span>(data)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a practical example that processes CSV data?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here's a grade calculator that reads student scores and creates a report:
+
+              <div class="code"><pre><span class="keyword">import</span> csv
+<span class="keyword">from</span> statistics <span class="keyword">import</span> mean, median
+
+<span class="keyword">def</span> <span class="function">process_grades</span>(input_file, output_file):
+    <span class="comment"># Read student data</span>
+    <span class="keyword">with</span> <span class="function">open</span>(input_file, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        reader = csv.<span class="function">DictReader</span>(f)
+        students = <span class="function">list</span>(reader)
+    
+    <span class="comment"># Calculate statistics</span>
+    scores = [<span class="function">float</span>(s[<span class="string">'score'</span>]) <span class="keyword">for</span> s <span class="keyword">in</span> students]
+    avg_score = <span class="function">mean</span>(scores)
+    med_score = <span class="function">median</span>(scores)
+    
+    <span class="comment"># Add letter grades</span>
+    <span class="keyword">for</span> student <span class="keyword">in</span> students:
+        score = <span class="function">float</span>(student[<span class="string">'score'</span>])
+        <span class="keyword">if</span> score >= <span class="number">90</span>: grade = <span class="string">'A'</span>
+        <span class="keyword">elif</span> score >= <span class="number">80</span>: grade = <span class="string">'B'</span>
+        <span class="keyword">elif</span> score >= <span class="number">70</span>: grade = <span class="string">'C'</span>
+        <span class="keyword">elif</span> score >= <span class="number">60</span>: grade = <span class="string">'D'</span>
+        <span class="keyword">else</span>: grade = <span class="string">'F'</span>
+        student[<span class="string">'grade'</span>] = grade
+        student[<span class="string">'passed'</span>] = <span class="string">'Yes'</span> <span class="keyword">if</span> score >= <span class="number">60</span> <span class="keyword">else</span> <span class="string">'No'</span>
+    
+    <span class="comment"># Write enhanced report</span>
+    <span class="keyword">with</span> <span class="function">open</span>(output_file, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>, newline=<span class="string">''</span>) <span class="keyword">as</span> f:
+        fieldnames = [<span class="string">'name'</span>, <span class="string">'score'</span>, <span class="string">'grade'</span>, <span class="string">'passed'</span>]
+        writer = csv.<span class="function">DictWriter</span>(f, fieldnames=fieldnames)
+        
+        writer.<span class="function">writeheader</span>()
+        writer.<span class="function">writerows</span>(students)
+        
+        <span class="comment"># Add summary row</span>
+        writer.<span class="function">writerow</span>({
+            <span class="string">'name'</span>: <span class="string">'AVERAGE'</span>,
+            <span class="string">'score'</span>: <span class="function">round</span>(avg_score, <span class="number">1</span>),
+            <span class="string">'grade'</span>: <span class="string">''</span>,
+            <span class="string">'passed'</span>: <span class="string">f"{sum(1 for s in students if s['passed'] == 'Yes')}/{len(students)}"</span>
+        })
+    
+    <span class="function">print</span>(<span class="string">f"📊 Processed {len(students)} students"</span>)
+    <span class="function">print</span>(<span class="string">f"Average: {avg_score:.1f}, Median: {med_score:.1f}"</span>)
+
+<span class="comment"># Usage</span>
+<span class="function">process_grades</span>(<span class="string">'scores.csv'</span>, <span class="string">'report.csv'</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chapter 5: Encodings -->
+      <section class="chapter">
+        <h2>Chapter 5: Understanding Encodings - Making Sense of Characters</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I sometimes see weird characters like â€™ or Ã© in my files. What's going on?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's the encoding problem! Think of encodings as different languages for computers. When you save a file in one "language" (encoding) and open it in another, you get gibberish - just like trying to read Chinese with an English dictionary!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So how do I avoid these problems?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The golden rule is: <strong>Always use UTF-8!</strong> It's the universal encoding that handles all languages and emojis. Here's how to handle different encoding situations:
+
+              <div class="code"><pre><span class="comment"># Rule 1: Always specify UTF-8 for new files</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'myfile.txt'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"Hello 世界! 🌍 Café naïve"</span>)
+
+<span class="comment"># Rule 2: Detect encoding for unknown files</span>
+<span class="keyword">def</span> <span class="function">read_with_detection</span>(filename):
+    <span class="comment"># Try common encodings</span>
+    encodings = [<span class="string">'utf-8'</span>, <span class="string">'latin-1'</span>, <span class="string">'cp1252'</span>, <span class="string">'utf-16'</span>]
+    
+    <span class="keyword">for</span> encoding <span class="keyword">in</span> encodings:
+        <span class="keyword">try</span>:
+            <span class="keyword">with</span> <span class="function">open</span>(filename, <span class="string">'r'</span>, encoding=encoding) <span class="keyword">as</span> f:
+                content = f.<span class="function">read</span>()
+                <span class="function">print</span>(<span class="string">f"Success with {encoding}!"</span>)
+                <span class="keyword">return</span> content
+        <span class="keyword">except</span> UnicodeDecodeError:
+            <span class="keyword">continue</span>
+    
+    <span class="function">print</span>(<span class="string">"Could not decode file!"</span>)
+    <span class="keyword">return</span> <span class="keyword">None</span>
+
+<span class="comment"># Rule 3: Handle encoding errors gracefully</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'messy.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>, errors=<span class="string">'ignore'</span>) <span class="keyword">as</span> f:
+    content = f.<span class="function">read</span>()  <span class="comment"># Skips bad characters</span>
+
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'messy.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>, errors=<span class="string">'replace'</span>) <span class="keyword">as</span> f:
+    content = f.<span class="function">read</span>()  <span class="comment"># Replaces bad chars with �</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🌍 Common Encodings</h3>
+            <ul>
+              <li><strong>UTF-8</strong> - Universal, use this!</li>
+              <li><strong>ASCII</strong> - English only, very limited</li>
+              <li><strong>Latin-1/ISO-8859-1</strong> - Western European</li>
+              <li><strong>CP1252</strong> - Windows default (older)</li>
+              <li><strong>UTF-16</strong> - Used by some Windows apps</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Error Handling Options</h3>
+            <ul>
+              <li><code>strict</code> - Raise error (default)</li>
+              <li><code>ignore</code> - Skip bad characters</li>
+              <li><code>replace</code> - Use � placeholder</li>
+              <li><code>backslashreplace</code> - Use \xNN codes</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How can I convert a file from one encoding to another?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Here's a handy encoding converter:
+
+              <div class="code"><pre><span class="keyword">def</span> <span class="function">convert_encoding</span>(input_file, output_file, 
+                        from_encoding=<span class="string">'cp1252'</span>, 
+                        to_encoding=<span class="string">'utf-8'</span>):
+    <span class="string">"""Convert a file from one encoding to another"""</span>
+    <span class="keyword">try</span>:
+        <span class="comment"># Read with original encoding</span>
+        <span class="keyword">with</span> <span class="function">open</span>(input_file, <span class="string">'r'</span>, encoding=from_encoding) <span class="keyword">as</span> f:
+            content = f.<span class="function">read</span>()
+        
+        <span class="comment"># Write with new encoding</span>
+        <span class="keyword">with</span> <span class="function">open</span>(output_file, <span class="string">'w'</span>, encoding=to_encoding) <span class="keyword">as</span> f:
+            f.<span class="function">write</span>(content)
+        
+        <span class="function">print</span>(<span class="string">f"✅ Converted {input_file} from {from_encoding} to {to_encoding}"</span>)
+        
+    <span class="keyword">except</span> UnicodeDecodeError <span class="keyword">as</span> e:
+        <span class="function">print</span>(<span class="string">f"❌ Decode error: {e}"</span>)
+        <span class="function">print</span>(<span class="string">"Try a different source encoding!"</span>)
+    <span class="keyword">except</span> UnicodeEncodeError <span class="keyword">as</span> e:
+        <span class="function">print</span>(<span class="string">f"❌ Encode error: {e}"</span>)
+        <span class="function">print</span>(<span class="string">"Some characters can't be converted!"</span>)
+
+<span class="comment"># Example: Convert old Windows file to UTF-8</span>
+<span class="function">convert_encoding</span>(<span class="string">'old_document.txt'</span>, <span class="string">'new_document.txt'</span>, 
+                <span class="string">'cp1252'</span>, <span class="string">'utf-8'</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          If you're on Windows and see weird characters, the file is probably encoded in CP1252 but you're reading it as UTF-8. Try reading with <code>encoding='cp1252'</code> instead!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about binary files like images or PDFs?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Binary files don't use text encoding at all! Use mode <code>'rb'</code> and <code>'wb'</code> for binary:
+
+              <div class="code"><pre><span class="comment"># Copying a binary file (image, PDF, etc.)</span>
+<span class="keyword">def</span> <span class="function">copy_binary_file</span>(source, destination):
+    <span class="keyword">with</span> <span class="function">open</span>(source, <span class="string">'rb'</span>) <span class="keyword">as</span> src:
+        <span class="keyword">with</span> <span class="function">open</span>(destination, <span class="string">'wb'</span>) <span class="keyword">as</span> dst:
+            dst.<span class="function">write</span>(src.<span class="function">read</span>())
+    
+    <span class="function">print</span>(<span class="string">f"Copied {source} to {destination}"</span>)
+
+<span class="comment"># Reading file size</span>
+<span class="keyword">import</span> os
+
+<span class="keyword">def</span> <span class="function">get_file_info</span>(filename):
+    size = os.path.<span class="function">getsize</span>(filename)
+    
+    <span class="comment"># Check if it's likely text or binary</span>
+    <span class="keyword">with</span> <span class="function">open</span>(filename, <span class="string">'rb'</span>) <span class="keyword">as</span> f:
+        chunk = f.<span class="function">read</span>(<span class="number">1024</span>)  <span class="comment"># Read first 1KB</span>
+        
+    <span class="comment"># Binary files often have null bytes</span>
+    is_binary = <span class="string">b'\x00'</span> <span class="keyword">in</span> chunk
+    
+    <span class="function">print</span>(<span class="string">f"File: {filename}"</span>)
+    <span class="function">print</span>(<span class="string">f"Size: {size:,} bytes"</span>)
+    <span class="function">print</span>(<span class="string">f"Type: {'Binary' if is_binary else 'Text'}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chapter 6: Best Practices -->
+      <section class="chapter">
+        <h2>Chapter 6: File Handling Best Practices - Write Like a Pro</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I've learned a lot about files! What are the professional best practices I should always follow?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Excellent question! Here are the golden rules that will save you from headaches:
+
+              <div class="code"><pre><span class="comment"># 🌟 BEST PRACTICE 1: Use pathlib for cross-platform paths</span>
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># Bad: String concatenation</span>
+bad_path = <span class="string">"data/"</span> + <span class="string">"files/"</span> + <span class="string">"report.txt"</span>  <span class="comment"># Breaks on Windows!</span>
+
+<span class="comment"># Good: pathlib works everywhere</span>
+good_path = Path(<span class="string">"data"</span>) / <span class="string">"files"</span> / <span class="string">"report.txt"</span>
+<span class="keyword">if</span> good_path.<span class="function">exists</span>():
+    <span class="keyword">with</span> <span class="function">open</span>(good_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+        content = f.<span class="function">read</span>()
+
+<span class="comment"># 🌟 BEST PRACTICE 2: Always use context managers (with)</span>
+<span class="comment"># Bad: Manual open/close</span>
+f = <span class="function">open</span>(<span class="string">'file.txt'</span>)  <span class="comment"># What if error happens?</span>
+data = f.<span class="function">read</span>()
+f.<span class="function">close</span>()  <span class="comment"># Might never execute!</span>
+
+<span class="comment"># Good: Automatic cleanup</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">'file.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+    data = f.<span class="function">read</span>()  <span class="comment"># File closes even if error occurs</span>
+
+<span class="comment"># 🌟 BEST PRACTICE 3: Handle errors gracefully</span>
+<span class="keyword">def</span> <span class="function">safe_read_file</span>(filename):
+    <span class="keyword">try</span>:
+        <span class="keyword">with</span> <span class="function">open</span>(filename, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            <span class="keyword">return</span> f.<span class="function">read</span>()
+    <span class="keyword">except</span> FileNotFoundError:
+        <span class="function">print</span>(<span class="string">f"File {filename} not found"</span>)
+        <span class="keyword">return</span> <span class="string">""</span>
+    <span class="keyword">except</span> PermissionError:
+        <span class="function">print</span>(<span class="string">f"No permission to read {filename}"</span>)
+        <span class="keyword">return</span> <span class="string">""</span>
+    <span class="keyword">except</span> UnicodeDecodeError:
+        <span class="function">print</span>(<span class="string">f"Encoding issue with {filename}"</span>)
+        <span class="keyword">return</span> <span class="string">""</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>✅ Always Do</h3>
+            <ul>
+              <li>Use <code>with open()</code> statements</li>
+              <li>Specify <code>encoding='utf-8'</code></li>
+              <li>Check if files exist before reading</li>
+              <li>Handle exceptions properly</li>
+              <li>Use pathlib for paths</li>
+              <li>Close files (automatic with 'with')</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>❌ Never Do</h3>
+            <ul>
+              <li>Forget to specify encoding</li>
+              <li>Use string concatenation for paths</li>
+              <li>Leave files open</li>
+              <li>Ignore error handling</li>
+              <li>Hardcode absolute paths</li>
+              <li>Mix text and binary modes</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about working with temporary files or backups?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great thinking! Here's how to handle temporary files and backups safely:
+
+              <div class="code"><pre><span class="comment"># 🌟 BEST PRACTICE 4: Use tempfile for temporary files</span>
+<span class="keyword">import</span> tempfile
+<span class="keyword">import</span> shutil
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+
+<span class="comment"># Create a temporary file that auto-deletes</span>
+<span class="keyword">with</span> tempfile.<span class="function">NamedTemporaryFile</span>(mode=<span class="string">'w'</span>, 
+                                 encoding=<span class="string">'utf-8'</span>,
+                                 delete=<span class="keyword">True</span>,
+                                 suffix=<span class="string">'.txt'</span>) <span class="keyword">as</span> tmp:
+    tmp.<span class="function">write</span>(<span class="string">"Temporary data"</span>)
+    tmp.<span class="function">flush</span>()  <span class="comment"># Ensure data is written</span>
+    <span class="function">print</span>(<span class="string">f"Temp file: {tmp.name}"</span>)
+    <span class="comment"># File automatically deleted when 'with' ends</span>
+
+<span class="comment"># 🌟 BEST PRACTICE 5: Create backups before modifying</span>
+<span class="keyword">def</span> <span class="function">safe_modify_file</span>(filename):
+    <span class="comment"># Create timestamped backup</span>
+    backup_name = <span class="string">f"{filename}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"</span>
+    shutil.<span class="function">copy2</span>(filename, backup_name)
+    <span class="function">print</span>(<span class="string">f"Created backup: {backup_name}"</span>)
+    
+    <span class="keyword">try</span>:
+        <span class="comment"># Modify the file</span>
+        <span class="keyword">with</span> <span class="function">open</span>(filename, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            content = f.<span class="function">read</span>()
+        
+        modified = content.<span class="function">upper</span>()  <span class="comment"># Example modification</span>
+        
+        <span class="keyword">with</span> <span class="function">open</span>(filename, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            f.<span class="function">write</span>(modified)
+        
+        <span class="function">print</span>(<span class="string">"File modified successfully"</span>)
+        
+    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+        <span class="comment"># Restore from backup if something goes wrong</span>
+        shutil.<span class="function">copy2</span>(backup_name, filename)
+        <span class="function">print</span>(<span class="string">f"Error occurred, restored from backup: {e}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a complete example that uses all these best practices?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Here's a professional-grade file processor that follows all best practices:
+
+              <div class="code"><pre><span class="comment">#!/usr/bin/env python3</span>
+<span class="string">"""
+Professional File Processing Script
+Demonstrates all file handling best practices
+"""</span>
+
+<span class="keyword">import</span> csv
+<span class="keyword">import</span> json
+<span class="keyword">import</span> logging
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+<span class="keyword">from</span> typing <span class="keyword">import</span> List, Dict, Optional
+
+<span class="comment"># Configure logging</span>
+logging.<span class="function">basicConfig</span>(
+    level=logging.INFO,
+    format=<span class="string">'%(asctime)s - %(levelname)s - %(message)s'</span>
+)
+logger = logging.<span class="function">getLogger</span>(__name__)
+
+<span class="keyword">class</span> <span class="function">FileProcessor</span>:
+    <span class="string">"""A robust file processor with all best practices"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, data_dir: str = <span class="string">"data"</span>):
+        self.data_dir = Path(data_dir)
+        self.data_dir.<span class="function">mkdir</span>(exist_ok=<span class="keyword">True</span>)  <span class="comment"># Create if doesn't exist</span>
+        
+    <span class="keyword">def</span> <span class="function">process_csv_safely</span>(self, 
+                           input_file: str, 
+                           output_file: str) -> bool:
+        <span class="string">"""Process CSV with full error handling and backup"""</span>
+        
+        input_path = self.data_dir / input_file
+        output_path = self.data_dir / output_file
+        
+        <span class="comment"># Check if input exists</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> input_path.<span class="function">exists</span>():
+            logger.<span class="function">error</span>(<span class="string">f"Input file not found: {input_path}"</span>)
+            <span class="keyword">return</span> <span class="keyword">False</span>
+        
+        <span class="keyword">try</span>:
+            <span class="comment"># Read CSV data</span>
+            <span class="keyword">with</span> <span class="function">open</span>(input_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+                reader = csv.<span class="function">DictReader</span>(f)
+                data = <span class="function">list</span>(reader)
+            
+            logger.<span class="function">info</span>(<span class="string">f"Read {len(data)} rows from {input_file}"</span>)
+            
+            <span class="comment"># Process data (example: add timestamp)</span>
+            <span class="keyword">for</span> row <span class="keyword">in</span> data:
+                row[<span class="string">'processed_at'</span>] = datetime.<span class="function">now</span>().<span class="function">isoformat</span>()
+            
+            <span class="comment"># Write results</span>
+            <span class="keyword">if</span> data:
+                fieldnames = <span class="function">list</span>(data[<span class="number">0</span>].<span class="function">keys</span>())
+                <span class="keyword">with</span> <span class="function">open</span>(output_path, <span class="string">'w'</span>, 
+                          encoding=<span class="string">'utf-8'</span>, 
+                          newline=<span class="string">''</span>) <span class="keyword">as</span> f:
+                    writer = csv.<span class="function">DictWriter</span>(f, fieldnames=fieldnames)
+                    writer.<span class="function">writeheader</span>()
+                    writer.<span class="function">writerows</span>(data)
+                
+                logger.<span class="function">info</span>(<span class="string">f"Wrote {len(data)} rows to {output_file}"</span>)
+                <span class="keyword">return</span> <span class="keyword">True</span>
+            
+        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+            logger.<span class="function">error</span>(<span class="string">f"Processing failed: {e}"</span>)
+            <span class="keyword">return</span> <span class="keyword">False</span>
+    
+    <span class="keyword">def</span> <span class="function">create_summary_report</span>(self) -> None:
+        <span class="string">"""Create a summary of all files in data directory"""</span>
+        
+        report = {
+            <span class="string">'generated_at'</span>: datetime.<span class="function">now</span>().<span class="function">isoformat</span>(),
+            <span class="string">'files'</span>: []
+        }
+        
+        <span class="comment"># Scan all files</span>
+        <span class="keyword">for</span> file_path <span class="keyword">in</span> self.data_dir.<span class="function">glob</span>(<span class="string">'*'</span>):
+            <span class="keyword">if</span> file_path.<span class="function">is_file</span>():
+                info = {
+                    <span class="string">'name'</span>: file_path.name,
+                    <span class="string">'size_bytes'</span>: file_path.<span class="function">stat</span>().st_size,
+                    <span class="string">'extension'</span>: file_path.suffix
+                }
+                report[<span class="string">'files'</span>].<span class="function">append</span>(info)
+        
+        <span class="comment"># Save report as JSON</span>
+        report_path = self.data_dir / <span class="string">'file_report.json'</span>
+        <span class="keyword">with</span> <span class="function">open</span>(report_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:
+            json.<span class="function">dump</span>(report, f, indent=<span class="number">2</span>)
+        
+        logger.<span class="function">info</span>(<span class="string">f"Report saved to {report_path}"</span>)
+
+<span class="comment"># Usage</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    processor = <span class="function">FileProcessor</span>()
+    processor.<span class="function">process_csv_safely</span>(<span class="string">'input.csv'</span>, <span class="string">'output.csv'</span>)
+    processor.<span class="function">create_summary_report</span>()</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Remember!</strong>
+          Good file handling is about being defensive: expect files to be missing, expect encodings to be wrong, expect permissions to fail. Handle it all gracefully!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Thanks Sam! I feel confident about working with files now. Any final advice?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Remember these three golden rules:
+              <br><br>
+              1. <strong>Always use <code>with open()</code></strong> - It's your safety net
+              <br>2. <strong>Always specify <code>encoding='utf-8'</code></strong> - Avoid character disasters
+              <br>3. <strong>Always handle errors</strong> - Files can fail in many ways
+              <br><br>
+              Follow these, and you'll write professional, robust file-handling code every time! Happy coding! 🚀
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" id="prevBtn" onclick="previousChapter()">
+          ← Previous
+        </button>
+        <span id="pageIndicator">Chapter 1 of 6</span>
+        <button class="btn primary" id="nextBtn" onclick="nextChapter()">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const totalChapters = chapters.length;
+
+    function showChapter(index) {
+      // Validate index
+      if (index < 0 || index >= totalChapters) return;
+      
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      document.getElementById('prevBtn').disabled = index === 0;
+      document.getElementById('nextBtn').disabled = index === totalChapters - 1;
+      
+      // Update page indicator
+      document.getElementById('pageIndicator').textContent = 
+        `Chapter ${index + 1} of ${totalChapters}`;
+      
+      // Update progress bar
+      const progress = ((index + 1) / totalChapters) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+      
+      // Update current chapter
+      currentChapter = index;
+      
+      // Save to localStorage
+      localStorage.setItem('currentChapter', index);
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    function nextChapter() {
+      if (currentChapter < totalChapters - 1) {
+        showChapter(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        showChapter(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextChapter();
+      if (e.key === 'ArrowLeft') previousChapter();
+      
+      // Number keys 1-6 jump to chapters
+      if (e.key >= '1' && e.key <= '6') {
+        const chapterIndex = parseInt(e.key) - 1;
+        if (chapterIndex < totalChapters) {
+          showChapter(chapterIndex);
+        }
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Load saved progress
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedChapter = localStorage.getItem('currentChapter');
+      if (savedChapter !== null) {
+        showChapter(parseInt(savedChapter));
+      } else {
+        showChapter(0);
+      }
+    });
+
+    // Print helper
+    window.addEventListener('beforeprint', () => {
+      // Show all chapters for printing
+      chapters.forEach(chapter => {
+        chapter.style.display = 'block';
+      });
+    });
+
+    window.addEventListener('afterprint', () => {
+      // Restore view after printing
+      showChapter(currentChapter);
+    });
+  </script>
+</body>
+</html>

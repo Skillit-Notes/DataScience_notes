@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Data Types - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+    
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: 1fr 56px;
+      direction: rtl;
+    }
+    
+    .conversation:nth-child(even) > * { direction: ltr; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 14.28%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+        direction: ltr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+    
+    /* Alignment Fix Override */
+    .conversation {
+      display: grid !important;
+      grid-template-columns: 56px minmax(0, 1fr) !important;
+      gap: 1rem !important;
+      align-items: start !important;
+      direction: ltr !important;
+    }
+    .conversation > .avatar   { grid-column: 1 !important; }
+    .conversation > .dialogue { grid-column: 2 !important; width: 100% !important; }
+
+    /* Even rows: dialogue on left, avatar on right */
+    .chapter .conversation:nth-of-type(even) {
+      grid-template-columns: minmax(0, 1fr) 56px !important;
+    }
+    .chapter .conversation:nth-of-type(even) > .dialogue { grid-column: 1 !important; }
+    .chapter .conversation:nth-of-type(even) > .avatar   { grid-column: 2 !important; }
+
+    /* Remove any inherited RTL or width constraints */
+    .chapter .conversation:nth-of-type(even) { direction: ltr !important; }
+    .chapter .conversation:nth-of-type(even) > * { direction: ltr !important; }
+    .dialogue { max-width: none !important; }
+    .dialogue-text { white-space: normal !important; }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🎯 Python Data Types Mastery</h1>
+        <p class="book-sub">Master Python's core data types through conversations with Alex and Sam!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">Numbers</button>
+        <button class="tab" onclick="showChapter(1)">Strings</button>
+        <button class="tab" onclick="showChapter(2)">Lists</button>
+        <button class="tab" onclick="showChapter(3)">Tuples</button>
+        <button class="tab" onclick="showChapter(4)">Sets</button>
+        <button class="tab" onclick="showChapter(5)">Dictionaries</button>
+        <button class="tab" onclick="showChapter(6)">Type Conversion</button>
+      </nav>
+
+<!-- Chapter 1: Numbers -->
+      <section class="chapter active">
+        <h2>Chapter 1: Python Numbers - Counting & Calculating</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Sam, I've been using numbers in Python, but I'm not sure about all the different types. Can you explain?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              Of course! Python has three main number types, each with its own superpower:
+              <br><br>
+              <strong>1. Integers (int)</strong> - Whole numbers like 42, -17, 0<br>
+              <strong>2. Floats (float)</strong> - Decimal numbers like 3.14, -0.5<br>
+              <strong>3. Complex</strong> - Numbers with real and imaginary parts (for advanced math)<br><br>
+              Let me show you how they work!
+              
+              <div class="code"><pre><span class="comment"># Integer - for counting and indexing</span>
+age = <span class="number">25</span>
+items_in_cart = <span class="number">3</span>
+floor_number = <span class="number">-1</span>  <span class="comment"># basements can be negative!</span>
+
+<span class="comment"># Float - for measurements and money</span>
+price = <span class="number">19.99</span>
+temperature = <span class="number">-5.5</span>
+pi = <span class="number">3.14159</span>
+
+<span class="comment"># Complex - for engineering/science</span>
+complex_num = <span class="number">3</span> <span class="operator">+</span> <span class="number">4j</span>  <span class="comment"># j is the imaginary unit</span>
+
+<span class="comment"># Check the type of any variable</span>
+<span class="function">print</span>(<span class="function">type</span>(age))         <span class="comment"># &lt;class 'int'&gt;</span>
+<span class="function">print</span>(<span class="function">type</span>(price))       <span class="comment"># &lt;class 'float'&gt;</span>
+<span class="function">print</span>(<span class="function">type</span>(complex_num)) <span class="comment"># &lt;class 'complex'&gt;</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That makes sense! What operations can I do with numbers?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python is like a super calculator! Here are all the operations you can do:
+              
+              <div class="code"><pre><span class="comment"># Basic arithmetic</span>
+a = <span class="number">15</span>
+b = <span class="number">4</span>
+
+<span class="function">print</span>(a <span class="operator">+</span> b)   <span class="comment"># Addition: 19</span>
+<span class="function">print</span>(a <span class="operator">-</span> b)   <span class="comment"># Subtraction: 11</span>
+<span class="function">print</span>(a <span class="operator">*</span> b)   <span class="comment"># Multiplication: 60</span>
+<span class="function">print</span>(a <span class="operator">/</span> b)   <span class="comment"># Division: 3.75 (always gives float!)</span>
+<span class="function">print</span>(a <span class="operator">//</span> b)  <span class="comment"># Floor division: 3 (rounds down)</span>
+<span class="function">print</span>(a <span class="operator">%</span> b)   <span class="comment"># Modulo (remainder): 3</span>
+<span class="function">print</span>(a <span class="operator">**</span> <span class="number">2</span>)  <span class="comment"># Power: 225 (15 squared)</span>
+
+<span class="comment"># Useful built-in functions</span>
+<span class="function">print</span>(<span class="function">abs</span>(<span class="operator">-</span><span class="number">7</span>))           <span class="comment"># Absolute value: 7</span>
+<span class="function">print</span>(<span class="function">round</span>(<span class="number">3.7</span>))        <span class="comment"># Round to nearest: 4</span>
+<span class="function">print</span>(<span class="function">round</span>(<span class="number">3.14159</span>, <span class="number">2</span>)) <span class="comment"># Round to 2 decimals: 3.14</span>
+<span class="function">print</span>(<span class="function">pow</span>(<span class="number">2</span>, <span class="number">5</span>))         <span class="comment"># Another way to do power: 32</span>
+<span class="function">print</span>(<span class="function">divmod</span>(<span class="number">17</span>, <span class="number">5</span>))     <span class="comment"># Get both quotient and remainder: (3, 2)</span>
+
+<span class="comment"># Working with lists of numbers</span>
+numbers = [<span class="number">10</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">12</span>]
+<span class="function">print</span>(<span class="function">min</span>(numbers))      <span class="comment"># Smallest: 3</span>
+<span class="function">print</span>(<span class="function">max</span>(numbers))      <span class="comment"># Largest: 12</span>
+<span class="function">print</span>(<span class="function">sum</span>(numbers))      <span class="comment"># Total: 38</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Wait, I noticed that 15 / 4 gave me 3.75 even though both were integers. Why?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Excellent observation! In Python 3, the <code>/</code> operator always returns a float, even when dividing integers. This prevents losing decimal information. If you want integer division, use <code>//</code> (floor division). 
+              <br><br>
+              Also, Python can handle HUGE numbers without any problem - there's no limit to integer size! And for readability, you can use underscores in large numbers:
+              
+              <div class="code"><pre><span class="comment"># Large numbers with underscores for readability</span>
+population = <span class="number">1_400_000_000</span>  <span class="comment"># Much easier to read!</span>
+budget = <span class="number">2_500_000.50</span>
+
+<span class="comment"># Python handles huge numbers easily</span>
+huge = <span class="number">10</span> <span class="operator">**</span> <span class="number">100</span>  <span class="comment"># 10 to the power of 100!</span>
+<span class="function">print</span>(<span class="string">f"10^100 has {len(str(huge))} digits!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📊 When to Use Each Type</h3>
+            <ul>
+              <li><strong>int:</strong> Counting items, ages, scores, array indexes</li>
+              <li><strong>float:</strong> Money, measurements, percentages, averages</li>
+              <li><strong>complex:</strong> Engineering, physics, signal processing</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚠️ Common Gotchas</h3>
+            <ul>
+              <li>Division (/) always returns float</li>
+              <li>Floats can be imprecise (0.1 + 0.2 ≠ 0.3 exactly)</li>
+              <li>Use <code>round()</code> for display, not for precise calculations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          Booleans (True/False) are actually integers under the hood! True equals 1 and False equals 0. You can even do math with them: <code>True + True = 2</code>!
+        </div>
+      </section>
+
+      <!-- Chapter 2: Strings -->
+      <section class="chapter">
+        <h2>Chapter 2: Python Strings - Working with Text</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I need to work with text in my programs. How do strings work in Python?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Strings are sequences of characters - think of them as text containers! You can create them with single quotes, double quotes, or triple quotes for multi-line text:
+              
+              <div class="code"><pre><span class="comment"># Different ways to create strings</span>
+name = <span class="string">'Alex'</span>              <span class="comment"># Single quotes</span>
+message = <span class="string">"Hello, World!"</span>  <span class="comment"># Double quotes</span>
+paragraph = <span class="string">"""This is a
+multi-line string that
+spans several lines!"""</span>     <span class="comment"># Triple quotes</span>
+
+<span class="comment"># Strings are immutable (can't change individual characters)</span>
+text = <span class="string">"Python"</span>
+<span class="comment"># text[0] = 'J'  # This would cause an error!</span>
+
+<span class="comment"># But you can create new strings from old ones</span>
+new_text = <span class="string">'J'</span> <span class="operator">+</span> text[<span class="number">1</span>:]  <span class="comment"># "Jython"</span>
+<span class="function">print</span>(new_text)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What does "immutable" mean? And how can I access specific characters?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              "Immutable" means you can't change a string once it's created - you can only create new strings. Think of it like a printed book - you can't change the letters on the page, but you can write a new book!
+              <br><br>
+              For accessing characters, Python uses indexing and slicing:
+              
+              <div class="code"><pre>word = <span class="string">"Python"</span>
+
+<span class="comment"># Indexing (accessing single characters)</span>
+<span class="function">print</span>(word[<span class="number">0</span>])    <span class="comment"># 'P' (first character)</span>
+<span class="function">print</span>(word[<span class="number">2</span>])    <span class="comment"># 't' (third character)</span>
+<span class="function">print</span>(word[<span class="operator">-</span><span class="number">1</span>])   <span class="comment"># 'n' (last character)</span>
+<span class="function">print</span>(word[<span class="operator">-</span><span class="number">2</span>])   <span class="comment"># 'o' (second to last)</span>
+
+<span class="comment"># Slicing (getting substrings)</span>
+<span class="function">print</span>(word[<span class="number">0</span>:<span class="number">3</span>])  <span class="comment"># 'Pyt' (characters 0,1,2)</span>
+<span class="function">print</span>(word[<span class="number">2</span>:])   <span class="comment"># 'thon' (from index 2 to end)</span>
+<span class="function">print</span>(word[:<span class="number">4</span>])   <span class="comment"># 'Pyth' (from start to index 3)</span>
+<span class="function">print</span>(word[::<span class="number">2</span>])  <span class="comment"># 'Pto' (every 2nd character)</span>
+<span class="function">print</span>(word[::<span class="operator">-</span><span class="number">1</span>]) <span class="comment"># 'nohtyP' (reversed!)</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! What about modifying strings? You said they're immutable, but I need to change text sometimes.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Right! While strings are immutable, Python has tons of methods that create NEW strings with the changes you want. These methods don't modify the original - they return a new string:
+              
+              <div class="code"><pre>text = <span class="string">"  Hello Python!  "</span>
+
+<span class="comment"># Case transformations (create new strings)</span>
+<span class="function">print</span>(text.upper())       <span class="comment"># "  HELLO PYTHON!  "</span>
+<span class="function">print</span>(text.lower())       <span class="comment"># "  hello python!  "</span>
+<span class="function">print</span>(text.title())       <span class="comment"># "  Hello Python!  "</span>
+<span class="function">print</span>(text.capitalize())  <span class="comment"># "  hello python!  "</span>
+<span class="function">print</span>(text.swapcase())    <span class="comment"># "  hELLO pYTHON!  "</span>
+
+<span class="comment"># Trimming whitespace</span>
+<span class="function">print</span>(text.strip())       <span class="comment"># "Hello Python!" (removes both sides)</span>
+<span class="function">print</span>(text.lstrip())      <span class="comment"># "Hello Python!  " (left only)</span>
+<span class="function">print</span>(text.rstrip())      <span class="comment"># "  Hello Python!" (right only)</span>
+
+<span class="comment"># Searching and checking</span>
+msg = <span class="string">"I love Python programming"</span>
+<span class="function">print</span>(msg.find(<span class="string">"Python"</span>))      <span class="comment"># 7 (index where it starts)</span>
+<span class="function">print</span>(msg.count(<span class="string">"o"</span>))          <span class="comment"># 2 (number of 'o's)</span>
+<span class="function">print</span>(msg.startswith(<span class="string">"I"</span>))     <span class="comment"># True</span>
+<span class="function">print</span>(msg.endswith(<span class="string">"ing"</span>))     <span class="comment"># True</span>
+
+<span class="comment"># Replacing and splitting</span>
+<span class="function">print</span>(msg.replace(<span class="string">"Python"</span>, <span class="string">"Java"</span>))  <span class="comment"># "I love Java programming"</span>
+words = msg.split()                       <span class="comment"># ['I', 'love', 'Python', 'programming']</span>
+<span class="function">print</span>(words)
+<span class="function">print</span>(<span class="string">"-"</span>.join(words))             <span class="comment"># "I-love-Python-programming"</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              There are so many methods! How do I know when something is a letter, number, or space?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python has built-in checking methods that return True or False - perfect for validation!
+              
+              <div class="code"><pre><span class="comment"># Content checking methods</span>
+<span class="function">print</span>(<span class="string">"hello"</span>.isalpha())     <span class="comment"># True (all letters)</span>
+<span class="function">print</span>(<span class="string">"123"</span>.isdigit())       <span class="comment"># True (all digits)</span>
+<span class="function">print</span>(<span class="string">"hello123"</span>.isalnum())  <span class="comment"># True (letters OR numbers)</span>
+<span class="function">print</span>(<span class="string">"   "</span>.isspace())      <span class="comment"># True (all whitespace)</span>
+<span class="function">print</span>(<span class="string">"Hello"</span>.isupper())    <span class="comment"># False (not all uppercase)</span>
+<span class="function">print</span>(<span class="string">"hello"</span>.islower())    <span class="comment"># True (all lowercase)</span>
+<span class="function">print</span>(<span class="string">"Hello World"</span>.istitle()) <span class="comment"># True (title case)</span>
+
+<span class="comment"># Practical example: validating user input</span>
+username = <span class="function">input</span>(<span class="string">"Enter username (letters/numbers only): "</span>)
+<span class="keyword">if</span> username.isalnum():
+    <span class="function">print</span>(<span class="string">"Valid username!"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"Username can only contain letters and numbers!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔤 Essential String Methods</h3>
+            <ul>
+              <li><strong>Transform:</strong> upper(), lower(), title(), capitalize()</li>
+              <li><strong>Clean:</strong> strip(), lstrip(), rstrip()</li>
+              <li><strong>Search:</strong> find(), index(), count(), in</li>
+              <li><strong>Check:</strong> isalpha(), isdigit(), isspace()</li>
+              <li><strong>Modify:</strong> replace(), split(), join()</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>✨ String Formatting</h3>
+            <ul>
+              <li><strong>f-strings:</strong> <code>f"Hello {name}"</code> (Python 3.6+)</li>
+              <li><strong>format():</strong> <code>"{} {}".format(a, b)</code></li>
+              <li><strong>%:</strong> <code>"%s %d" % (text, num)</code> (old style)</li>
+              <li><strong>Concatenation:</strong> <code>str1 + str2</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Memory Tip!</strong>
+          Remember: strings are like printed pages - you can read them, but to make changes, you need to print a new page. All string methods return NEW strings!
+        </div>
+      </section>
+
+<!-- Chapter 3: Lists -->
+      <section class="chapter">
+        <h2>Chapter 3: Python Lists - Your Dynamic Collection</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I need to store multiple items together, like a shopping list. What should I use?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Lists are perfect for that! Think of a list as a container that can hold multiple items in order. Unlike strings, lists are mutable - you can add, remove, and change items anytime!
+              
+              <div class="code"><pre><span class="comment"># Creating lists</span>
+shopping = [<span class="string">"apples"</span>, <span class="string">"bread"</span>, <span class="string">"milk"</span>]
+numbers = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>]
+mixed = [<span class="string">"Alex"</span>, <span class="number">25</span>, <span class="number">3.14</span>, <span class="keyword">True</span>]  <span class="comment"># Can mix types!</span>
+empty = []  <span class="comment"># Empty list</span>
+
+<span class="comment"># Lists can contain other lists!</span>
+matrix = [[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>], [<span class="number">5</span>, <span class="number">6</span>]]
+
+<span class="function">print</span>(shopping)
+<span class="function">print</span>(<span class="string">f"I have {len(shopping)} items to buy"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do I access items in a list and add new ones?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Lists use the same indexing as strings, but since they're mutable, you can also change items directly:
+              
+              <div class="code"><pre>fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"orange"</span>]
+
+<span class="comment"># Accessing items (same as strings)</span>
+<span class="function">print</span>(fruits[<span class="number">0</span>])     <span class="comment"># "apple" (first item)</span>
+<span class="function">print</span>(fruits[<span class="operator">-</span><span class="number">1</span>])    <span class="comment"># "orange" (last item)</span>
+<span class="function">print</span>(fruits[<span class="number">1</span>:<span class="number">3</span>])   <span class="comment"># ["banana", "orange"] (slicing)</span>
+
+<span class="comment"># Modifying items (this is new!)</span>
+fruits[<span class="number">1</span>] = <span class="string">"grape"</span>    <span class="comment"># Change banana to grape</span>
+<span class="function">print</span>(fruits)         <span class="comment"># ["apple", "grape", "orange"]</span>
+
+<span class="comment"># Adding items - three ways!</span>
+fruits.append(<span class="string">"mango"</span>)        <span class="comment"># Add one item to end</span>
+fruits.extend([<span class="string">"kiwi"</span>, <span class="string">"pear"</span>]) <span class="comment"># Add multiple items</span>
+fruits.insert(<span class="number">1</span>, <span class="string">"cherry"</span>)    <span class="comment"># Insert at specific position</span>
+
+<span class="function">print</span>(fruits)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about removing items? And what if I want to find or count things?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Lists have several ways to remove items, plus helpful methods for finding and counting:
+              
+              <div class="code"><pre>colors = [<span class="string">"red"</span>, <span class="string">"blue"</span>, <span class="string">"green"</span>, <span class="string">"blue"</span>, <span class="string">"yellow"</span>]
+
+<span class="comment"># Removing items - multiple ways!</span>
+colors.remove(<span class="string">"green"</span>)     <span class="comment"># Remove first matching value</span>
+last = colors.pop()        <span class="comment"># Remove & return last item</span>
+<span class="function">print</span>(<span class="string">f"Removed: {last}"</span>)
+item = colors.pop(<span class="number">1</span>)       <span class="comment"># Remove & return item at index 1</span>
+<span class="keyword">del</span> colors[<span class="number">0</span>]             <span class="comment"># Delete item at index 0</span>
+
+<span class="comment"># Finding and counting</span>
+numbers = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">20</span>, <span class="number">40</span>]
+<span class="function">print</span>(numbers.count(<span class="number">20</span>))   <span class="comment"># 2 (appears twice)</span>
+<span class="function">print</span>(numbers.index(<span class="number">30</span>))   <span class="comment"># 2 (position of 30)</span>
+<span class="function">print</span>(<span class="number">50</span> <span class="keyword">in</span> numbers)      <span class="comment"># False (not in list)</span>
+<span class="function">print</span>(<span class="number">20</span> <span class="keyword">in</span> numbers)      <span class="comment"># True (is in list)</span>
+
+<span class="comment"># Useful aggregates</span>
+scores = [<span class="number">85</span>, <span class="number">92</span>, <span class="number">78</span>, <span class="number">95</span>, <span class="number">88</span>]
+<span class="function">print</span>(<span class="string">f"Min: {min(scores)}, Max: {max(scores)}, Sum: {sum(scores)}"</span>)
+<span class="function">print</span>(<span class="string">f"Average: {sum(scores) / len(scores)}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I sort lists? And what's this "list comprehension" I keep hearing about?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! Lists can be sorted and reversed. And list comprehensions are Python's super-compact way to create lists:
+              
+              <div class="code"><pre><span class="comment"># Sorting and reversing</span>
+nums = [<span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">9</span>]
+nums.sort()                <span class="comment"># Sort in place (modifies list)</span>
+<span class="function">print</span>(nums)               <span class="comment"># [1, 1, 3, 4, 5, 9]</span>
+nums.sort(reverse=<span class="keyword">True</span>)    <span class="comment"># Sort descending</span>
+<span class="function">print</span>(nums)               <span class="comment"># [9, 5, 4, 3, 1, 1]</span>
+nums.reverse()             <span class="comment"># Reverse the order</span>
+<span class="function">print</span>(nums)               <span class="comment"># [1, 1, 3, 4, 5, 9]</span>
+
+<span class="comment"># List comprehensions - create lists in one line!</span>
+<span class="comment"># Basic syntax: [expression for item in iterable]</span>
+squares = [n<span class="operator">**</span><span class="number">2</span> <span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">6</span>)]
+<span class="function">print</span>(squares)  <span class="comment"># [1, 4, 9, 16, 25]</span>
+
+<span class="comment"># With conditions</span>
+evens = [n <span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>) <span class="keyword">if</span> n <span class="operator">%</span> <span class="number">2</span> <span class="operator">==</span> <span class="number">0</span>]
+<span class="function">print</span>(evens)   <span class="comment"># [0, 2, 4, 6, 8]</span>
+
+<span class="comment"># Transform existing list</span>
+words = [<span class="string">"hello"</span>, <span class="string">"world"</span>, <span class="string">"python"</span>]
+upper_words = [w.upper() <span class="keyword">for</span> w <span class="keyword">in</span> words]
+<span class="function">print</span>(upper_words)  <span class="comment"># ['HELLO', 'WORLD', 'PYTHON']</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📝 List Operations Summary</h3>
+            <ul>
+              <li><strong>Add:</strong> append(), extend(), insert()</li>
+              <li><strong>Remove:</strong> remove(), pop(), del, clear()</li>
+              <li><strong>Find:</strong> index(), count(), in</li>
+              <li><strong>Order:</strong> sort(), reverse()</li>
+              <li><strong>Copy:</strong> copy() or list[:]</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>💡 List vs String</h3>
+            <ul>
+              <li>Both: Ordered, indexable, sliceable</li>
+              <li>Lists: Mutable, any types, [ ]</li>
+              <li>Strings: Immutable, only characters, " "</li>
+              <li>Lists can contain lists (nested)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Best Practice!</strong>
+          Use descriptive names for lists (plural nouns work well): <code>students</code> not <code>s</code>, <code>prices</code> not <code>p</code>. This makes your code self-documenting!
+        </div>
+      </section>
+
+      <!-- Chapter 4: Tuples -->
+      <section class="chapter">
+        <h2>Chapter 4: Python Tuples - Immutable Sequences</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I've heard about tuples. How are they different from lists?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Tuples are like lists' responsible older sibling - they're ordered collections, but they're immutable (can't be changed). Think of them as "protected lists" for data that shouldn't change:
+              
+              <div class="code"><pre><span class="comment"># Creating tuples - use parentheses</span>
+point = (<span class="number">3</span>, <span class="number">4</span>)              <span class="comment"># 2D coordinates</span>
+rgb = (<span class="number">255</span>, <span class="number">128</span>, <span class="number">0</span>)        <span class="comment"># Color values</span>
+person = (<span class="string">"Alice"</span>, <span class="number">25</span>, <span class="string">"Engineer"</span>)  <span class="comment"># Mixed types</span>
+
+<span class="comment"># Single item tuple needs a comma!</span>
+single = (<span class="number">42</span>,)    <span class="comment"># This is a tuple</span>
+not_tuple = (<span class="number">42</span>)  <span class="comment"># This is just the number 42!</span>
+
+<span class="comment"># Empty tuple</span>
+empty = ()
+
+<span class="comment"># Tuples can be created without parentheses</span>
+coordinates = <span class="number">5</span>, <span class="number">10</span>  <span class="comment"># Still a tuple!</span>
+<span class="function">print</span>(<span class="function">type</span>(coordinates))  <span class="comment"># &lt;class 'tuple'&gt;</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So I can't change them? Why would I want that?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Immutability is actually a superpower! It makes your data safer and your code more predictable. Here's why tuples are useful:
+              <br><br>
+              1. <strong>Data integrity</strong> - Some data shouldn't change (like coordinates, database records)<br>
+              2. <strong>Dictionary keys</strong> - Tuples can be dictionary keys (lists can't!)<br>
+              3. <strong>Performance</strong> - Tuples are faster than lists<br>
+              4. <strong>Multiple returns</strong> - Functions can return multiple values as tuples<br><br>
+              
+              Let me show you:
+              
+              <div class="code"><pre><span class="comment"># Accessing tuple items (same as lists)</span>
+point = (<span class="number">10</span>, <span class="number">20</span>)
+x = point[<span class="number">0</span>]  <span class="comment"># 10</span>
+y = point[<span class="number">1</span>]  <span class="comment"># 20</span>
+
+<span class="comment"># Trying to change raises an error</span>
+<span class="comment"># point[0] = 15  # TypeError: tuple doesn't support item assignment</span>
+
+<span class="comment"># Tuple unpacking - super useful!</span>
+x, y = point  <span class="comment"># Unpack into separate variables</span>
+<span class="function">print</span>(<span class="string">f"x={x}, y={y}"</span>)
+
+<span class="comment"># Multiple assignment in one line</span>
+name, age, job = (<span class="string">"Bob"</span>, <span class="number">30</span>, <span class="string">"Teacher"</span>)
+
+<span class="comment"># Swapping variables elegantly</span>
+a, b = <span class="number">5</span>, <span class="number">10</span>
+a, b = b, a  <span class="comment"># Swap values!</span>
+<span class="function">print</span>(<span class="string">f"a={a}, b={b}"</span>)  <span class="comment"># a=10, b=5</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That unpacking looks really useful! Can you show me more advanced examples?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Tuple unpacking is one of Python's most elegant features. Here are some powerful patterns:
+              
+              <div class="code"><pre><span class="comment"># Extended unpacking with *</span>
+numbers = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)
+first, <span class="operator">*</span>middle, last = numbers
+<span class="function">print</span>(<span class="string">f"first={first}, middle={middle}, last={last}"</span>)
+<span class="comment"># first=1, middle=[2, 3, 4], last=5</span>
+
+<span class="comment"># Returning multiple values from functions</span>
+<span class="keyword">def</span> <span class="function">get_min_max</span>(numbers):
+    <span class="keyword">return</span> <span class="function">min</span>(numbers), <span class="function">max</span>(numbers)  <span class="comment"># Returns a tuple</span>
+
+low, high = get_min_max([<span class="number">3</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">1</span>])
+<span class="function">print</span>(<span class="string">f"Range: {low} to {high}"</span>)
+
+<span class="comment"># Tuples as dictionary keys (lists can't do this!)</span>
+locations = {}
+locations[(<span class="number">40.7</span>, <span class="number">-74.0</span>)] = <span class="string">"New York"</span>
+locations[(<span class="number">51.5</span>, <span class="number">-0.1</span>)] = <span class="string">"London"</span>
+<span class="function">print</span>(locations[(<span class="number">40.7</span>, <span class="number">-74.0</span>)])  <span class="comment"># "New York"</span>
+
+<span class="comment"># Named tuples (more readable!)</span>
+<span class="keyword">from</span> collections <span class="keyword">import</span> namedtuple
+Person = namedtuple(<span class="string">'Person'</span>, [<span class="string">'name'</span>, <span class="string">'age'</span>, <span class="string">'job'</span>])
+alice = Person(<span class="string">"Alice"</span>, <span class="number">30</span>, <span class="string">"Developer"</span>)
+<span class="function">print</span>(alice.name)  <span class="comment"># More readable than alice[0]</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Wait, you said tuples can contain mutable objects. Doesn't that break immutability?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Excellent observation! The tuple itself is immutable (you can't add/remove items or reassign positions), but if it contains mutable objects, those objects can still be modified:
+              
+              <div class="code"><pre><span class="comment"># Tuple with mutable object (list)</span>
+data = (<span class="string">"fixed"</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], <span class="number">42</span>)
+<span class="comment"># data[0] = "changed"  # Error! Can't reassign</span>
+<span class="comment"># But we CAN modify the list inside:</span>
+data[<span class="number">1</span>].append(<span class="number">4</span>)
+<span class="function">print</span>(data)  <span class="comment"># ("fixed", [1, 2, 3, 4], 42)</span>
+
+<span class="comment"># Tuple methods (only 2!)</span>
+numbers = (<span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>)
+<span class="function">print</span>(numbers.count(<span class="number">3</span>))  <span class="comment"># 3 (appears 3 times)</span>
+<span class="function">print</span>(numbers.index(<span class="number">2</span>))  <span class="comment"># 2 (position of first 2)</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📦 When to Use Tuples</h3>
+            <ul>
+              <li>Fixed collections (coordinates, RGB values)</li>
+              <li>Function returns with multiple values</li>
+              <li>Dictionary keys (immutable required)</li>
+              <li>Data that shouldn't change</li>
+              <li>Performance-critical code</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔄 Tuple vs List</h3>
+            <ul>
+              <li><strong>Tuple:</strong> Immutable, (), faster, hashable</li>
+              <li><strong>List:</strong> Mutable, [], more methods, flexible</li>
+              <li>Use tuples for structure, lists for collections</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Remember!</strong>
+          If you need to change data → use a list. If data should stay constant → use a tuple. When in doubt, start with a list and refactor to tuple if needed.
+        </div>
+      </section>
+
+      <!-- Chapter 5: Sets -->
+      <section class="chapter">
+        <h2>Chapter 5: Python Sets - Unique Collections</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I have a list with duplicates and I want only unique items. Is there an easy way?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect use case for sets! Sets are collections that automatically keep only unique items - no duplicates allowed. They're like mathematical sets you learned in school:
+              
+              <div class="code"><pre><span class="comment"># Creating sets - duplicates are automatically removed!</span>
+numbers = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">4</span>}
+<span class="function">print</span>(numbers)  <span class="comment"># {1, 2, 3, 4} - duplicates gone!</span>
+
+<span class="comment"># Convert list to set to remove duplicates</span>
+scores = [<span class="number">85</span>, <span class="number">90</span>, <span class="number">85</span>, <span class="number">75</span>, <span class="number">90</span>, <span class="number">95</span>]
+unique_scores = <span class="function">set</span>(scores)
+<span class="function">print</span>(unique_scores)  <span class="comment"># {75, 85, 90, 95}</span>
+
+<span class="comment"># Empty set (careful with syntax!)</span>
+empty_set = <span class="function">set</span>()  <span class="comment"># Can't use {} - that's an empty dict!</span>
+
+<span class="comment"># Set from string (unique characters)</span>
+letters = <span class="function">set</span>(<span class="string">"hello"</span>)
+<span class="function">print</span>(letters)  <span class="comment"># {'h', 'e', 'l', 'o'}</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! But wait, the order changed. And can I access items by index like lists?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Good catch! Sets are unordered - they don't maintain any specific order, and you can't access items by index. But they have their own superpowers:
+              <br><br>
+              1. <strong>Lightning-fast membership testing</strong> (checking if item exists)<br>
+              2. <strong>Set operations</strong> (union, intersection, difference)<br>
+              3. <strong>Automatic duplicate removal</strong><br><br>
+              
+              Let me show you set operations - they're really powerful:
+              
+              <div class="code"><pre><span class="comment"># Adding and removing items</span>
+fruits = {<span class="string">"apple"</span>, <span class="string">"banana"</span>}
+fruits.add(<span class="string">"orange"</span>)         <span class="comment"># Add one item</span>
+fruits.update([<span class="string">"grape"</span>, <span class="string">"kiwi"</span>])  <span class="comment"># Add multiple</span>
+<span class="function">print</span>(fruits)
+
+fruits.discard(<span class="string">"banana"</span>)     <span class="comment"># Remove (no error if missing)</span>
+fruits.remove(<span class="string">"grape"</span>)       <span class="comment"># Remove (error if missing)</span>
+popped = fruits.pop()        <span class="comment"># Remove random item</span>
+
+<span class="comment"># Fast membership testing</span>
+<span class="function">print</span>(<span class="string">"apple"</span> <span class="keyword">in</span> fruits)   <span class="comment"># Super fast!</span>
+
+<span class="comment"># Set mathematics!</span>
+set_a = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>}
+set_b = {<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>}
+
+<span class="comment"># Union (all unique items from both)</span>
+<span class="function">print</span>(set_a <span class="operator">|</span> set_b)        <span class="comment"># {1, 2, 3, 4, 5, 6}</span>
+<span class="function">print</span>(set_a.union(set_b))   <span class="comment"># Same result</span>
+
+<span class="comment"># Intersection (common items)</span>
+<span class="function">print</span>(set_a <span class="operator">&</span> set_b)        <span class="comment"># {3, 4}</span>
+<span class="function">print</span>(set_a.intersection(set_b))
+
+<span class="comment"># Difference (in a but not in b)</span>
+<span class="function">print</span>(set_a <span class="operator">-</span> set_b)        <span class="comment"># {1, 2}</span>
+<span class="function">print</span>(set_a.difference(set_b))
+
+<span class="comment"># Symmetric difference (in either, but not both)</span>
+<span class="function">print</span>(set_a <span class="operator">^</span> set_b)        <span class="comment"># {1, 2, 5, 6}</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Wow, those set operations are like Venn diagrams! When would I use these in real code?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly like Venn diagrams! Here are practical examples:
+              
+              <div class="code"><pre><span class="comment"># Example 1: Find common friends</span>
+alice_friends = {<span class="string">"Bob"</span>, <span class="string">"Charlie"</span>, <span class="string">"David"</span>, <span class="string">"Eve"</span>}
+bob_friends = {<span class="string">"Alice"</span>, <span class="string">"Charlie"</span>, <span class="string">"Eve"</span>, <span class="string">"Frank"</span>}
+
+common = alice_friends <span class="operator">&</span> bob_friends
+<span class="function">print</span>(<span class="string">f"Common friends: {common}"</span>)  <span class="comment"># Charlie, Eve</span>
+
+<span class="comment"># Example 2: Find unique words in text</span>
+text = <span class="string">"the quick brown fox jumps over the lazy dog"</span>
+unique_words = <span class="function">set</span>(text.split())
+<span class="function">print</span>(<span class="string">f"Unique words: {len(unique_words)}"</span>)
+
+<span class="comment"># Example 3: Check if sets are related</span>
+required_skills = {<span class="string">"Python"</span>, <span class="string">"SQL"</span>, <span class="string">"Git"</span>}
+candidate_skills = {<span class="string">"Python"</span>, <span class="string">"SQL"</span>, <span class="string">"Git"</span>, <span class="string">"Docker"</span>}
+
+<span class="keyword">if</span> required_skills.issubset(candidate_skills):
+    <span class="function">print</span>(<span class="string">"Candidate has all required skills!"</span>)
+
+<span class="comment"># Set comprehension</span>
+squares = {n<span class="operator">**</span><span class="number">2</span> <span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>)}
+<span class="function">print</span>(squares)  <span class="comment"># {0, 1, 4, 9, 16, 25, 36, 49, 64, 81}</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Set Use Cases</h3>
+            <ul>
+              <li>Remove duplicates from data</li>
+              <li>Fast membership testing</li>
+              <li>Find common/different elements</li>
+              <li>Track unique items</li>
+              <li>Mathematical set operations</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚡ Set Performance</h3>
+            <ul>
+              <li><code>in</code> operator: O(1) average</li>
+              <li>Add/remove: O(1) average</li>
+              <li>Much faster than lists for membership</li>
+              <li>frozenset: immutable version</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          Use sets when you need uniqueness or fast lookups. Use lists when order matters. Use tuples when data shouldn't change. Each has its perfect use case!
+        </div>
+      </section>
+<!-- Chapter 6: Dictionaries -->
+      <section class="chapter">
+        <h2>Chapter 6: Python Dictionaries - Key-Value Mapping</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I need to store information about students - their names, ages, and grades. Lists seem clunky for this.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect timing to learn dictionaries! They're like real dictionaries - you look up a key (word) to get a value (definition). They're ideal for structured data:
+              
+              <div class="code"><pre><span class="comment"># Creating dictionaries</span>
+student = {
+    <span class="string">"name"</span>: <span class="string">"Alex"</span>,
+    <span class="string">"age"</span>: <span class="number">18</span>,
+    <span class="string">"grade"</span>: <span class="string">"A"</span>,
+    <span class="string">"subjects"</span>: [<span class="string">"Math"</span>, <span class="string">"Physics"</span>, <span class="string">"CS"</span>]
+}
+
+<span class="comment"># Access values by key</span>
+<span class="function">print</span>(student[<span class="string">"name"</span>])      <span class="comment"># "Alex"</span>
+<span class="function">print</span>(student[<span class="string">"subjects"</span>])  <span class="comment"># ["Math", "Physics", "CS"]</span>
+
+<span class="comment"># Safer access with get()</span>
+<span class="function">print</span>(student.get(<span class="string">"email"</span>))  <span class="comment"># None (no error)</span>
+<span class="function">print</span>(student.get(<span class="string">"email"</span>, <span class="string">"N/A"</span>))  <span class="comment"># "N/A" (default)</span>
+
+<span class="comment"># Other ways to create dicts</span>
+empty = {}
+from_pairs = <span class="function">dict</span>([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">2</span>)])
+from_kwargs = <span class="function">dict</span>(name=<span class="string">"Bob"</span>, age=<span class="number">25</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is exactly what I need! How do I add, update, and remove items?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Dictionaries are mutable, so you can modify them easily:
+              
+              <div class="code"><pre>person = {<span class="string">"name"</span>: <span class="string">"Alice"</span>, <span class="string">"age"</span>: <span class="number">25</span>}
+
+<span class="comment"># Add new key-value pairs</span>
+person[<span class="string">"city"</span>] = <span class="string">"Boston"</span>
+person[<span class="string">"job"</span>] = <span class="string">"Engineer"</span>
+
+<span class="comment"># Update existing values</span>
+person[<span class="string">"age"</span>] = <span class="number">26</span>
+
+<span class="comment"># Update multiple at once</span>
+person.update({<span class="string">"age"</span>: <span class="number">27</span>, <span class="string">"city"</span>: <span class="string">"Seattle"</span>})
+
+<span class="comment"># Remove items</span>
+job = person.pop(<span class="string">"job"</span>)        <span class="comment"># Remove and return value</span>
+<span class="keyword">del</span> person[<span class="string">"city"</span>]             <span class="comment"># Remove key-value pair</span>
+last = person.popitem()         <span class="comment"># Remove last inserted item</span>
+
+<span class="comment"># Check if key exists</span>
+<span class="keyword">if</span> <span class="string">"name"</span> <span class="keyword">in</span> person:
+    <span class="function">print</span>(<span class="string">f"Name is {person['name']}"</span>)
+
+<span class="comment"># Get all keys, values, or items</span>
+data = {<span class="string">"x"</span>: <span class="number">10</span>, <span class="string">"y"</span>: <span class="number">20</span>, <span class="string">"z"</span>: <span class="number">30</span>}
+<span class="function">print</span>(<span class="function">list</span>(data.keys()))    <span class="comment"># ["x", "y", "z"]</span>
+<span class="function">print</span>(<span class="function">list</span>(data.values()))  <span class="comment"># [10, 20, 30]</span>
+<span class="function">print</span>(<span class="function">list</span>(data.items()))   <span class="comment"># [("x", 10), ("y", 20), ("z", 30)]</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do I loop through dictionaries? And can I have nested dictionaries?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes to both! Looping is elegant, and nesting lets you create complex data structures:
+              
+              <div class="code"><pre><span class="comment"># Looping through dictionaries</span>
+scores = {<span class="string">"Alice"</span>: <span class="number">95</span>, <span class="string">"Bob"</span>: <span class="number">87</span>, <span class="string">"Charlie"</span>: <span class="number">92</span>}
+
+<span class="comment"># Loop through keys</span>
+<span class="keyword">for</span> name <span class="keyword">in</span> scores:
+    <span class="function">print</span>(<span class="string">f"{name}: {scores[name]}"</span>)
+
+<span class="comment"># Loop through key-value pairs (best way!)</span>
+<span class="keyword">for</span> name, score <span class="keyword">in</span> scores.items():
+    <span class="function">print</span>(<span class="string">f"{name} scored {score}"</span>)
+
+<span class="comment"># Loop through values only</span>
+total = <span class="function">sum</span>(scores.values())
+<span class="function">print</span>(<span class="string">f"Total: {total}"</span>)
+
+<span class="comment"># Nested dictionaries (like JSON!)</span>
+school = {
+    <span class="string">"students"</span>: {
+        <span class="string">"alice"</span>: {<span class="string">"age"</span>: <span class="number">18</span>, <span class="string">"grade"</span>: <span class="string">"A"</span>},
+        <span class="string">"bob"</span>: {<span class="string">"age"</span>: <span class="number">17</span>, <span class="string">"grade"</span>: <span class="string">"B"</span>}
+    },
+    <span class="string">"teachers"</span>: {
+        <span class="string">"math"</span>: <span class="string">"Dr. Smith"</span>,
+        <span class="string">"physics"</span>: <span class="string">"Dr. Jones"</span>
+    }
+}
+
+<span class="comment"># Access nested values</span>
+<span class="function">print</span>(school[<span class="string">"students"</span>][<span class="string">"alice"</span>][<span class="string">"grade"</span>])  <span class="comment"># "A"</span>
+
+<span class="comment"># Dictionary comprehension</span>
+squares = {n: n<span class="operator">**</span><span class="number">2</span> <span class="keyword">for</span> n <span class="keyword">in</span> <span class="function">range</span>(<span class="number">5</span>)}
+<span class="function">print</span>(squares)  <span class="comment"># {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about that setdefault() method? And can any value be a key?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great questions! <code>setdefault()</code> is super useful, and keys must be immutable (hashable):
+              
+              <div class="code"><pre><span class="comment"># setdefault - get value or set default</span>
+config = {}
+config.setdefault(<span class="string">"theme"</span>, <span class="string">"dark"</span>)  <span class="comment"># Sets and returns "dark"</span>
+config.setdefault(<span class="string">"theme"</span>, <span class="string">"light"</span>) <span class="comment"># Returns "dark" (already set)</span>
+
+<span class="comment"># Counting with setdefault</span>
+words = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"apple"</span>, <span class="string">"cherry"</span>]
+count = {}
+<span class="keyword">for</span> word <span class="keyword">in</span> words:
+    count[word] = count.get(word, <span class="number">0</span>) <span class="operator">+</span> <span class="number">1</span>
+<span class="function">print</span>(count)  <span class="comment"># {"apple": 2, "banana": 1, "cherry": 1}</span>
+
+<span class="comment"># Valid dictionary keys (must be immutable)</span>
+valid_dict = {
+    <span class="string">"string_key"</span>: <span class="string">"value"</span>,
+    <span class="number">42</span>: <span class="string">"integer key"</span>,
+    <span class="number">3.14</span>: <span class="string">"float key"</span>,
+    (<span class="number">1</span>, <span class="number">2</span>): <span class="string">"tuple key"</span>,  <span class="comment"># Tuples can be keys!</span>
+    <span class="keyword">True</span>: <span class="string">"boolean key"</span>
+}
+
+<span class="comment"># Invalid keys (mutable types)</span>
+<span class="comment"># bad_dict = {[1, 2]: "list key"}  # TypeError!</span>
+<span class="comment"># bad_dict = {{1, 2}: "set key"}   # TypeError!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📚 Dictionary Methods</h3>
+            <ul>
+              <li><strong>Access:</strong> [], get(), setdefault()</li>
+              <li><strong>Modify:</strong> update(), pop(), popitem()</li>
+              <li><strong>View:</strong> keys(), values(), items()</li>
+              <li><strong>Check:</strong> in, len()</li>
+              <li><strong>Copy:</strong> copy(), dict()</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Perfect For</h3>
+            <ul>
+              <li>JSON-like data structures</li>
+              <li>Configurations and settings</li>
+              <li>Caching and memoization</li>
+              <li>Counting and grouping</li>
+              <li>Fast lookups by key</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Best Practice!</strong>
+          Use meaningful key names. <code>user["email"]</code> is much clearer than <code>user["e"]</code>. Think of dictionaries as mini-databases for your data!
+        </div>
+      </section>
+
+      <!-- Chapter 7: Type Conversion -->
+      <section class="chapter">
+        <h2>Chapter 7: Type Conversion - Transforming Data</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I keep getting errors when I try to combine different data types. How do I convert between them?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Type conversion (or "casting") is essential in Python! You can convert between types using built-in functions. Let me show you the common conversions:
+              
+              <div class="code"><pre><span class="comment"># String to number conversions</span>
+text_num = <span class="string">"42"</span>
+integer = <span class="function">int</span>(text_num)      <span class="comment"># 42</span>
+<span class="function">print</span>(<span class="function">type</span>(integer))        <span class="comment"># &lt;class 'int'&gt;</span>
+
+text_float = <span class="string">"3.14"</span>
+decimal = <span class="function">float</span>(text_float)  <span class="comment"># 3.14</span>
+
+<span class="comment"># Be careful with int() on floats in strings!</span>
+<span class="comment"># int("3.14")  # ValueError! Can't convert directly</span>
+<span class="comment"># Do this instead:</span>
+result = <span class="function">int</span>(<span class="function">float</span>(<span class="string">"3.14"</span>))  <span class="comment"># 3 (truncates decimal)</span>
+
+<span class="comment"># Number to string</span>
+num = <span class="number">123</span>
+text = <span class="function">str</span>(num)            <span class="comment"># "123"</span>
+<span class="function">print</span>(<span class="string">f"The number is {text}"</span>)
+
+<span class="comment"># Boolean conversions</span>
+<span class="function">print</span>(<span class="function">bool</span>(<span class="number">1</span>))          <span class="comment"># True (any non-zero)</span>
+<span class="function">print</span>(<span class="function">bool</span>(<span class="number">0</span>))          <span class="comment"># False</span>
+<span class="function">print</span>(<span class="function">bool</span>(<span class="string">""</span>))         <span class="comment"># False (empty string)</span>
+<span class="function">print</span>(<span class="function">bool</span>(<span class="string">"Hello"</span>))   <span class="comment"># True (non-empty)</span>
+<span class="function">print</span>(<span class="function">bool</span>([]))         <span class="comment"># False (empty list)</span>
+<span class="function">print</span>(<span class="function">bool</span>([<span class="number">1</span>]))        <span class="comment"># True (non-empty)</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about converting between collections like lists, tuples, and sets?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Collection conversions are super useful! You can easily transform between different collection types:
+              
+              <div class="code"><pre><span class="comment"># List conversions</span>
+text = <span class="string">"hello"</span>
+char_list = <span class="function">list</span>(text)      <span class="comment"># ['h', 'e', 'l', 'l', 'o']</span>
+
+numbers = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)          <span class="comment"># tuple</span>
+num_list = <span class="function">list</span>(numbers)    <span class="comment"># [1, 2, 3]</span>
+
+<span class="comment"># Tuple conversions</span>
+items = [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>]
+items_tuple = <span class="function">tuple</span>(items)  <span class="comment"># ('a', 'b', 'c')</span>
+
+<span class="comment"># Set conversions (removes duplicates!)</span>
+duplicates = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>]
+unique = <span class="function">set</span>(duplicates)     <span class="comment"># {1, 2, 3}</span>
+back_to_list = <span class="function">list</span>(unique) <span class="comment"># [1, 2, 3]</span>
+
+<span class="comment"># String from list</span>
+words = [<span class="string">"Hello"</span>, <span class="string">"World"</span>]
+sentence = <span class="string">" "</span>.join(words)   <span class="comment"># "Hello World"</span>
+
+<span class="comment"># Dictionary from pairs</span>
+pairs = [(<span class="string">"name"</span>, <span class="string">"Alex"</span>), (<span class="string">"age"</span>, <span class="number">25</span>)]
+person = <span class="function">dict</span>(pairs)        <span class="comment"># {"name": "Alex", "age": 25}</span>
+
+<span class="comment"># Zip to create pairs</span>
+keys = [<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>]
+values = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+paired = <span class="function">dict</span>(<span class="function">zip</span>(keys, values))  <span class="comment"># {"a": 1, "b": 2, "c": 3}</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              When I get input from users, it's always a string. How do I safely convert it?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Excellent point! User input needs careful handling. Always validate and use try-except for safety:
+              
+              <div class="code"><pre><span class="comment"># Safe conversion with error handling</span>
+user_input = <span class="function">input</span>(<span class="string">"Enter your age: "</span>)
+
+<span class="keyword">try</span>:
+    age = <span class="function">int</span>(user_input)
+    <span class="function">print</span>(<span class="string">f"Next year you'll be {age + 1}"</span>)
+<span class="keyword">except</span> ValueError:
+    <span class="function">print</span>(<span class="string">"Please enter a valid number!"</span>)
+
+<span class="comment"># Function for safe conversion</span>
+<span class="keyword">def</span> <span class="function">safe_int</span>(text, default=<span class="number">0</span>):
+    <span class="keyword">try</span>:
+        <span class="keyword">return</span> <span class="function">int</span>(text)
+    <span class="keyword">except</span> (ValueError, TypeError):
+        <span class="keyword">return</span> default
+
+<span class="comment"># Using the safe function</span>
+value = safe_int(<span class="string">"abc"</span>, default=<span class="operator">-</span><span class="number">1</span>)
+<span class="function">print</span>(value)  <span class="comment"># -1</span>
+
+<span class="comment"># Checking before converting</span>
+text = <span class="string">"123"</span>
+<span class="keyword">if</span> text.isdigit():
+    num = <span class="function">int</span>(text)
+    <span class="function">print</span>(<span class="string">f"Converted: {num}"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"Not a valid number"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔄 Common Conversions</h3>
+            <ul>
+              <li><strong>To string:</strong> str(anything)</li>
+              <li><strong>To int:</strong> int(string/float)</li>
+              <li><strong>To float:</strong> float(string/int)</li>
+              <li><strong>To list:</strong> list(iterable)</li>
+              <li><strong>To tuple:</strong> tuple(iterable)</li>
+              <li><strong>To set:</strong> set(iterable)</li>
+              <li><strong>To dict:</strong> dict(pairs)</li>
+              <li><strong>To bool:</strong> bool(value)</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>⚠️ Conversion Gotchas</h3>
+            <ul>
+              <li>int("3.14") fails - use int(float("3.14"))</li>
+              <li>set() removes duplicates and order</li>
+              <li>Empty collections are False in bool()</li>
+              <li>str() on list gives "[1, 2, 3]" not "123"</li>
+              <li>Always handle user input errors</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Golden Rule!</strong>
+          When converting user input or external data, always use try-except or validate first. It's better to handle errors gracefully than crash your program!
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-7 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 7 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

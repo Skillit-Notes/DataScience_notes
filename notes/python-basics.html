@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Basics - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    /* Fix inline code visibility inside dialogue */
+.dialogue code {
+  background: var(--code-bg);
+  color: var(--code-ink);   /* ensures text is visible */
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9em;
+}
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: 1fr 56px;
+      direction: rtl;
+    }
+    
+    .conversation:nth-child(even) > * { direction: ltr; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 16.66%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+        direction: ltr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+  </style>
+
+<!-- ===== Alignment Fix Override ===== -->
+<style id="alignment-fix-override">
+  /* Keep a consistent two-column grid and swap order on even rows
+     WITHOUT using direction: rtl (which was causing misalignment). */
+  .conversation {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    grid-template-areas: "avatar dialog";
+    align-items: start;
+  }
+  .conversation .avatar { grid-area: avatar; }
+  .conversation .dialogue { grid-area: dialog; width: 100%; }
+
+  /* Even rows: put dialogue first, avatar second, but keep LTR layout */
+  .chapter .conversation:nth-of-type(even) {
+    grid-template-columns: 1fr 56px;
+    grid-template-areas: "dialog avatar";
+  }
+
+  /* Remove the previous direction hacks if present */
+  .chapter .conversation:nth-of-type(even) { direction: ltr !important; }
+  .chapter .conversation:nth-of-type(even) > * { direction: ltr !important; }
+
+  /* Make avatars and cards align cleanly on the top-edge */
+  .avatar { align-self: start; }
+  .dialogue { align-self: start; }
+
+  /* Prevent hover lift from shifting vertical flow on tight stacks */
+  .dialogue:hover { transform: translateY(-1px); }
+
+  /* Tighten grid gap just a touch for neat alignment on wide screens */
+  .conversation { gap: 0.9rem; }
+
+  /* Ensure feature cards align consistently in grid */
+  .features { align-items: stretch; }
+  .feature-card { height: 100%; }
+</style>
+
+
+<!-- ===== Conversation Alignment Fix (grid areas, no RTL) ===== -->
+<style id="conversation-alignment-fix">
+  .conversation {
+    display: grid !important;
+    grid-template-columns: 56px minmax(0, 1fr) !important;
+    gap: 1rem !important;
+    align-items: start !important;
+    direction: ltr !important;
+  }
+  .conversation > .avatar   { grid-column: 1 !important; }
+  .conversation > .dialogue { grid-column: 2 !important; width: 100% !important; }
+
+  /* Even rows: dialogue on left, avatar on right */
+  .chapter .conversation:nth-of-type(even) {
+    grid-template-columns: minmax(0, 1fr) 56px !important;
+  }
+  .chapter .conversation:nth-of-type(even) > .dialogue { grid-column: 1 !important; }
+  .chapter .conversation:nth-of-type(even) > .avatar   { grid-column: 2 !important; }
+
+  /* Remove any inherited RTL or width constraints */
+  .chapter .conversation:nth-of-type(even) { direction: ltr !important; }
+  .chapter .conversation:nth-of-type(even) > * { direction: ltr !important; }
+  .dialogue { max-width: none !important; }
+  .dialogue-text { white-space: normal !important; }
+</style>
+
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🐍 Python Basics Adventure</h1>
+        <p class="book-sub">Join Alex and Sam on an exciting journey through Python programming!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">What is Python?</button>
+        <button class="tab" onclick="showChapter(1)">Getting Started</button>
+        <button class="tab" onclick="showChapter(2)">Comments</button>
+        <button class="tab" onclick="showChapter(3)">Variables</button>
+        <button class="tab" onclick="showChapter(4)">Input/Output</button>
+        <button class="tab" onclick="showChapter(5)">Operators</button>
+      </nav>
+
+      <!-- Chapter 1: What is Python? -->
+      <section class="chapter active">
+        <h2>Chapter 1: What is Python? Why use it?</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Hey Sam! I keep hearing about Python everywhere. What exactly is Python, and why is everyone so excited about it?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              Great question, Alex! Python is like a friendly language that helps us talk to computers. Imagine if you could tell your computer what to do in almost plain English - that's Python!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That sounds cool! But why should I choose Python over other programming languages?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me show you why Python is amazing! First, it's super easy to read and write:
+              
+              <div class="code"><pre><span class="comment"># In Python, to print something:</span>
+<span class="function">print</span>(<span class="string">"Hello, World!"</span>)
+
+<span class="comment"># In some other languages, you might need:</span>
+<span class="comment"># public static void main(String[] args) {</span>
+<span class="comment">#     System.out.println("Hello, World!");</span>
+<span class="comment"># }</span></pre></div>
+              
+              See how simple Python is? It's like writing in English!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Why Choose Python?</h3>
+            <ul>
+              <li>Easy to learn and read</li>
+              <li>Huge community support</li>
+              <li>Tons of libraries</li>
+              <li>Great for beginners</li>
+              <li>High-paying jobs</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🚀 What Can You Build?</h3>
+            <ul>
+              <li>🌐 Websites (Instagram, YouTube)</li>
+              <li>🤖 AI & Machine Learning</li>
+              <li>📊 Data Analysis</li>
+              <li>🎮 Games</li>
+              <li>🔧 Automation Tools</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Fun Fact!</strong>
+          Python is named after the comedy group "Monty Python," not the snake! The creator wanted programming to be fun!
+        </div>
+      
+<!-- Enrichment: Chapter 1 (beginner story + facts) -->
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      Okay, so Python looks friendly. But who actually uses it in real life?
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      Tons of people! Students use it to learn coding, data scientists explore data with it, web developers build sites,
+      scientists run experiments, and everyday folks automate boring tasks (like renaming files or sending reminders).
+      Python is <strong>cross‑platform</strong> (Windows, Mac, Linux) and <strong>interpreted</strong> — which means
+      you can run your code directly without a separate “build” step.
+    </div>
+  </div>
+</div>
+
+<div class="features">
+  <div class="feature-card">
+    <h3>👩‍🏫 Who Uses Python?</h3>
+    <ul>
+      <li>Students & teachers — easy to learn, perfect for beginners</li>
+      <li>Data analysts & scientists — explore data, charts, AI/ML</li>
+      <li>Web developers — backends, APIs, websites</li>
+      <li>Engineers & researchers — simulations, automation, scripts</li>
+      <li>Anyone — to automate repetitive tasks</li>
+    </ul>
+  </div>
+  <div class="feature-card">
+    <h3>🧠 Key Ideas (Plain English)</h3>
+    <ul>
+      <li><strong>Interpreted:</strong> Run your file directly with <code>python myfile.py</code></li>
+      <li><strong>Portable:</strong> Same code works on Windows/Mac/Linux</li>
+      <li><strong>Readable:</strong> Code looks like clear, simple steps</li>
+    </ul>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Mindset!</strong>
+  You don’t have to memorize everything. Learn one small idea, try it, then build on it.
+</div>
+
+</section>
+
+      <!-- Chapter 2: Getting Started -->
+      <section class="chapter">
+        <h2>Chapter 2: Getting Started & First Program</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I'm excited to start! How do I begin writing Python code?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              It's super easy! First, install Python from python.org. You can write Python in many ways:
+              <br><br>
+              1. <strong>Python Shell</strong> - Type python in your terminal<br>
+              2. <strong>Text Editor</strong> - Save files with .py extension<br>
+              3. <strong>IDEs</strong> - Like PyCharm or VS Code<br>
+              4. <strong>Online</strong> - Websites like repl.it<br><br>
+              Let's write our first program!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Yes! What should we write?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let's start with tradition but make it more fun:
+              
+              <div class="code"><pre><span class="comment"># My first Python program!</span>
+<span class="function">print</span>(<span class="string">"Hello, World!"</span>)
+<span class="function">print</span>(<span class="string">"I'm learning Python!"</span>)
+<span class="function">print</span>(<span class="string">"This is awesome! 🎉"</span>)
+
+<span class="comment"># Let's do some math</span>
+<span class="function">print</span>(<span class="number">5</span> <span class="operator">+</span> <span class="number">3</span>)
+<span class="function">print</span>(<span class="string">"5 + 3 ="</span>, <span class="number">5</span> <span class="operator">+</span> <span class="number">3</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's it? Just type and run? No complicated setup?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! That's the beauty of Python. Save this in a file called "hello.py" and run it with: <code>python hello.py</code>
+
+              <br><br>
+              Python reads your code from top to bottom, line by line, just like reading a book!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          Always save your Python files with the .py extension. This tells your computer it's a Python program!
+        </div>
+      
+<!-- Enrichment: Chapter 2 (install, run, editors, common errors) -->
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      How do I install it and actually run a file from my computer?
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      Go to <em>python.org</em> and install the latest Python 3. After installing, open your terminal and check:
+      <div class="code"><pre>python --version
+# On some Macs use:
+python3 --version</pre></div>
+      To run your file:
+      <div class="code"><pre>python hello.py
+# or on some Macs:
+python3 hello.py</pre></div>
+      You can edit code with any text editor. For beginners, try <strong>IDLE</strong> (comes with Python) or
+      <strong>VS Code</strong> (free, popular). Save files with the <code>.py</code> extension.
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      What if nothing happens or I see an error?
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      It’s normal! Start by printing something to check that your file is running:
+      <div class="code"><pre>print("File is running!")</pre></div>
+      If the terminal says “command not found,” it means Python isn’t on your PATH yet.
+      Re-run the installer and choose “Add Python to PATH,” or search for “Add to PATH” instructions for your OS.
+    </div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Beginner Tip!</strong>
+  When stuck, add temporary <code>print()</code> lines to see what your program is doing. Remove them later.
+</div>
+
+</section>
+
+      <!-- Chapter 3: Comments -->
+      <section class="chapter">
+        <h2>Chapter 3: Comments - Notes in Your Code</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I saw those lines starting with # in your code. What are those?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Excellent observation! Those are called comments. They're like sticky notes in your code - Python completely ignores them, but they help humans understand what's happening!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Why would I want Python to ignore something I write?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! Comments are super useful for:
+              <br><br>
+              📝 Explaining what your code does<br>
+              🤔 Leaving reminders for yourself<br>
+              👥 Helping others understand your code<br>
+              🐛 Temporarily disabling code while debugging<br><br>
+              
+              Let me show you the types of comments:
+              
+              <div class="code"><pre><span class="comment"># This is a single-line comment</span>
+<span class="comment"># Use it for short explanations</span>
+
+name = <span class="string">"Alex"</span>  <span class="comment"># You can also put comments at the end of lines</span>
+
+<span class="string">"""
+This is a multi-line comment!
+You can write multiple lines here.
+Perfect for longer explanations,
+documentation, or temporarily
+disabling blocks of code.
+"""</span>
+
+<span class="string">'''
+You can also use single quotes
+for multi-line comments.
+Both work the same way!
+'''</span>
+
+<span class="comment"># Example of using comments effectively:</span>
+<span class="comment"># Calculate the area of a circle</span>
+radius = <span class="number">5</span>
+pi = <span class="number">3.14159</span>
+area = pi <span class="operator">*</span> radius <span class="operator">**</span> <span class="number">2</span>  <span class="comment"># Formula: π × r²</span>
+<span class="function">print</span>(<span class="string">"Area:"</span>, area)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Best Practice!</strong>
+          Write comments that explain WHY you're doing something, not just WHAT you're doing. The code shows what, comments explain why!
+        </div>
+      
+<!-- Enrichment: Chapter 3 (docstrings and why) -->
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      Are multi‑line comments special? I saw triple quotes used.
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      Triple quotes can be used two ways. As plain multi‑line strings (often used like comments), and as
+      <strong>docstrings</strong> — official descriptions placed right under a function or class to explain what it does.
+      Tools can read docstrings to build documentation.
+      <div class="code"><pre><span class="comment"># A function with a docstring</span>
+def greet(name):
+    """Return a friendly greeting for the given name."""
+    return f"Hello, {name}!"
+print(greet("Alex"))</pre></div>
+      Use comments to explain <em>why</em> something is done; the code already shows <em>what</em> is done.
+    </div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Clarity First!</strong>
+  Write comments like you’re helping your future self. Short, clear, and helpful.
+</div>
+
+</section>
+
+      <!-- Chapter 4: Variables -->
+      <section class="chapter">
+        <h2>Chapter 4: Variables, Constants & Literals</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, what are variables? I keep seeing words followed by = signs in code.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Variables are like labeled boxes where you store information! Imagine you have a box labeled "age" and you put the number 15 in it. Later, you can look at what's in the "age" box or change it!
+              
+              <div class="code"><pre><span class="comment"># Creating variables (putting things in boxes)</span>
+age = <span class="number">15</span>
+name = <span class="string">"Alex"</span>
+height = <span class="number">5.6</span>
+is_student = <span class="keyword">True</span>
+
+<span class="comment"># Using variables</span>
+<span class="function">print</span>(<span class="string">"Name:"</span>, name)
+<span class="function">print</span>(<span class="string">"Age:"</span>, age)
+
+<span class="comment"># Changing variables (putting new things in the box)</span>
+age = <span class="number">16</span>  <span class="comment"># Birthday happened!</span>
+<span class="function">print</span>(<span class="string">"New age:"</span>, age)
+
+<span class="comment"># Variables can store results of calculations</span>
+next_year_age = age <span class="operator">+</span> <span class="number">1</span>
+<span class="function">print</span>(<span class="string">"Next year I'll be:"</span>, next_year_age)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! What about constants and literals?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Good memory! Let me explain:
+              <br><br>
+              <strong>Literals</strong> are the actual values you write in your code:
+              
+              <div class="code"><pre><span class="comment"># These are all literals:</span>
+<span class="number">42</span>              <span class="comment"># Integer literal</span>
+<span class="number">3.14</span>            <span class="comment"># Float literal</span>
+<span class="string">"Hello"</span>         <span class="comment"># String literal</span>
+<span class="keyword">True</span>            <span class="comment"># Boolean literal</span>
+[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]       <span class="comment"># List literal</span></pre></div>
+              
+              <strong>Constants</strong> are variables that shouldn't change. Python doesn't enforce this, but we use UPPERCASE to signal "don't change this!":
+              
+              <div class="code"><pre><span class="comment"># Constants (use UPPERCASE as a convention)</span>
+PI = <span class="number">3.14159</span>
+GRAVITY = <span class="number">9.8</span>
+MAX_STUDENTS = <span class="number">30</span>
+SCHOOL_NAME = <span class="string">"Python Academy"</span>
+
+<span class="comment"># Use them in calculations</span>
+circle_area = PI <span class="operator">*</span> radius <span class="operator">**</span> <span class="number">2</span>
+<span class="function">print</span>(<span class="string">f"Welcome to {SCHOOL_NAME}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Naming Rules!</strong>
+          Variable names must start with a letter or underscore, can contain letters, numbers, and underscores, and are case-sensitive (age and Age are different variables)!
+        </div>
+      
+<!-- Enrichment: Chapter 4 (types, type(), naming) -->
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      What kinds of things can variables store?
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      Lots! Numbers, text, True/False, lists of things, and even dictionaries (like labeled folders):
+      <div class="code"><pre>age = 15                 <span class="comment"># int (integer)</span>
+price = 3.99             <span class="comment"># float (decimal)</span>
+name = "Alex"            <span class="comment"># str (string)</span>
+is_student = True        <span class="comment"># bool (boolean)</span>
+grades = [90, 85, 92]    <span class="comment"># list</span>
+student = {"name": "Alex", "age": 15}  <span class="comment"># dict (dictionary)</span>
+
+print(type(student))</pre></div>
+      Python decides the type for you (this is called <strong>dynamic typing</strong>). Rename variables clearly —
+      <code>user_height_cm</code> is better than <code>h</code>.
+    </div>
+  </div>
+</div>
+
+<div class="features">
+  <div class="feature-card">
+    <h3>✍️ Naming Rules</h3>
+    <ul>
+      <li>Start with a letter or underscore</li>
+      <li>Use letters, numbers, underscores only</li>
+      <li>Case‑sensitive: <code>age</code> and <code>Age</code> are different</li>
+      <li>Use <code>UPPERCASE</code> names to signal constants (by convention)</li>
+    </ul>
+  </div>
+  <div class="feature-card">
+    <h3>🧩 Small Practice</h3>
+    <ul>
+      <li>Create <code>first_name</code> and <code>last_name</code>, then print <code>f"{first_name} {last_name}"</code></li>
+      <li>Make a <code>profile</code> dict with <code>name</code>, <code>age</code>, <code>city</code></li>
+    </ul>
+  </div>
+</div>
+
+</section>
+
+      <!-- Chapter 5: Input & Output -->
+      <section class="chapter">
+        <h2>Chapter 5: Input & Output - Talking with Users</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              We've been using print() a lot. Is that the only way to show output?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Print() is our main way to display output, but it's super flexible! And even better, we can also GET input from users! Let me show you:
+              
+              <div class="code"><pre><span class="comment"># Different ways to use print()</span>
+<span class="function">print</span>(<span class="string">"Simple text"</span>)
+<span class="function">print</span>(<span class="string">"Multiple"</span>, <span class="string">"items"</span>, <span class="string">"separated"</span>)
+<span class="function">print</span>(<span class="string">"Sum:"</span>, <span class="number">5</span> <span class="operator">+</span> <span class="number">3</span>)
+
+<span class="comment"># Fancy formatting</span>
+name = <span class="string">"Alex"</span>
+age = <span class="number">15</span>
+<span class="function">print</span>(<span class="string">f"Hello, {name}! You are {age} years old."</span>)
+
+<span class="comment"># Print without newline</span>
+<span class="function">print</span>(<span class="string">"Loading"</span>, end=<span class="string">""</span>)
+<span class="function">print</span>(<span class="string">"..."</span>)  <span class="comment"># Appears on same line!</span>
+
+<span class="comment"># Custom separator</span>
+<span class="function">print</span>(<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, sep=<span class="string">"-"</span>)  <span class="comment"># Output: A-B-C</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's cool! But how do we get information FROM the user?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where input() comes in! It's like print() in reverse - it waits for the user to type something:
+              
+              <div class="code"><pre><span class="comment"># Getting input from user</span>
+name = <span class="function">input</span>(<span class="string">"What's your name? "</span>)
+<span class="function">print</span>(<span class="string">f"Nice to meet you, {name}!"</span>)
+
+<span class="comment"># input() always returns a string!</span>
+age_text = <span class="function">input</span>(<span class="string">"How old are you? "</span>)
+age = <span class="function">int</span>(age_text)  <span class="comment"># Convert to number</span>
+<span class="function">print</span>(<span class="string">f"Next year you'll be {age + 1}"</span>)
+
+<span class="comment"># Shorter way:</span>
+height = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Your height in meters: "</span>))
+<span class="function">print</span>(<span class="string">f"That's {height * 100} centimeters!"</span>)
+
+<span class="comment"># A complete interactive program:</span>
+<span class="function">print</span>(<span class="string">"🎮 Welcome to the Calculator!"</span>)
+num1 = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Enter first number: "</span>))
+num2 = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Enter second number: "</span>))
+result = num1 <span class="operator">+</span> num2
+<span class="function">print</span>(<span class="string">f"{num1} + {num2} = {result}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Remember!</strong>
+          input() ALWAYS returns text (string), even if the user types numbers. Use int() or float() to convert to numbers for math!
+        </div>
+      
+<!-- Enrichment: Chapter 5 (casting, try/except) -->
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      What if a user types something that’s not a number?
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      Great catch! Convert carefully and handle mistakes with <strong>try/except</strong>:
+      <div class="code"><pre>age_text = input("How old are you? ")
+try:
+    age = int(age_text.strip())
+    print(f"Next year you’ll be {age + 1}")
+except ValueError:
+    print("Please type a whole number like 12 or 16.")</pre></div>
+      Use <code>.strip()</code> to remove extra spaces. For decimals, use <code>float()</code>.
+    </div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Safety Tip!</strong>
+  Don’t print secrets or passwords to the screen. Treat user inputs with care.
+</div>
+
+</section>
+
+      <!-- Chapter 6: Operators -->
+      <section class="chapter">
+        <h2>Chapter 6: Operators - The Tools of Programming</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I've seen symbols like +, -, ==, and others in code. What are all these?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Those are operators - the action heroes of programming! They help us do math, make comparisons, and make decisions. Let me show you the different types:
+              
+              <div class="code"><pre><span class="comment"># 1. ARITHMETIC OPERATORS (Math!)</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">+</span> <span class="number">3</span>)   <span class="comment"># Addition: 13</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">-</span> <span class="number">3</span>)   <span class="comment"># Subtraction: 7</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">*</span> <span class="number">3</span>)   <span class="comment"># Multiplication: 30</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">/</span> <span class="number">3</span>)   <span class="comment"># Division: 3.333...</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">//</span> <span class="number">3</span>)  <span class="comment"># Floor division: 3</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">%</span> <span class="number">3</span>)   <span class="comment"># Modulo (remainder): 1</span>
+<span class="function">print</span>(<span class="number">10</span> <span class="operator">**</span> <span class="number">3</span>)  <span class="comment"># Power: 1000</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I get the math ones! What about the others?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let's explore all the operator families:
+              
+              <div class="code"><pre><span class="comment"># 2. ASSIGNMENT OPERATORS (Storing values)</span>
+x = <span class="number">10</span>        <span class="comment"># Basic assignment</span>
+x <span class="operator">+=</span> <span class="number">5</span>       <span class="comment"># Same as x = x + 5 (now 15)</span>
+x <span class="operator">-=</span> <span class="number">3</span>       <span class="comment"># Same as x = x - 3 (now 12)</span>
+x <span class="operator">*=</span> <span class="number">2</span>       <span class="comment"># Same as x = x * 2 (now 24)</span>
+x <span class="operator">/=</span> <span class="number">4</span>       <span class="comment"># Same as x = x / 4 (now 6.0)</span>
+
+<span class="comment"># 3. COMPARISON OPERATORS (Making comparisons)</span>
+<span class="function">print</span>(<span class="number">5</span> <span class="operator">==</span> <span class="number">5</span>)   <span class="comment"># Equal to: True</span>
+<span class="function">print</span>(<span class="number">5</span> <span class="operator">!=</span> <span class="number">3</span>)   <span class="comment"># Not equal: True</span>
+<span class="function">print</span>(<span class="number">5</span> <span class="operator">></span> <span class="number">3</span>)    <span class="comment"># Greater than: True</span>
+<span class="function">print</span>(<span class="number">5</span> <span class="operator"><</span> <span class="number">3</span>)    <span class="comment"># Less than: False</span>
+<span class="function">print</span>(<span class="number">5</span> <span class="operator">>=</span> <span class="number">5</span>)   <span class="comment"># Greater or equal: True</span>
+<span class="function">print</span>(<span class="number">3</span> <span class="operator"><=</span> <span class="number">5</span>)   <span class="comment"># Less or equal: True</span>
+
+<span class="comment"># 4. LOGICAL OPERATORS (Combining conditions)</span>
+age = <span class="number">15</span>
+has_permission = <span class="keyword">True</span>
+<span class="function">print</span>(age <span class="operator">></span> <span class="number">13</span> <span class="keyword">and</span> has_permission)  <span class="comment"># Both must be true</span>
+<span class="function">print</span>(age <span class="operator">></span> <span class="number">18</span> <span class="keyword">or</span> has_permission)   <span class="comment"># At least one true</span>
+<span class="function">print</span>(<span class="keyword">not</span> (age <span class="operator">></span> <span class="number">18</span>))               <span class="comment"># Opposite</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Most Used Operators</h3>
+            <ul>
+              <li>Math: + - * / // % **</li>
+              <li>Compare: == != > < >= <=</li>
+              <li>Logic: and, or, not</li>
+              <li>Check: in, not in</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Special Operators</h3>
+            <ul>
+              <li>Identity: is, is not</li>
+              <li>Membership: in, not in</li>
+              <li>Bitwise: & | ^ ~ << >></li>
+              <li>(Advanced - learn later!)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Quick Reference!</strong>
+          Focus on arithmetic, comparison, and logical operators first. You'll use these 90% of the time. The others are for special situations!
+        </div>
+      
+<!-- Enrichment: Chapter 6 (precedence, strings, membership, identity) -->
+<div class="conversation">
+  <div class="avatar alex">👦</div>
+  <div class="dialogue">
+    <div class="character-name">Alex</div>
+    <div class="dialogue-text">
+      Is there an order for mixing different operators together?
+    </div>
+  </div>
+</div>
+
+<div class="conversation">
+  <div class="avatar sam">👧</div>
+  <div class="dialogue">
+    <div class="character-name">Sam</div>
+    <div class="dialogue-text">
+      Yes — it’s called <strong>operator precedence</strong> (like math rules). Use parentheses to make it clear:
+      <div class="code"><pre>print(2 + 3 * 4)      <span class="comment"># 14 (multiplication first)</span>
+print((2 + 3) * 4)    <span class="comment"># 20</span></pre></div>
+      Strings have operators too:
+      <div class="code"><pre>print("Hello " + "World")   <span class="comment"># concatenation</span>
+print("ha" * 3)              <span class="comment"># repeat</span>
+print("a" in "apple")        <span class="comment"># membership: True</span></pre></div>
+      And there’s <strong>identity</strong> vs equality:
+      <div class="code"><pre>a = [1,2]; b = [1,2]; c = a
+print(a == b)   <span class="comment"># True (same contents)</span>
+print(a is b)   <span class="comment"># False (different boxes)</span>
+print(a is c)   <span class="comment"># True (same box)</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Rule of Thumb!</strong>
+  When in doubt, add parentheses. Future‑you (and friends) will thank you.
+</div>
+
+</section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-6 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 6 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

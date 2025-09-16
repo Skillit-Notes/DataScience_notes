@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Control Flow - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: minmax(0, 1fr) 56px;
+    }
+    
+    .conversation:nth-child(even) > .dialogue { grid-column: 1; }
+    .conversation:nth-child(even) > .avatar   { grid-column: 2; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+      height: 100%;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 16.66%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🔀 Python Control Flow</h1>
+        <p class="book-sub">Master decision-making and loops with Alex and Sam!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">If Statements</button>
+        <button class="tab" onclick="showChapter(1)">Range Function</button>
+        <button class="tab" onclick="showChapter(2)">For Loops</button>
+        <button class="tab" onclick="showChapter(3)">While Loops</button>
+        <button class="tab" onclick="showChapter(4)">Break & Continue</button>
+        <button class="tab" onclick="showChapter(5)">Pass Statement</button>
+      </nav>
+
+      <!-- Chapter 1: If Statements -->
+      <section class="chapter active">
+        <h2>Chapter 1: If Statements - Making Decisions</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Sam, I've learned about variables and operators, but how do I make my programs smart? Like, how can Python make decisions?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              That's where <strong>if statements</strong> come in! They let your program choose different paths based on conditions. It's like asking "Is this true?" and then doing something only if the answer is yes!
+              
+              <div class="code"><pre><span class="comment"># Basic if statement</span>
+age = <span class="number">20</span>
+<span class="keyword">if</span> age >= <span class="number">18</span>:  <span class="comment"># If this condition is True...</span>
+    <span class="function">print</span>(<span class="string">"You are an adult!"</span>)  <span class="comment"># ...run this code</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! But what if I want to do something else when the condition is false?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's what <strong>else</strong> is for! It's like saying "if this is true, do this, otherwise do that":
+              
+              <div class="code"><pre><span class="comment"># if-else statement</span>
+temperature = <span class="number">12</span>
+<span class="keyword">if</span> temperature >= <span class="number">20</span>:
+    <span class="function">print</span>(<span class="string">"Warm day!"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"A bit chilly!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What if I have more than two options? Like grading with A, B, C, D, F?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect question! Use <strong>elif</strong> (else if) for multiple conditions:
+              
+              <div class="code"><pre><span class="comment"># if-elif-else for multiple conditions</span>
+score = <span class="number">78</span>
+<span class="keyword">if</span> score >= <span class="number">90</span>:
+    <span class="function">print</span>(<span class="string">"Grade: A"</span>)
+<span class="keyword">elif</span> score >= <span class="number">80</span>:
+    <span class="function">print</span>(<span class="string">"Grade: B"</span>)
+<span class="keyword">elif</span> score >= <span class="number">70</span>:
+    <span class="function">print</span>(<span class="string">"Grade: C"</span>)
+<span class="keyword">elif</span> score >= <span class="number">60</span>:
+    <span class="function">print</span>(<span class="string">"Grade: D"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"Grade: F"</span>)</pre></div>
+              
+              Python checks these conditions in order and stops at the first true one!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 If Statement Types</h3>
+            <ul>
+              <li><strong>if</strong> - Run code only when condition is true</li>
+              <li><strong>if-else</strong> - Choose between two options</li>
+              <li><strong>if-elif-else</strong> - Handle multiple conditions</li>
+              <li>Always check conditions in order, top to bottom</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔍 Common Conditions</h3>
+            <ul>
+              <li><code>age >= 18</code> - Compare numbers</li>
+              <li><code>name == "Alex"</code> - Check equality</li>
+              <li><code>score > 90 and grade == "A"</code> - Multiple conditions</li>
+              <li><code>weather == "sunny" or weather == "cloudy"</code> - Either condition</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Indentation Matters!</strong>
+          Python uses indentation (spaces) to know which code belongs inside the if block. Always use 4 spaces!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I combine conditions? Like checking if someone is both old enough AND has permission?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Use <strong>and</strong>, <strong>or</strong>, and <strong>not</strong> to combine conditions:
+              
+              <div class="code"><pre><span class="comment"># Combining conditions</span>
+age = <span class="number">16</span>
+has_permission = <span class="keyword">True</span>
+is_weekend = <span class="keyword">False</span>
+
+<span class="comment"># Both conditions must be true</span>
+<span class="keyword">if</span> age >= <span class="number">13</span> <span class="keyword">and</span> has_permission:
+    <span class="function">print</span>(<span class="string">"You can go to the movie!"</span>)
+
+<span class="comment"># At least one condition must be true</span>
+<span class="keyword">if</span> age >= <span class="number">18</span> <span class="keyword">or</span> has_permission:
+    <span class="function">print</span>(<span class="string">"You have freedom!"</span>)
+
+<span class="comment"># Opposite condition</span>
+<span class="keyword">if</span> <span class="keyword">not</span> is_weekend:
+    <span class="function">print</span>(<span class="string">"Time for school!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Quick Practice!</strong>
+          Try writing an if statement that checks if a number is positive, negative, or zero. Use elif for each case!
+        </div>
+      </section>
+
+      <!-- Chapter 2: Range Function -->
+      <section class="chapter">
+        <h2>Chapter 2: Range Function - Creating Number Sequences</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I want to repeat something multiple times, like printing "Hello" 5 times. Is there an easy way?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect timing! The <strong>range()</strong> function is exactly what you need. It creates sequences of numbers that are super useful for loops:
+              
+              <div class="code"><pre><span class="comment"># range(stop) - start at 0, go up to (but not including) stop</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">5</span>):  <span class="comment"># 0, 1, 2, 3, 4</span>
+    <span class="function">print</span>(<span class="string">"Hello number"</span>, i)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Why does it start at 0 and not include 5?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! It's a programming convention. <code>range(5)</code> gives you exactly 5 numbers: 0, 1, 2, 3, 4. This makes it perfect for counting! But range is much more flexible:
+              
+              <div class="code"><pre><span class="comment"># range(start, stop) - custom starting point</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">2</span>, <span class="number">7</span>):  <span class="comment"># 2, 3, 4, 5, 6</span>
+    <span class="function">print</span>(i, end=<span class="string">" "</span>)
+<span class="function">print</span>()  <span class="comment"># new line</span>
+
+<span class="comment"># range(start, stop, step) - custom increment</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">0</span>, <span class="number">10</span>, <span class="number">2</span>):  <span class="comment"># 0, 2, 4, 6, 8</span>
+    <span class="function">print</span>(i, end=<span class="string">" "</span>)
+<span class="function">print</span>()
+
+<span class="comment"># Even backwards!</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>, <span class="number">0</span>, <span class="number">-2</span>):  <span class="comment"># 10, 8, 6, 4, 2</span>
+    <span class="function">print</span>(i, end=<span class="string">" "</span>)
+<span class="function">print</span>()</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Cool! What about working with lists? Can range help there?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Use <code>range(len(list))</code> to get the index numbers:
+              
+              <div class="code"><pre><span class="comment"># Using range with lists</span>
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+
+<span class="comment"># Get index and value</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="function">len</span>(fruits)):
+    <span class="function">print</span>(<span class="string">f"Index {i}: {fruits[i]}"</span>)
+
+<span class="comment"># Convert range to a list to see the numbers</span>
+numbers = <span class="function">list</span>(<span class="function">range</span>(<span class="number">1</span>, <span class="number">11</span>))  <span class="comment"># [1, 2, 3, ..., 10]</span>
+<span class="function">print</span>(<span class="string">"Numbers 1-10:"</span>, numbers)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📊 Range Patterns</h3>
+            <ul>
+              <li><code>range(5)</code> → 0, 1, 2, 3, 4</li>
+              <li><code>range(2, 6)</code> → 2, 3, 4, 5</li>
+              <li><code>range(0, 10, 2)</code> → 0, 2, 4, 6, 8</li>
+              <li><code>range(5, 0, -1)</code> → 5, 4, 3, 2, 1</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Common Uses</h3>
+            <ul>
+              <li>Repeat something N times</li>
+              <li>Count through list indexes</li>
+              <li>Create number sequences</li>
+              <li>Countdown timers</li>
+              <li>Skip counting (2s, 5s, 10s)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Memory Efficient!</strong>
+          Range doesn't create all numbers at once - it generates them as needed. That's why range(1000000) doesn't use much memory!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I use range to create a multiplication table?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great idea! Here's how:
+              
+              <div class="code"><pre><span class="comment"># Multiplication table for 5</span>
+number = <span class="number">5</span>
+<span class="function">print</span>(<span class="string">f"Multiplication table for {number}:"</span>)
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">11</span>):
+    result = number <span class="operator">*</span> i
+    <span class="function">print</span>(<span class="string">f"{number} x {i} = {result}"</span>)</pre></div>
+              
+              Range makes it easy to control exactly which numbers you want to work with!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chapter 3: For Loops -->
+      <section class="chapter">
+        <h2>Chapter 3: For Loops - Iterating Through Collections</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I've seen you use "for" with range, but can it work with other things too?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! <strong>For loops</strong> work with any collection - lists, strings, tuples, even dictionaries! They're like saying "for each item in this collection, do something":
+              
+              <div class="code"><pre><span class="comment"># Loop through a list</span>
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+<span class="keyword">for</span> fruit <span class="keyword">in</span> fruits:
+    <span class="function">print</span>(<span class="string">f"I like {fruit}!"</span>)
+
+<span class="comment"># Loop through a string (character by character)</span>
+<span class="keyword">for</span> letter <span class="keyword">in</span> <span class="string">"Hello"</span>:
+    <span class="function">print</span>(letter)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's so much cleaner than writing everything out manually! What if I need both the item and its position?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect question! Use <strong>enumerate()</strong> - it gives you both the index and the value:
+              
+              <div class="code"><pre><span class="comment"># Get both index and value with enumerate()</span>
+colors = [<span class="string">"red"</span>, <span class="string">"green"</span>, <span class="string">"blue"</span>]
+<span class="keyword">for</span> index, color <span class="keyword">in</span> <span class="function">enumerate</span>(colors):
+    <span class="function">print</span>(<span class="string">f"Color {index}: {color}"</span>)
+
+<span class="comment"># You can even start counting from a different number</span>
+<span class="keyword">for</span> position, color <span class="keyword">in</span> <span class="function">enumerate</span>(colors, start=<span class="number">1</span>):
+    <span class="function">print</span>(<span class="string">f"Position {position}: {color}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I have loops inside loops?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! They're called <strong>nested loops</strong>. Super useful for working with grids, tables, or any 2D data:
+              
+              <div class="code"><pre><span class="comment"># Nested loops - create a coordinate grid</span>
+<span class="function">print</span>(<span class="string">"Coordinate grid:"</span>)
+<span class="keyword">for</span> row <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">4</span>):  <span class="comment"># rows 1, 2, 3</span>
+    <span class="keyword">for</span> col <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">4</span>):  <span class="comment"># cols 1, 2, 3</span>
+        <span class="function">print</span>(<span class="string">f"({row},{col})"</span>, end=<span class="string">" "</span>)
+    <span class="function">print</span>()  <span class="comment"># new line after each row</span>
+
+<span class="comment"># Real example: multiplication table</span>
+<span class="function">print</span>(<span class="string">"\nMultiplication table:"</span>)
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">4</span>):
+    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">4</span>):
+        <span class="function">print</span>(<span class="string">f"{i}x{j}={i*j}"</span>, end=<span class="string">"  "</span>)
+    <span class="function">print</span>()</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔄 For Loop Types</h3>
+            <ul>
+              <li><strong>Lists:</strong> <code>for item in my_list</code></li>
+              <li><strong>Strings:</strong> <code>for char in "hello"</code></li>
+              <li><strong>Range:</strong> <code>for i in range(5)</code></li>
+              <li><strong>Enumerate:</strong> <code>for i, item in enumerate(list)</code></li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Common Patterns</h3>
+            <ul>
+              <li>Process each item in a collection</li>
+              <li>Build new lists from existing ones</li>
+              <li>Count or sum values</li>
+              <li>Search for specific items</li>
+              <li>Create patterns or grids</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I loop through dictionaries too?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Definitely! Dictionaries have several looping options:
+              
+              <div class="code"><pre><span class="comment"># Dictionary looping</span>
+student = {<span class="string">"name"</span>: <span class="string">"Alex"</span>, <span class="string">"age"</span>: <span class="number">15</span>, <span class="string">"grade"</span>: <span class="string">"A"</span>}
+
+<span class="comment"># Loop through keys only</span>
+<span class="keyword">for</span> key <span class="keyword">in</span> student:
+    <span class="function">print</span>(<span class="string">f"Key: {key}"</span>)
+
+<span class="comment"># Loop through values only</span>
+<span class="keyword">for</span> value <span class="keyword">in</span> student.values():
+    <span class="function">print</span>(<span class="string">f"Value: {value}"</span>)
+
+<span class="comment"># Loop through both keys and values</span>
+<span class="keyword">for</span> key, value <span class="keyword">in</span> student.items():
+    <span class="function">print</span>(<span class="string">f"{key}: {value}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          For loops are generally faster and more readable than while loops when you know what you're iterating over. Use them whenever possible!
+        </div>
+      </section>
+
+      <!-- Chapter 4: While Loops -->
+      <section class="chapter">
+        <h2>Chapter 4: While Loops - Repeating Until Conditions Change</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, for loops are great when I know what I'm looping through. But what if I want to keep doing something until something else happens?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's exactly what <strong>while loops</strong> are for! They keep running as long as a condition stays true. It's like saying "while this is happening, keep doing that":
+              
+              <div class="code"><pre><span class="comment"># Basic while loop</span>
+count = <span class="number">1</span>
+<span class="keyword">while</span> count <= <span class="number">5</span>:  <span class="comment"># Keep going while count is 5 or less</span>
+    <span class="function">print</span>(<span class="string">f"Count is: {count}"</span>)
+    count += <span class="number">1</span>  <span class="comment"># IMPORTANT: update the condition!</span>
+
+<span class="function">print</span>(<span class="string">"Loop finished!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Why do you keep emphasizing updating the condition?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Because if you don't, you'll get an <strong>infinite loop</strong> - it'll run forever! The condition must eventually become false:
+              
+              <div class="code"><pre><span class="comment"># ❌ DANGER: Infinite loop (don't run this!)</span>
+<span class="comment"># count = 1</span>
+<span class="comment"># while count <= 5:</span>
+<span class="comment">#     print("This will run forever!")</span>
+<span class="comment">#     # Missing: count += 1</span>
+
+<span class="comment"># ✅ GOOD: Condition will eventually become false</span>
+password_tries = <span class="number">0</span>
+max_tries = <span class="number">3</span>
+correct_password = <span class="string">"secret123"</span>
+
+<span class="keyword">while</span> password_tries < max_tries:
+    user_input = <span class="function">input</span>(<span class="string">"Enter password: "</span>)  <span class="comment"># In real code</span>
+    <span class="comment"># For demo, let's simulate user input</span>
+    user_input = <span class="string">"wrong"</span> <span class="keyword">if</span> password_tries < <span class="number">2</span> <span class="keyword">else</span> <span class="string">"secret123"</span>
+    
+    <span class="keyword">if</span> user_input == correct_password:
+        <span class="function">print</span>(<span class="string">"Access granted!"</span>)
+        <span class="keyword">break</span>  <span class="comment"># Exit the loop early</span>
+    <span class="keyword">else</span>:
+        password_tries += <span class="number">1</span>  <span class="comment"># Update condition</span>
+        <span class="function">print</span>(<span class="string">f"Wrong password. {max_tries - password_tries} tries left."</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              When should I choose while over for?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Great question! Use while when:
+              <br><br>
+              • You don't know how many times to loop<br>
+              • You're waiting for something to change<br>
+              • You're validating user input<br>
+              • You're reading data until you reach the end<br><br>
+              
+              Here are some practical examples:
+              
+              <div class="code"><pre><span class="comment"># Example 1: Keep asking until valid input</span>
+age = <span class="number">-1</span>
+<span class="keyword">while</span> age < <span class="number">0</span> <span class="keyword">or</span> age > <span class="number">120</span>:
+    age = <span class="function">int</span>(<span class="function">input</span>(<span class="string">"Enter your age (0-120): "</span>))
+    <span class="keyword">if</span> age < <span class="number">0</span> <span class="keyword">or</span> age > <span class="number">120</span>:
+        <span class="function">print</span>(<span class="string">"Please enter a valid age!"</span>)
+
+<span class="comment"># Example 2: Game loop</span>
+playing = <span class="keyword">True</span>
+score = <span class="number">0</span>
+<span class="keyword">while</span> playing:
+    <span class="comment"># Game logic here</span>
+    score += <span class="number">10</span>
+    <span class="function">print</span>(<span class="string">f"Score: {score}"</span>)
+    
+    <span class="comment"># Exit condition</span>
+    <span class="keyword">if</span> score >= <span class="number">100</span>:
+        playing = <span class="keyword">False</span>
+        <span class="function">print</span>(<span class="string">"You won!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>⚖️ For vs While</h3>
+            <ul>
+              <li><strong>For:</strong> Known collection or count</li>
+              <li><strong>While:</strong> Unknown duration, wait for condition</li>
+              <li><strong>For:</strong> Usually safer (no infinite loops)</li>
+              <li><strong>While:</strong> More flexible, powerful</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 While Loop Uses</h3>
+            <ul>
+              <li>Input validation</li>
+              <li>Game loops</li>
+              <li>Menu systems</li>
+              <li>File processing</li>
+              <li>Waiting for events</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a simple menu system?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Sure! Here's a classic pattern:
+              
+              <div class="code"><pre><span class="comment"># Simple menu system</span>
+menu_running = <span class="keyword">True</span>
+
+<span class="keyword">while</span> menu_running:
+    <span class="function">print</span>(<span class="string">"\n=== CALCULATOR MENU ==="</span>)
+    <span class="function">print</span>(<span class="string">"1. Add numbers"</span>)
+    <span class="function">print</span>(<span class="string">"2. Multiply numbers"</span>)
+    <span class="function">print</span>(<span class="string">"3. Exit"</span>)
+    
+    choice = <span class="function">input</span>(<span class="string">"Choose an option: "</span>)
+    
+    <span class="keyword">if</span> choice == <span class="string">"1"</span>:
+        a = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"First number: "</span>))
+        b = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Second number: "</span>))
+        <span class="function">print</span>(<span class="string">f"Result: {a + b}"</span>)
+    <span class="keyword">elif</span> choice == <span class="string">"2"</span>:
+        a = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"First number: "</span>))
+        b = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"Second number: "</span>))
+        <span class="function">print</span>(<span class="string">f"Result: {a * b}"</span>)
+    <span class="keyword">elif</span> choice == <span class="string">"3"</span>:
+        menu_running = <span class="keyword">False</span>  <span class="comment"># Exit the loop</span>
+        <span class="function">print</span>(<span class="string">"Goodbye!"</span>)
+    <span class="keyword">else</span>:
+        <span class="function">print</span>(<span class="string">"Invalid choice. Please try again."</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Safety First!</strong>
+          Always make sure your while loop condition will eventually become false. Add print statements to debug infinite loops!
+        </div>
+      </section>
+
+      <!-- Chapter 5: Break and Continue -->
+      <section class="chapter">
+        <h2>Chapter 5: Break & Continue - Controlling Loop Flow</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, sometimes I want to exit a loop early or skip certain items. Is there a way to control loops better?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Python has two super useful keywords for this: <strong>break</strong> and <strong>continue</strong>. Think of them as special loop controls:
+              <br><br>
+              • <strong>break</strong> = "Stop the loop immediately!"<br>
+              • <strong>continue</strong> = "Skip the rest of this round, start the next one!"
+              
+              <div class="code"><pre><span class="comment"># break example: stop when we find what we're looking for</span>
+numbers = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">9</span>, <span class="number">11</span>, <span class="number">13</span>]
+target = <span class="number">9</span>
+
+<span class="keyword">for</span> num <span class="keyword">in</span> numbers:
+    <span class="keyword">if</span> num == target:
+        <span class="function">print</span>(<span class="string">f"Found {target}! Stopping search."</span>)
+        <span class="keyword">break</span>  <span class="comment"># Exit the loop immediately</span>
+    <span class="function">print</span>(<span class="string">f"Checked {num}"</span>)
+
+<span class="function">print</span>(<span class="string">"Search finished."</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So break stops everything. What about continue?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Continue skips the rest of the current iteration but keeps the loop going:
+              
+              <div class="code"><pre><span class="comment"># continue example: skip processing odd numbers</span>
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]
+
+<span class="function">print</span>(<span class="string">"Even numbers only:"</span>)
+<span class="keyword">for</span> num <span class="keyword">in</span> numbers:
+    <span class="keyword">if</span> num % <span class="number">2</span> != <span class="number">0</span>:  <span class="comment"># if the number is odd</span>
+        <span class="keyword">continue</span>  <span class="comment"># skip the rest, go to next iteration</span>
+    
+    <span class="comment"># This only runs for even numbers</span>
+    <span class="function">print</span>(<span class="string">f"Processing even number: {num}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I use these with while loops too?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! They work with any loop. Here's a practical example with while:
+              
+              <div class="code"><pre><span class="comment"># User input validation with break and continue</span>
+attempts = <span class="number">0</span>
+max_attempts = <span class="number">3</span>
+
+<span class="keyword">while</span> attempts < max_attempts:
+    attempts += <span class="number">1</span>
+    user_input = <span class="function">input</span>(<span class="string">f"Attempt {attempts}: Enter a positive number: "</span>)
+    
+    <span class="comment"># Check if input is numeric</span>
+    <span class="keyword">if</span> <span class="keyword">not</span> user_input.isdigit():
+        <span class="function">print</span>(<span class="string">"That's not a number! Try again."</span>)
+        <span class="keyword">continue</span>  <span class="comment"># Skip to next iteration</span>
+    
+    number = <span class="function">int</span>(user_input)
+    <span class="keyword">if</span> number <= <span class="number">0</span>:
+        <span class="function">print</span>(<span class="string">"Please enter a positive number."</span>)
+        <span class="keyword">continue</span>
+    
+    <span class="comment"># Success! Break out of loop</span>
+    <span class="function">print</span>(<span class="string">f"Great! You entered {number}"</span>)
+    <span class="keyword">break</span>
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"Too many failed attempts!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I use break and continue in nested loops?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes, but be careful! Break and continue only affect the innermost loop they're in:
+              
+              <div class="code"><pre><span class="comment"># Nested loops with break/continue</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">4</span>):  <span class="comment"># outer loop</span>
+    <span class="function">print</span>(<span class="string">f"Outer loop: {i}"</span>)
+    
+    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">6</span>):  <span class="comment"># inner loop</span>
+        <span class="keyword">if</span> j == <span class="number">3</span>:
+            <span class="function">print</span>(<span class="string">"  Skipping 3"</span>)
+            <span class="keyword">continue</span>  <span class="comment"># Only skips inner loop iteration</span>
+        
+        <span class="keyword">if</span> j == <span class="number">5</span>:
+            <span class="function">print</span>(<span class="string">"  Breaking inner loop at 5"</span>)
+            <span class="keyword">break</span>  <span class="comment"># Only breaks inner loop</span>
+        
+        <span class="function">print</span>(<span class="string">f"  Inner: {j}"</span>)
+    
+    <span class="function">print</span>(<span class="string">f"Finished inner loop for i={i}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎮 Break vs Continue</h3>
+            <ul>
+              <li><strong>break:</strong> Exits the loop completely</li>
+              <li><strong>continue:</strong> Skips to next iteration</li>
+              <li>Only affects the current (innermost) loop</li>
+              <li>Can be used in both for and while loops</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Common Use Cases</h3>
+            <ul>
+              <li><strong>break:</strong> Found what you're looking for</li>
+              <li><strong>break:</strong> Error condition occurred</li>
+              <li><strong>continue:</strong> Skip invalid data</li>
+              <li><strong>continue:</strong> Filter conditions</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can you show me a real-world example where these are useful?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Sure! Here's a grade processor that skips invalid entries and stops early if needed:
+              
+              <div class="code"><pre><span class="comment"># Grade processing with break and continue</span>
+grades = [<span class="string">"85"</span>, <span class="string">"invalid"</span>, <span class="string">"92"</span>, <span class="string">"78"</span>, <span class="string">"-5"</span>, <span class="string">"88"</span>, <span class="string">"quit"</span>, <span class="string">"95"</span>]
+total_score = <span class="number">0</span>
+valid_grades = <span class="number">0</span>
+
+<span class="keyword">for</span> grade_str <span class="keyword">in</span> grades:
+    <span class="comment"># Check for quit command</span>
+    <span class="keyword">if</span> grade_str.lower() == <span class="string">"quit"</span>:
+        <span class="function">print</span>(<span class="string">"Processing stopped by user."</span>)
+        <span class="keyword">break</span>  <span class="comment"># Stop processing entirely</span>
+    
+    <span class="comment"># Skip non-numeric grades</span>
+    <span class="keyword">if</span> <span class="keyword">not</span> grade_str.lstrip(<span class="string">'-'</span>).isdigit():
+        <span class="function">print</span>(<span class="string">f"Skipping invalid grade: {grade_str}"</span>)
+        <span class="keyword">continue</span>  <span class="comment"># Skip to next grade</span>
+    
+    grade = <span class="function">int</span>(grade_str)
+    
+    <span class="comment"># Skip impossible grades</span>
+    <span class="keyword">if</span> grade < <span class="number">0</span> <span class="keyword">or</span> grade > <span class="number">100</span>:
+        <span class="function">print</span>(<span class="string">f"Skipping impossible grade: {grade}"</span>)
+        <span class="keyword">continue</span>
+    
+    <span class="comment"># Valid grade - process it</span>
+    <span class="function">print</span>(<span class="string">f"Processing grade: {grade}"</span>)
+    total_score += grade
+    valid_grades += <span class="number">1</span>
+
+<span class="keyword">if</span> valid_grades > <span class="number">0</span>:
+    average = total_score / valid_grades
+    <span class="function">print</span>(<span class="string">f"Average grade: {average:.1f}"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"No valid grades found."</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Best Practice!</strong>
+          Use break and continue to make your code cleaner and more readable. They help avoid deeply nested if statements!
+        </div>
+      </section>
+
+      <!-- Chapter 6: Pass Statement -->
+      <section class="chapter">
+        <h2>Chapter 6: Pass Statement - The Placeholder</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, sometimes when I'm planning my code, I know I need an if statement or function, but I'm not ready to write the actual code yet. What do I put there?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's a perfect use case for the <strong>pass</strong> statement! It's Python's "do nothing" placeholder. Think of it as a sticky note that says "I'll fill this in later":
+              
+              <div class="code"><pre><span class="comment"># pass as a placeholder</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">5</span>):
+    <span class="keyword">if</span> i == <span class="number">2</span>:
+        <span class="keyword">pass</span>  <span class="comment"># TODO: handle special case for 2</span>
+    <span class="keyword">else</span>:
+        <span class="function">print</span>(<span class="string">f"Processing: {i}"</span>)
+
+<span class="comment"># Function placeholder</span>
+<span class="keyword">def</span> <span class="function">calculate_tax</span>(amount):
+    <span class="keyword">pass</span>  <span class="comment"># Will implement tax calculation later</span>
+
+<span class="comment"># Class placeholder (you'll learn about classes later)</span>
+<span class="keyword">class</span> <span class="function">GameEngine</span>:
+    <span class="keyword">pass</span>  <span class="comment"># Game engine implementation coming soon!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Why do I need pass? Can't I just leave it empty?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Python requires every block to have at least one statement. Empty blocks cause syntax errors:
+              
+              <div class="code"><pre><span class="comment"># ❌ This causes a syntax error!</span>
+<span class="comment"># if True:</span>
+<span class="comment">#     # Nothing here - Python gets confused!</span>
+
+<span class="comment"># ✅ This works perfectly</span>
+<span class="keyword">if</span> <span class="keyword">True</span>:
+    <span class="keyword">pass</span>  <span class="comment"># Python is happy!</span>
+
+<span class="comment"># Real example: testing different conditions</span>
+temperature = <span class="number">25</span>
+<span class="keyword">if</span> temperature > <span class="number">30</span>:
+    <span class="function">print</span>(<span class="string">"It's hot!"</span>)
+<span class="keyword">elif</span> temperature < <span class="number">10</span>:
+    <span class="function">print</span>(<span class="string">"It's cold!"</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">pass</span>  <span class="comment"># Temperature is fine, do nothing</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Are there other situations where pass is useful?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Definitely! Here are some common scenarios:
+              
+              <div class="code"><pre><span class="comment"># 1. Debugging - temporarily disable code</span>
+<span class="keyword">for</span> item <span class="keyword">in</span> shopping_list:
+    <span class="keyword">if</span> item == <span class="string">"expensive_item"</span>:
+        <span class="keyword">pass</span>  <span class="comment"># Skip processing for now</span>
+        <span class="comment"># buy_item(item)  # Commented out for testing</span>
+    <span class="keyword">else</span>:
+        buy_item(item)
+
+<span class="comment"># 2. Exception handling placeholder</span>
+<span class="keyword">try</span>:
+    risky_operation()
+<span class="keyword">except</span> ValueError:
+    <span class="keyword">pass</span>  <span class="comment"># Ignore ValueError for now</span>
+<span class="keyword">except</span> TypeError:
+    <span class="function">print</span>(<span class="string">"Type error occurred"</span>)
+
+<span class="comment"># 3. Building code structure first</span>
+<span class="keyword">def</span> <span class="function">main_game_loop</span>():
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        handle_input()
+        update_game_state()
+        render_screen()
+        
+<span class="keyword">def</span> <span class="function">handle_input</span>():
+    <span class="keyword">pass</span>  <span class="comment"># TODO: keyboard/mouse input</span>
+    
+<span class="keyword">def</span> <span class="function">update_game_state</span>():
+    <span class="keyword">pass</span>  <span class="comment"># TODO: game physics, AI</span>
+    
+<span class="keyword">def</span> <span class="function">render_screen</span>():
+    <span class="keyword">pass</span>  <span class="comment"># TODO: draw graphics</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So pass helps me plan and structure my code before filling in the details?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! It's like creating an outline for an essay. You can build the structure first, then fill in each section:
+              
+              <div class="code"><pre><span class="comment"># Planning a student grade system</span>
+<span class="keyword">def</span> <span class="function">process_student_grades</span>(student_data):
+    <span class="comment"># Step 1: Validate the data</span>
+    <span class="keyword">if</span> validate_data(student_data):
+        <span class="comment"># Step 2: Calculate grades</span>
+        grades = calculate_grades(student_data)
+        
+        <span class="comment"># Step 3: Generate report</span>
+        report = generate_report(grades)
+        
+        <span class="comment"># Step 4: Save results</span>
+        save_report(report)
+    <span class="keyword">else</span>:
+        <span class="function">print</span>(<span class="string">"Invalid student data"</span>)
+
+<span class="comment"># Now implement each function one by one</span>
+<span class="keyword">def</span> <span class="function">validate_data</span>(data):
+    <span class="keyword">pass</span>  <span class="comment"># TODO: check data format, completeness</span>
+
+<span class="keyword">def</span> <span class="function">calculate_grades</span>(data):
+    <span class="keyword">pass</span>  <span class="comment"># TODO: apply grading formula</span>
+
+<span class="keyword">def</span> <span class="function">generate_report</span>(grades):
+    <span class="keyword">pass</span>  <span class="comment"># TODO: format grades into report</span>
+
+<span class="keyword">def</span> <span class="function">save_report</span>(report):
+    <span class="keyword">pass</span>  <span class="comment"># TODO: write to file or database</span></pre></div>
+              
+              This approach helps you think through the logic before getting bogged down in implementation details!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📝 When to Use Pass</h3>
+            <ul>
+              <li>Planning code structure</li>
+              <li>Creating function/class stubs</li>
+              <li>Temporarily disabling code</li>
+              <li>Empty except blocks (temporarily)</li>
+              <li>Placeholder for "do nothing" logic</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Development Workflow</h3>
+            <ul>
+              <li>1. Plan your code structure</li>
+              <li>2. Create functions with pass</li>
+              <li>3. Test the overall flow</li>
+              <li>4. Implement each function</li>
+              <li>5. Replace pass statements</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          Always add TODO comments with your pass statements. They remind you what you planned to implement and help others understand your code!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This is really helpful! So pass is like a bookmark for future code?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect analogy! Pass is indeed a bookmark that says "continue here later." It keeps your code syntactically correct while you focus on the big picture. Just remember to go back and implement those bookmarked sections!
+              
+              <div class="code"><pre><span class="comment"># A complete example showing pass in action</span>
+<span class="function">print</span>(<span class="string">"Welcome to the Password Strength Checker!"</span>)
+
+<span class="keyword">def</span> <span class="function">check_password_strength</span>(password):
+    strength_score = <span class="number">0</span>
+    
+    <span class="keyword">if</span> <span class="function">len</span>(password) >= <span class="number">8</span>:
+        strength_score += <span class="number">1</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">pass</span>  <span class="comment"># TODO: suggest minimum length</span>
+    
+    <span class="keyword">if</span> any(c.isdigit() <span class="keyword">for</span> c <span class="keyword">in</span> password):
+        strength_score += <span class="number">1</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">pass</span>  <span class="comment"># TODO: suggest adding numbers</span>
+    
+    <span class="keyword">if</span> any(c.isupper() <span class="keyword">for</span> c <span class="keyword">in</span> password):
+        strength_score += <span class="number">1</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">pass</span>  <span class="comment"># TODO: suggest uppercase letters</span>
+    
+    <span class="keyword">return</span> strength_score
+
+<span class="comment"># Test the function (it works even with pass statements!)</span>
+test_password = <span class="string">"MyPassword123"</span>
+score = check_password_strength(test_password)
+<span class="function">print</span>(<span class="string">f"Password strength: {score}/3"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-6 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 6 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

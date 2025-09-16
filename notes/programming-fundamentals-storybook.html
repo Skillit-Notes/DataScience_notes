@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Programming Fundamentals - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    
+    /* Fix inline code visibility inside dialogue */
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+    
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+      direction: ltr;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: minmax(0, 1fr) 56px;
+    }
+    
+    .conversation:nth-child(even) > .dialogue { grid-column: 1; }
+    .conversation:nth-child(even) > .avatar { grid-column: 2; }
+    .conversation > .avatar { grid-column: 1; }
+    .conversation > .dialogue { grid-column: 2; width: 100%; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+      max-width: none;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+      white-space: normal;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PSEUDOCODE';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+      align-items: stretch;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+      height: 100%;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 12.5%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: minmax(0, 1fr) 48px;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .nav, .pager, .progress {
+        display: none;
+      }
+      
+      .chapter {
+        display: block !important;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">🧠 Programming Fundamentals</h1>
+        <p class="book-sub">Join Alex and Sam to discover the core concepts of computer programming!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">What is Programming?</button>
+        <button class="tab" onclick="showChapter(1)">Languages & Tools</button>
+        <button class="tab" onclick="showChapter(2)">Algorithms & Logic</button>
+        <button class="tab" onclick="showChapter(3)">Debugging & Testing</button>
+        <button class="tab" onclick="showChapter(4)">Data & Memory</button>
+        <button class="tab" onclick="showChapter(5)">Code Organization</button>
+        <button class="tab" onclick="showChapter(6)">Input & Output</button>
+        <button class="tab" onclick="showChapter(7)">Core Concepts</button>
+      </nav>
+
+      <!-- Chapter 1: What is Programming? -->
+      <section class="chapter active">
+        <h2>Chapter 1: What is Programming?</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Curious Learner)</div>
+            <div class="dialogue-text">
+              Hey Sam! I keep hearing about programming everywhere. What exactly is programming, and why is it so important?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Programming Guide)</div>
+            <div class="dialogue-text">
+              Think of programming as giving instructions to a computer, like writing a recipe! But instead of "add flour," we write commands like "display this message" or "calculate this math problem." Programming is the art of solving problems by breaking them into steps a computer can follow.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So programming is like giving directions? But how does a computer actually understand what I want it to do?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Computers are incredibly literal! They only understand very specific instructions in a precise format. Think of it this way: if you tell a human "make coffee," they understand the whole process. But a computer needs every tiny step:
+
+              <div class="code"><pre><span class="comment">// How humans think about making coffee:</span>
+<span class="string">"Make coffee"</span>
+
+<span class="comment">// How computers need instructions:</span>
+<span class="number">1.</span> <span class="string">Fill water reservoir with 8 cups water</span>
+<span class="number">2.</span> <span class="string">Place filter in coffee maker</span>
+<span class="number">3.</span> <span class="string">Add 6 tablespoons ground coffee to filter</span>
+<span class="number">4.</span> <span class="string">Press power button</span>
+<span class="number">5.</span> <span class="string">Wait 5 minutes</span>
+<span class="number">6.</span> <span class="string">Pour into cup</span></pre></div>
+
+              That's the essence of programming - breaking down complex tasks into simple, clear steps!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That makes sense! But what kinds of things do programmers actually build?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Programming is everywhere! Every app on your phone, website you visit, game you play, and even smart appliances are powered by code. Let me show you the different types:
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🌐 Software Types</h3>
+            <ul>
+              <li><strong>Applications:</strong> Phone apps, desktop programs</li>
+              <li><strong>Websites:</strong> Social media, online stores</li>
+              <li><strong>Games:</strong> Mobile games, video games</li>
+              <li><strong>Systems:</strong> Operating systems, drivers</li>
+              <li><strong>Tools:</strong> Text editors, calculators</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>👨‍💻 Programmer Roles</h3>
+            <ul>
+              <li><strong>Web Developer:</strong> Builds websites and web apps</li>
+              <li><strong>Mobile Developer:</strong> Creates phone apps</li>
+              <li><strong>Game Developer:</strong> Makes video games</li>
+              <li><strong>Data Scientist:</strong> Analyzes data patterns</li>
+              <li><strong>Software Engineer:</strong> Builds complex systems</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Wow, there's so much! What's the difference between software and hardware?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Think of it like this: <strong>Hardware</strong> is the physical stuff you can touch - the computer itself, screen, keyboard, processor chips. <strong>Software</strong> is the programs and instructions that run on that hardware - like apps, games, and the operating system.
+              
+              <br><br>It's like hardware is a piano (the physical instrument) and software is the music (the instructions for what keys to press). You need both to make beautiful music!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Key Takeaway!</strong>
+          Programming is problem-solving through step-by-step instructions. Every digital thing around you was created by someone writing code to solve a problem or fulfill a need!
+        </div>
+      </section>
+
+      <!-- Chapter 2: Languages & Tools -->
+      <section class="chapter">
+        <h2>Chapter 2: Programming Languages & Tools</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, I've heard there are different programming languages like Python, JavaScript, and C++. Why are there so many? Can't we just use one?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's like asking "Why are there different types of vehicles when we could just use cars?" Different programming languages are designed for different jobs! A race car is great for speed, a truck for heavy lifting, and a bike for short trips.
+              
+              <br><br>Similarly, Python is great for beginners and data analysis, JavaScript runs websites, and C++ is used for high-performance systems. Each language has strengths for specific tasks!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That makes sense! But how does the computer actually understand these languages?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Computers only understand <strong>machine code</strong> - basically 1s and 0s. But that's impossible for humans to read! So we have two main ways to translate our human-readable code:
+
+              <div class="code"><pre><span class="comment">// COMPILED LANGUAGES (like C++, Java)</span>
+<span class="string">Your Code</span> → <span class="function">Compiler</span> → <span class="string">Machine Code</span> → <span class="string">Run Program</span>
+
+<span class="comment">// INTERPRETED LANGUAGES (like Python, JavaScript)</span>
+<span class="string">Your Code</span> → <span class="function">Interpreter</span> → <span class="string">Runs Directly</span></pre></div>
+
+              Think of it like translation: <strong>Compiled</strong> is like translating an entire book before reading it. <strong>Interpreted</strong> is like having a live translator who translates as you speak!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>⚡ Compiled Languages</h3>
+            <ul>
+              <li>Code is translated before running</li>
+              <li>Usually faster execution</li>
+              <li>Examples: C++, Rust, Go</li>
+              <li>Need to "build" before running</li>
+              <li>Good for: System software, games</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔄 Interpreted Languages</h3>
+            <ul>
+              <li>Code runs directly line-by-line</li>
+              <li>Easier to test and debug</li>
+              <li>Examples: Python, JavaScript, Ruby</li>
+              <li>Just run the file directly</li>
+              <li>Good for: Web apps, scripting, learning</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about the tools programmers use? I've heard about something called an IDE?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              An <strong>IDE</strong> stands for "Integrated Development Environment" - think of it as a programmer's workshop! Just like a carpenter has a workbench with all their tools organized, an IDE gives programmers everything they need in one place:
+
+              <br><br>
+              • <strong>Text Editor</strong> - Where you write code<br>
+              • <strong>Compiler/Interpreter</strong> - Runs your code<br>
+              • <strong>Debugger</strong> - Finds and fixes errors<br>
+              • <strong>File Explorer</strong> - Manages your project files<br>
+              • <strong>Extensions</strong> - Extra tools and features<br><br>
+
+              Popular IDEs include Visual Studio Code, IntelliJ, and PyCharm. You can also use simple text editors like Notepad++, but IDEs make life much easier!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's syntax? I keep seeing that word in programming discussions.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <strong>Syntax</strong> is like grammar rules for programming languages! Just like English has rules (capitalize the first word of a sentence, end with punctuation), programming languages have strict rules about how to write code.
+
+              <div class="code"><pre><span class="comment">// Correct Python syntax:</span>
+<span class="keyword">if</span> age > <span class="number">18</span>:
+    <span class="function">print</span>(<span class="string">"You can vote!"</span>)
+
+<span class="comment">// Wrong syntax (missing colon):</span>
+<span class="keyword">if</span> age > <span class="number">18</span>
+    <span class="function">print</span>(<span class="string">"You can vote!"</span>)</pre></div>
+
+              Miss one small character, and the computer won't understand! The good news is IDEs help catch syntax errors as you type.
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Starting Tip!</strong>
+          Don't worry about memorizing syntax perfectly. Even experienced programmers look things up! Focus on understanding the logic and concepts first.
+        </div>
+      </section>
+
+<!-- Chapter 3: Algorithms & Logic -->
+      <section class="chapter">
+        <h2>Chapter 3: Algorithms & Problem Solving</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, what exactly is an algorithm? It sounds really complicated and mathematical!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              An <strong>algorithm</strong> is just a fancy word for a step-by-step solution to a problem! You use algorithms every day without realizing it. Making a sandwich? That's an algorithm! Getting dressed? Another algorithm!
+
+              <div class="code"><pre><span class="comment">// Algorithm: Making a Peanut Butter Sandwich</span>
+<span class="number">1.</span> <span class="string">Get two slices of bread</span>
+<span class="number">2.</span> <span class="string">Open peanut butter jar</span>
+<span class="number">3.</span> <span class="string">Spread peanut butter on one slice</span>
+<span class="number">4.</span> <span class="string">Open jelly jar</span>
+<span class="number">5.</span> <span class="string">Spread jelly on other slice</span>
+<span class="number">6.</span> <span class="string">Put slices together</span>
+<span class="number">7.</span> <span class="string">Enjoy your sandwich!</span></pre></div>
+
+              In programming, we write algorithms to solve problems like sorting a list, finding the shortest route, or determining if a password is secure.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That's much simpler than I thought! How do programmers plan out their algorithms before writing code?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              We use several tools to plan before coding. The most common are <strong>pseudocode</strong> and <strong>flowcharts</strong>.
+
+              <br><br><strong>Pseudocode</strong> is like writing instructions in plain English with some programming structure:
+
+              <div class="code"><pre><span class="comment">// Pseudocode: Find the largest number in a list</span>
+<span class="keyword">BEGIN</span>
+  <span class="string">SET largest = first number in list</span>
+  <span class="keyword">FOR EACH</span> number in the list:
+    <span class="keyword">IF</span> number > largest:
+      <span class="string">SET largest = number</span>
+  <span class="keyword">RETURN</span> largest
+<span class="keyword">END</span></pre></div>
+
+              <strong>Flowcharts</strong> use shapes and arrows to show the flow of logic - diamonds for decisions, rectangles for actions, and arrows showing the path through the process.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do you approach a completely new problem? It seems overwhelming!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The secret is <strong>breaking it down</strong>! We call this "divide and conquer." Here's my problem-solving process:
+
+              <br><br>
+              1. <strong>Understand the problem</strong> - What exactly needs to be solved?<br>
+              2. <strong>Break it into smaller pieces</strong> - What are the main steps?<br>
+              3. <strong>Solve each piece</strong> - Focus on one part at a time<br>
+              4. <strong>Connect the pieces</strong> - Combine solutions together<br>
+              5. <strong>Test and refine</strong> - Make sure it works correctly<br><br>
+
+              Let's try an example: "Build a program to manage a library's books"
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📚 Library Problem Breakdown</h3>
+            <ul>
+              <li><strong>Store book information</strong> (title, author, ISBN)</li>
+              <li><strong>Add new books</strong> to the collection</li>
+              <li><strong>Search for books</strong> by title or author</li>
+              <li><strong>Track borrowed books</strong> and due dates</li>
+              <li><strong>Generate reports</strong> on overdue books</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔍 Problem-Solving Skills</h3>
+            <ul>
+              <li><strong>Pattern Recognition:</strong> Find similar problems you've solved</li>
+              <li><strong>Logical Thinking:</strong> Step through the process logically</li>
+              <li><strong>Abstraction:</strong> Focus on the important details</li>
+              <li><strong>Decomposition:</strong> Break complex problems into simple parts</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about efficiency? Are some algorithms better than others for the same problem?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Some algorithms are much more <strong>efficient</strong> than others. Imagine you need to find a specific book in a library:
+
+              <div class="code"><pre><span class="comment">// Inefficient approach:</span>
+<span class="string">Start at the first book, check every single book one by one
+until you find the one you want</span>
+
+<span class="comment">// Efficient approach:</span>
+<span class="string">Use the library's catalog system to look up the exact
+location and go directly to that shelf</span></pre></div>
+
+              For small problems, efficiency might not matter. But when dealing with millions of pieces of data, a faster algorithm can mean the difference between getting results in seconds versus hours!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Think Like a Programmer!</strong>
+          Start practicing algorithmic thinking in daily life. When you face any problem, try breaking it down into clear, logical steps. This skill transfers directly to programming!
+        </div>
+      </section>
+
+      <!-- Chapter 4: Debugging & Testing -->
+      <section class="chapter">
+        <h2>Chapter 4: Debugging & Testing</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, what exactly is a "bug" in programming? And why do they call it debugging?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              A <strong>bug</strong> is an error in your code that causes it to behave unexpectedly! The term actually comes from 1947 when Admiral Grace Hopper found a literal moth stuck in a computer relay, causing it to malfunction. She taped the bug into her logbook and wrote "First actual case of bug being found."
+
+              <br><br><strong>Debugging</strong> is the detective work of finding and fixing these errors. Every programmer spends a lot of time debugging - it's completely normal and part of the job!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Are there different types of bugs? Some seem easier to find than others.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! There are three main types of errors, each with different challenges:
+
+              <div class="code"><pre><span class="comment">// 1. SYNTAX ERRORS - Code won't run at all</span>
+<span class="keyword">if</span> age > <span class="number">18</span>  <span class="comment">// Missing colon (:)</span>
+    <span class="function">print</span>(<span class="string">"You can vote"</span>)
+
+<span class="comment">// 2. RUNTIME ERRORS - Code crashes while running</span>
+result = <span class="number">10</span> / <span class="number">0</span>  <span class="comment">// Division by zero!</span>
+
+<span class="comment">// 3. LOGIC ERRORS - Code runs but gives wrong results</span>
+<span class="comment">// Trying to calculate average but using wrong formula</span>
+average = total * count  <span class="comment">// Should be total / count</span></pre></div>
+
+              <strong>Syntax errors</strong> are like spelling mistakes - easy to spot because the program won't even start. <strong>Runtime errors</strong> crash your program while it's running. <strong>Logic errors</strong> are the trickiest because the program runs fine but does the wrong thing!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do experienced programmers debug their code? Do they have special techniques?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              We have several debugging strategies! Here are the most effective ones:
+
+              <br><br>
+              1. <strong>Print Statement Debugging</strong> - Add print statements to see what's happening<br>
+              2. <strong>Rubber Duck Debugging</strong> - Explain your code line-by-line to a rubber duck (or friend)<br>
+              3. <strong>Debugger Tools</strong> - Step through code line by line in your IDE<br>
+              4. <strong>Divide and Conquer</strong> - Comment out sections to isolate the problem<br>
+              5. <strong>Read Error Messages</strong> - They often tell you exactly what's wrong and where!<br><br>
+
+              The key is being systematic and patient. Don't just randomly change things - understand what each line does.
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔍 Debugging Strategies</h3>
+            <ul>
+              <li><strong>Read the error carefully</strong> - It usually tells you the line number</li>
+              <li><strong>Start with the first error</strong> - Fix one at a time</li>
+              <li><strong>Use print statements</strong> - See what values variables have</li>
+              <li><strong>Check your logic</strong> - Walk through step by step</li>
+              <li><strong>Take breaks</strong> - Fresh eyes often spot bugs quickly</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🧪 Testing Approaches</h3>
+            <ul>
+              <li><strong>Unit Testing:</strong> Test individual functions</li>
+              <li><strong>Integration Testing:</strong> Test how parts work together</li>
+              <li><strong>User Testing:</strong> Test with real users</li>
+              <li><strong>Edge Case Testing:</strong> Test extreme or unusual inputs</li>
+              <li><strong>Automated Testing:</strong> Computer runs tests automatically</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about testing? How do programmers make sure their code works correctly?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <strong>Testing</strong> is like quality control in manufacturing! We write special code that tests our main code to make sure it works correctly. Here's a simple example:
+
+              <div class="code"><pre><span class="comment">// Function we want to test</span>
+<span class="keyword">function</span> <span class="function">add</span>(a, b):
+    <span class="keyword">return</span> a + b
+
+<span class="comment">// Test cases</span>
+<span class="keyword">test</span>(<span class="string">"add(2, 3) should equal 5"</span>):
+    result = <span class="function">add</span>(<span class="number">2</span>, <span class="number">3</span>)
+    <span class="keyword">expect</span>(result).to_equal(<span class="number">5</span>)
+
+<span class="comment">// Test edge cases</span>
+<span class="keyword">test</span>(<span class="string">"add with negative numbers"</span>):
+    result = <span class="function">add</span>(-<span class="number">5</span>, <span class="number">3</span>)
+    <span class="keyword">expect</span>(result).to_equal(-<span class="number">2</span>)</pre></div>
+
+              Good testing includes <strong>edge cases</strong> - unusual inputs that might break your program, like very large numbers, empty data, or unexpected user behavior.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This all sounds like a lot of extra work! Do professional programmers really spend that much time on debugging and testing?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Actually, studies show programmers spend about 50-75% of their time debugging and testing! It might seem like extra work, but it saves huge amounts of time and money later. Imagine if a banking app had a bug that occasionally lost money, or if a medical device failed because of untested code.
+
+              <br><br>The earlier you catch bugs, the cheaper they are to fix. A bug caught during development might take 10 minutes to fix, but the same bug found by customers could cost thousands of dollars and damage your reputation.
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Debugging Mindset!</strong>
+          Don't get frustrated by bugs - they're learning opportunities! Every bug you fix makes you a better programmer. Embrace them as puzzles to solve, not failures.
+        </div>
+      </section>
+<!-- Chapter 5: Data & Memory -->
+      <section class="chapter">
+        <h2>Chapter 5: Data & Memory Basics</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, how does a computer actually store and remember information? I know we use variables, but what's happening inside the computer?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Think of computer <strong>memory</strong> like a giant apartment building with millions of numbered rooms! Each room can store one piece of information. When you create a variable, the computer finds an empty room, puts your data there, and remembers the room number.
+
+              <div class="code"><pre><span class="comment">// When you write:</span>
+name = <span class="string">"Alex"</span>
+
+<span class="comment">// The computer does:</span>
+<span class="number">1.</span> <span class="string">Find empty memory location (like room #1547)</span>
+<span class="number">2.</span> <span class="string">Store "Alex" in that location</span>
+<span class="number">3.</span> <span class="string">Remember that "name" points to room #1547</span>
+<span class="number">4.</span> <span class="string">When you use "name", go to room #1547 and get the data</span></pre></div>
+
+              There are different types of memory: <strong>RAM</strong> (fast, temporary) and <strong>Storage</strong> (slower, permanent like files on your hard drive).
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What happens when I change a variable's value? Does it go to a new room?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              It depends on the type of data and the programming language. For simple values like numbers and text, the computer often finds a new room:
+
+              <div class="code"><pre>age = <span class="number">15</span>      <span class="comment">// Stored in room #100</span>
+age = <span class="number">16</span>      <span class="comment">// Might get new room #200, old room #100 gets cleaned up</span></pre></div>
+
+              But for complex data like lists, it might modify the same room:
+
+              <div class="code"><pre>friends = [<span class="string">"Sam"</span>, <span class="string">"Taylor"</span>]    <span class="comment">// Room #500</span>
+friends.append(<span class="string">"Jordan"</span>)         <span class="comment">// Same room #500, just bigger now</span></pre></div>
+
+              The computer has a "garbage collector" that automatically cleans up unused memory rooms, so you don't have to worry about running out of space!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I've heard about files and databases. How do those fit into data storage?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Memory is temporary - when you turn off the computer, everything in RAM disappears! For permanent storage, we use:
+
+              <br><br>
+              <strong>Files</strong> - Like digital filing cabinets on your hard drive. They can store text, images, videos, or any data. Files are organized in <strong>folders</strong> (or directories) with <strong>paths</strong> like "Documents/School/homework.txt"
+
+              <br><br>
+              <strong>Databases</strong> - Like super-organized digital warehouses that can quickly find and sort millions of records. They're perfect for things like user accounts, inventory, or any structured data that needs fast searching.
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>💾 Storage Types</h3>
+            <ul>
+              <li><strong>RAM:</strong> Fast, temporary (variables, running programs)</li>
+              <li><strong>Hard Drive:</strong> Slow, permanent (files, programs)</li>
+              <li><strong>SSD:</strong> Fast, permanent (modern file storage)</li>
+              <li><strong>Cache:</strong> Ultra-fast, tiny (frequently used data)</li>
+              <li><strong>Cloud:</strong> Storage on remote servers via internet</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>📁 Data Organization</h3>
+            <ul>
+              <li><strong>Variables:</strong> Temporary data in memory</li>
+              <li><strong>Files:</strong> Permanent data in folders</li>
+              <li><strong>Databases:</strong> Structured, searchable collections</li>
+              <li><strong>Backups:</strong> Copies of important data for safety</li>
+              <li><strong>Archives:</strong> Long-term storage of old data</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about file paths? I've seen things like "C:\Documents\file.txt" on Windows and "/home/user/file.txt" on other systems.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              File <strong>paths</strong> are like addresses for your files! They tell the computer exactly where to find something. Different operating systems use different formats:
+
+              <div class="code"><pre><span class="comment">// Windows style</span>
+<span class="string">C:\Users\Alex\Documents\homework.txt</span>
+
+<span class="comment">// Mac/Linux style</span>
+<span class="string">/Users/Alex/Documents/homework.txt</span>
+
+<span class="comment">// Parts of a path:</span>
+<span class="string">Drive or Root → Folders → Filename.extension</span></pre></div>
+
+              Understanding paths is crucial for programming because your code needs to know where to find files to read or where to save new ones. Most programming languages can work with both path styles automatically!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Data Safety!</strong>
+          Always back up important data! Hardware can fail, and files can get corrupted. The golden rule: if you only have one copy of something important, you don't really have it.
+        </div>
+      </section>
+
+      <!-- Chapter 6: Code Organization -->
+      <section class="chapter">
+        <h2>Chapter 6: Code Organization & Structure</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, as programs get bigger, how do programmers keep everything organized? It seems like it would become a huge mess!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              You're absolutely right - organization becomes critical as projects grow! Think of it like building a house. You wouldn't just pile all your materials in one big heap. You organize lumber in one area, electrical supplies in another, and keep tools sorted by type.
+
+              <br><br>Programming is the same way! We organize code into logical groups using several key concepts:
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's the difference between a program, a project, and a module?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me break that down with an analogy to a school:
+
+              <div class="code"><pre><span class="comment">// PROGRAM - A single executable file</span>
+<span class="string">Like one textbook - complete but focused on one subject</span>
+
+<span class="comment">// PROJECT - Collection of related programs and files</span>
+<span class="string">Like your entire school - buildings, classrooms, resources</span>
+
+<span class="comment">// MODULE - Reusable piece of code</span>
+<span class="string">Like a chapter in a textbook - focused on one topic</span>
+
+<span class="comment">// Example project structure:</span>
+MyWebsite/
+├── index.html          <span class="comment">// Main program file</span>
+├── styles.css          <span class="comment">// Styling module</span>
+├── scripts.js          <span class="comment">// JavaScript module</span>
+├── images/             <span class="comment">// Resource folder</span>
+└── pages/              <span class="comment">// Additional page modules</span></pre></div>
+
+              This organization makes it easy to find things, work on specific parts, and reuse code in other projects!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What are libraries and frameworks? I hear these terms a lot but don't understand the difference.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Think of it this way:
+
+              <br><br>
+              A <strong>Library</strong> is like a toolbox. You pick and choose which tools (functions) to use when you need them. You're in control of your program's structure, but you use the library's tools to help you.
+
+              <br><br>
+              A <strong>Framework</strong> is like a house frame. It provides the basic structure, and you fill in the rooms (your specific code). The framework controls the overall flow, and you plug your code into the framework's structure.
+
+              <div class="code"><pre><span class="comment">// Using a Library (you control the flow)</span>
+<span class="keyword">import</span> math_library
+result = math_library.calculate_square_root(<span class="number">16</span>)
+
+<span class="comment">// Using a Framework (framework controls the flow)</span>
+<span class="keyword">class</span> MyWebPage(WebFramework):
+    <span class="keyword">def</span> handle_user_click():
+        <span class="comment">// Your code goes here, but framework calls it</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📚 Library vs Framework</h3>
+            <ul>
+              <li><strong>Libraries:</strong> Tools you call when needed</li>
+              <li><strong>Examples:</strong> Math library, image processing</li>
+              <li><strong>You control:</strong> When and how to use them</li>
+              <li><strong>Like:</strong> Power tools in your workshop</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🏗️ Package Management</h3>
+            <ul>
+              <li><strong>Package Manager:</strong> App store for code libraries</li>
+              <li><strong>Dependencies:</strong> Libraries your project needs</li>
+              <li><strong>Version Control:</strong> Managing different versions</li>
+              <li><strong>Examples:</strong> npm (JavaScript), pip (Python)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about documentation? I've heard that's really important for code organization.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <strong>Documentation</strong> is like leaving detailed instructions for future you and your teammates! There are several types:
+
+              <div class="code"><pre><span class="comment">// 1. INLINE COMMENTS - Explain tricky parts</span>
+<span class="comment">// Calculate compound interest using formula A = P(1 + r/n)^(nt)</span>
+final_amount = principal * (1 + rate/periods) ** (periods * years)
+
+<span class="comment">// 2. FUNCTION DOCUMENTATION - Explain what functions do</span>
+"""
+Calculate monthly payment for a loan
+Parameters:
+  - principal: The loan amount
+  - rate: Annual interest rate (as decimal)
+  - months: Number of payment months
+Returns:
+  - Monthly payment amount
+"""
+
+<span class="comment">// 3. PROJECT README - Overview of entire project</span>
+<span class="string">README.md file explains:
+- What the project does
+- How to install and run it  
+- How to contribute
+- Examples of usage</span></pre></div>
+
+              Good documentation saves hours of confusion later!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do teams of programmers work on the same project without stepping on each other's code?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's where <strong>version control</strong> comes in! Think of it like a magical time machine for your code that also allows multiple people to work simultaneously.
+
+              <br><br>The most popular system is <strong>Git</strong>. It tracks every change made to your code, who made it, and when. If someone breaks something, you can easily go back to a working version. Teams create "branches" - like parallel universes where they can work on different features without interfering with each other, then merge their work together when ready.
+
+              <br><br>It's like having multiple people edit the same Google Doc, but with super-powered collaboration features designed specifically for code!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Organization Tip!</strong>
+          Start organizing from day one, even for small projects. Good habits are easier to build than bad habits are to break!
+        </div>
+      </section>
+
+<!-- Chapter 7: Input & Output -->
+      <section class="chapter">
+        <h2>Chapter 7: Input, Output & User Interaction</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, how do programs actually communicate with users and other systems? I understand the code does things, but how does information get in and out?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Think of programs like restaurants! <strong>Input</strong> is like customers placing orders - information coming into the program. <strong>Output</strong> is like the finished meals being served - information going out to users.
+
+              <br><br>Programs can receive input in many ways:
+              <br>• Keyboard typing and mouse clicks
+              <br>• Files being loaded
+              <br>• Data from other programs or websites
+              <br>• Sensors (like a phone's camera or GPS)
+              <br>• Voice commands
+
+              <br><br>And they can produce output through:
+              <br>• Text displayed on screen
+              <br>• Graphics, images, and videos
+              <br>• Files saved to disk
+              <br>• Sounds and music
+              <br>• Data sent to other programs
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's the difference between a command line interface and a graphical user interface?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              These are two different ways programs can interact with users:
+
+              <br><br><strong>Command Line Interface (CLI)</strong> - Text-based interaction. You type commands, and the program responds with text. It's like texting with your computer:
+
+              <div class="code"><pre><span class="comment">// Example CLI interaction</span>
+User types: <span class="string">copy homework.txt backup/</span>
+Computer responds: <span class="string">File copied successfully</span>
+
+User types: <span class="string">calculate 15 * 8</span>  
+Computer responds: <span class="string">Result: 120</span></pre></div>
+
+              <strong>Graphical User Interface (GUI)</strong> - Visual interaction with windows, buttons, and menus. Like using apps on your phone:
+
+              <br><br>• Click buttons to perform actions
+              <br>• Fill out forms with text boxes
+              <br>• Drag and drop files
+              <br>• Use menus and toolbars
+
+              <br><br>CLI is faster for experienced users, GUI is more intuitive for beginners!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>💻 Interface Types</h3>
+            <ul>
+              <li><strong>CLI:</strong> Fast, precise, text-based commands</li>
+              <li><strong>GUI:</strong> Visual, intuitive, point-and-click</li>
+              <li><strong>Web Interface:</strong> Browser-based interaction</li>
+              <li><strong>Mobile Interface:</strong> Touch-based, gesture-driven</li>
+              <li><strong>Voice Interface:</strong> Spoken commands and responses</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔗 Data Exchange</h3>
+            <ul>
+              <li><strong>API:</strong> Programs talking to other programs</li>
+              <li><strong>Files:</strong> Saving and loading data</li>
+              <li><strong>Network:</strong> Sending data over internet</li>
+              <li><strong>Database:</strong> Storing and retrieving records</li>
+              <li><strong>Sensors:</strong> Getting real-world data</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's an API? I've heard that term but don't understand what it means.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <strong>API</strong> stands for "Application Programming Interface" - it's like a waiter in a restaurant! You (one program) tell the waiter (API) what you want from the kitchen (another program or service). The waiter knows how to communicate with the kitchen and brings you back what you ordered.
+
+              <div class="code"><pre><span class="comment">// Example: Weather app using a weather service API</span>
+Your App: <span class="string">"Hey Weather API, what's the weather in Austin?"</span>
+Weather API: <span class="string">"Sunny, 75°F, 10% chance of rain"</span>
+
+<span class="comment">// Your app doesn't need to know HOW the weather service</span>
+<span class="comment">// gets its data - it just uses the API interface</span></pre></div>
+
+              APIs let programs share data and functionality without knowing each other's internal workings. Your phone's weather app uses weather APIs, your Uber app uses mapping APIs, and social media apps use notification APIs.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do programs handle different types of input, like when users make mistakes or enter unexpected data?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              This is called <strong>input validation</strong> and <strong>error handling</strong>. Good programs are like patient teachers - they expect users to make mistakes and handle them gracefully:
+
+              <div class="code"><pre><span class="comment">// Bad program: Crashes if user enters text instead of number</span>
+age = <span class="function">get_user_input</span>(<span class="string">"Enter your age: "</span>)
+next_year = age + <span class="number">1</span>  <span class="comment">// CRASH if age is "twenty"!</span>
+
+<span class="comment">// Good program: Validates input and provides helpful feedback</span>
+<span class="keyword">while</span> <span class="keyword">True</span>:
+    user_input = <span class="function">get_user_input</span>(<span class="string">"Enter your age (0-120): "</span>)
+    <span class="keyword">if</span> <span class="function">is_valid_number</span>(user_input) <span class="keyword">and</span> <span class="number">0</span> <= user_input <= <span class="number">120</span>:
+        age = user_input
+        <span class="keyword">break</span>
+    <span class="keyword">else</span>:
+        <span class="function">print</span>(<span class="string">"Please enter a valid age between 0 and 120"</span>)</pre></div>
+
+              This includes checking for empty inputs, values that are too large or small, and providing clear error messages to help users fix their mistakes.
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>User Experience Tip!</strong>
+          Always design your input/output with real users in mind. What seems obvious to you as the programmer might be confusing to users. Test with actual people!
+        </div>
+      </section>
+
+      <!-- Chapter 8: Core Concepts -->
+      <section class="chapter">
+        <h2>Chapter 8: Programming Core Concepts</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Sam, we've covered a lot of ground! What are the most important core concepts that appear in all programming languages? The fundamental building blocks I should really understand?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Perfect question to wrap up! There are several core concepts that appear in virtually every programming language. Think of these as the "grammar rules" of programming - once you understand them, learning any specific language becomes much easier.
+
+              <br><br>Let me show you the big ones:
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Let's start with variables and functions - I feel like those are everywhere!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! <strong>Variables</strong> and <strong>Functions</strong> are the foundation of all programming:
+
+              <div class="code"><pre><span class="comment">// VARIABLES - Named containers for data</span>
+name = <span class="string">"Alex"</span>           <span class="comment">// Store text</span>
+age = <span class="number">15</span>                <span class="comment">// Store numbers</span>
+is_student = <span class="keyword">true</span>      <span class="comment">// Store true/false</span>
+
+<span class="comment">// FUNCTIONS - Reusable blocks of code</span>
+<span class="keyword">function</span> <span class="function">greet</span>(person_name):
+    <span class="keyword">return</span> <span class="string">"Hello, "</span> + person_name + <span class="string">"!"</span>
+
+<span class="comment">// Using the function</span>
+message = <span class="function">greet</span>(<span class="string">"Sam"</span>)  <span class="comment">// Returns "Hello, Sam!"</span></pre></div>
+
+              Functions take <strong>parameters</strong> (inputs), do some work, and can <strong>return</strong> a result. They're like little machines that transform inputs into outputs!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about making decisions and repeating things? That seems important for automation.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Those are <strong>Control Flow</strong> concepts - the logic that controls what your program does:
+
+              <div class="code"><pre><span class="comment">// CONDITIONS - Making decisions (if/else)</span>
+<span class="keyword">if</span> temperature > <span class="number">80</span>:
+    <span class="function">print</span>(<span class="string">"It's hot! Wear shorts."</span>)
+<span class="keyword">elif</span> temperature > <span class="number">60</span>:
+    <span class="function">print</span>(<span class="string">"Nice weather! Jeans are fine."</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"Bundle up! It's cold."</span>)
+
+<span class="comment">// LOOPS - Repeating actions</span>
+<span class="comment">// Repeat exact number of times</span>
+<span class="keyword">for</span> i = <span class="number">1</span> <span class="keyword">to</span> <span class="number">10</span>:
+    <span class="function">print</span>(<span class="string">"Counting: "</span>, i)
+
+<span class="comment">// Repeat while condition is true</span>
+<span class="keyword">while</span> user_wants_to_continue:
+    <span class="function">play_game</span>()
+    user_wants_to_continue = <span class="function">ask_user</span>(<span class="string">"Play again?"</span>)</pre></div>
+
+              These let programs make intelligent decisions and automate repetitive tasks - the core of what makes computers so useful!
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🧱 Universal Building Blocks</h3>
+            <ul>
+              <li><strong>Variables:</strong> Store and name data</li>
+              <li><strong>Functions:</strong> Reusable code blocks</li>
+              <li><strong>Conditions:</strong> Make decisions (if/else)</li>
+              <li><strong>Loops:</strong> Repeat actions</li>
+              <li><strong>Data Structures:</strong> Organize related data</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Programming Principles</h3>
+            <ul>
+              <li><strong>DRY:</strong> Don't Repeat Yourself</li>
+              <li><strong>KISS:</strong> Keep It Simple, Stupid</li>
+              <li><strong>Modularity:</strong> Break problems into pieces</li>
+              <li><strong>Readability:</strong> Write code humans can understand</li>
+              <li><strong>Testing:</strong> Verify your code works correctly</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What about scope? I've heard that term but don't understand what it means.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              <strong>Scope</strong> is about where variables can be "seen" or used in your program. Think of it like rooms in a house:
+
+              <div class="code"><pre><span class="comment">// GLOBAL SCOPE - Like the living room, everyone can access</span>
+house_address = <span class="string">"123 Main Street"</span>
+
+<span class="keyword">function</span> <span class="function">cook_dinner</span>():
+    <span class="comment">// LOCAL SCOPE - Like your bedroom, only you can access</span>
+    secret_recipe = <span class="string">"Add extra salt"</span>
+    
+    <span class="comment">// Can access both global and local variables here</span>
+    <span class="function">print</span>(<span class="string">"Cooking at"</span>, house_address)  <span class="comment">// Works!</span>
+    <span class="function">print</span>(<span class="string">"Using recipe:"</span>, secret_recipe)  <span class="comment">// Works!</span>
+
+<span class="comment">// Outside the function</span>
+<span class="function">print</span>(house_address)    <span class="comment">// Works! (global)</span>
+<span class="function">print</span>(secret_recipe)   <span class="comment">// ERROR! Can't see local variables</span></pre></div>
+
+              This prevents variables from different parts of your program from interfering with each other!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">🎓</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              This has been incredibly helpful! What should I do next to start my programming journey?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👩‍💻</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              I'm so glad you found this useful! Here's my recommended next steps:
+
+              <br><br>
+              1. <strong>Pick a beginner-friendly language</strong> - Python, JavaScript, or Scratch are great starts<br>
+              2. <strong>Set up your environment</strong> - Install the language and a simple IDE<br>
+              3. <strong>Start with small projects</strong> - Calculator, guessing game, simple webpage<br>
+              4. <strong>Practice regularly</strong> - Even 15 minutes a day builds skills<br>
+              5. <strong>Join communities</strong> - Forums, local meetups, online courses<br>
+              6. <strong>Don't be afraid to make mistakes</strong> - Every bug teaches you something!<br><br>
+
+              Remember: every expert programmer started exactly where you are now. The key is consistent practice and curiosity. You've got this!
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Final Wisdom!</strong>
+          Programming is a superpower that lets you bring ideas to life and solve real problems. Start small, be patient with yourself, and remember that every line of code you write makes you a programmer!
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Add number key shortcuts (1-8 for chapters)
+    document.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 8 && !e.shiftKey && !e.ctrlKey) {
+        showChapter(num - 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next chapter
+          nextChapter();
+        } else {
+          // Swiped right - go to previous chapter
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>

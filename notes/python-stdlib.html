@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Standard Library - Learn with Alex & Sam</title>
+
+  <!-- Modern, legible fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design Tokens (Dark Mode Default) ====== */
+    :root {
+      --bg: #0b0c10;
+      --bg-soft: #111317;
+      --panel: #111317;
+      --panel-elev: #151922;
+      --text: #e6eaf2;
+      --muted: #a7b0c0;
+      --primary: #8ab4ff;
+      --primary-ink: #0b1220;
+      --accent: #a78bfa;
+      --success: #7ee787;
+      --warning: #ffa657;
+      --ring: rgba(138, 180, 255, 0.35);
+      --border: #202635;
+      --code-bg: #0f1117;
+      --code-ink: #e6edf3;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.3);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --space-1: .375rem;
+      --space-2: .625rem;
+      --space-3: .875rem;
+      --space-4: 1.25rem;
+      --space-5: 1.75rem;
+      --space-6: 2.25rem;
+      --space-7: 3rem;
+      --container: 1080px;
+    }
+
+    /* Auto light mode */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fb;
+        --bg-soft: #f1f3f8;
+        --panel: #ffffff;
+        --panel-elev: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --primary: #2563eb;
+        --primary-ink: #ffffff;
+        --accent: #7c3aed;
+        --success: #22c55e;
+        --warning: #f97316;
+        --ring: rgba(37, 99, 235, .25);
+        --border: #e5e7eb;
+        --code-bg: #0f172a;
+        --code-ink: #e6edf3;
+        --shadow: 0 10px 30px rgba(2,6,23,.08), 0 2px 8px rgba(2,6,23,.05);
+      }
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(60% 40% at 70% 10%, rgba(124,58,237,.18), transparent 60%),
+        radial-gradient(40% 30% at 10% 20%, rgba(37,99,235,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .book {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: clip;
+    }
+
+    /* Header */
+    .book-header {
+      padding: var(--space-6) var(--space-5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent),
+        linear-gradient(90deg, rgba(124,58,237,.18), rgba(37,99,235,.18));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .dialogue code {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    .book-title {
+      margin: 0 0 .35rem 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .book-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem);
+    }
+
+    /* Tabs (Navigation) */
+    .nav {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel-elev), transparent);
+      justify-content: center;
+    }
+    
+    .tab {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: .6rem 1.1rem;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+      transition: left .4s ease;
+    }
+    
+    .tab:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .tab:hover::before { left: 100%; }
+    .tab:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--ring); }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Chapters */
+    .chapter { 
+      display: none; 
+      padding: var(--space-5) var(--space-4); 
+      background: var(--panel);
+      min-height: 400px;
+    }
+    
+    .chapter.active { 
+      display: block; 
+      animation: fadeSlide .3s ease;
+    }
+    
+    @keyframes fadeSlide { 
+      from { 
+        opacity: 0; 
+        transform: translateY(10px) 
+      } 
+      to { 
+        opacity: 1; 
+        transform: translateY(0) 
+      } 
+    }
+
+    .chapter h2 {
+      margin: 0 0 var(--space-5) 0;
+      font-size: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+      letter-spacing: .2px;
+      line-height: 1.2;
+      position: relative;
+      padding-bottom: .8rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .chapter h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    /* Conversation blocks */
+    .conversation {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: var(--space-5);
+      animation: slideIn .4s ease backwards;
+      direction: ltr !important;
+    }
+    
+    .conversation:nth-child(odd) { animation-delay: .1s; }
+    .conversation:nth-child(even) { 
+      animation-delay: .2s;
+      grid-template-columns: minmax(0, 1fr) 56px;
+    }
+    
+    .conversation:nth-child(even) > .dialogue { grid-column: 1; }
+    .conversation:nth-child(even) > .avatar { grid-column: 2; }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .avatar {
+      width: 56px; 
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .avatar.alex {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    }
+    
+    .avatar.sam {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+    }
+    
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.3));
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    
+    .avatar:hover::after { opacity: 1; }
+    
+    .dialogue {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      position: relative;
+      transition: all .2s ease;
+      max-width: none !important;
+    }
+    
+    .dialogue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      border-color: var(--primary);
+    }
+    
+    .character-name { 
+      font-weight: 700; 
+      margin-bottom: .5rem;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    
+    .dialogue-text { 
+      color: var(--text); 
+      line-height: 1.7;
+      white-space: normal !important;
+    }
+
+    /* Code blocks */
+    .code {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      overflow-x: auto;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.2);
+    }
+    
+    .code::before {
+      content: 'PYTHON';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: .7rem;
+      color: var(--muted);
+      opacity: .5;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .code pre { 
+      margin: 0; 
+      white-space: pre; 
+      line-height: 1.65;
+    }
+    
+    /* Syntax highlighting */
+    .keyword { color: #79c0ff; font-weight: 600; }
+    .string { color: #a5d6ff; }
+    .comment { color: #7ee787; font-style: italic; }
+    .number { color: #ffa657; }
+    .function { color: #d2a8ff; }
+    .operator { color: #ff7b72; }
+
+    /* Tips */
+    .tip {
+      margin: var(--space-5) 0;
+      padding: var(--space-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(124,58,237,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      position: relative;
+      padding-left: var(--space-6);
+    }
+    
+    .tip::before {
+      content: '💡';
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      animation: pulse 2s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
+    }
+    
+    .tip strong { 
+      color: var(--accent);
+      display: block;
+      margin-bottom: .3rem;
+      font-size: 1.05rem;
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    
+    .feature-card {
+      padding: var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all .2s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.2);
+      border-color: var(--accent);
+    }
+    
+    .feature-card h3 {
+      margin: 0 0 var(--space-2) 0;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    .feature-card ul {
+      margin: 0;
+      padding-left: var(--space-4);
+      color: var(--text);
+    }
+    
+    .feature-card li {
+      margin-bottom: .3rem;
+    }
+
+    /* Footer nav */
+    .pager {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel-elev), transparent);
+    }
+    
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: .8rem 1.3rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+    
+    .btn:disabled { 
+      opacity: .4; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn.primary { 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--primary-ink); 
+      border-color: transparent;
+    }
+    
+    .btn:focus-visible { 
+      outline: 0; 
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      z-index: 100;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 12.5%;
+      transition: width .3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .conversation {
+        grid-template-columns: 48px 1fr;
+        gap: .75rem;
+      }
+      
+      .conversation:nth-child(even) {
+        grid-template-columns: 48px 1fr;
+      }
+      
+      .avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav {
+        padding: var(--space-2) var(--space-3);
+      }
+      
+      .tab {
+        padding: .5rem .9rem;
+        font-size: .85rem;
+      }
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      * { 
+        transition: none !important; 
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="container">
+    <div class="book">
+      <!-- Header -->
+      <header class="book-header">
+        <h1 class="book-title">📚 Python Standard Library Essentials</h1>
+        <p class="book-sub">Discover the powerful tools that come built into Python!</p>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav">
+        <button class="tab active" onclick="showChapter(0)">os</button>
+        <button class="tab" onclick="showChapter(1)">sys</button>
+        <button class="tab" onclick="showChapter(2)">math</button>
+        <button class="tab" onclick="showChapter(3)">random</button>
+        <button class="tab" onclick="showChapter(4)">json</button>
+        <button class="tab" onclick="showChapter(5)">time</button>
+        <button class="tab" onclick="showChapter(6)">datetime</button>
+        <button class="tab" onclick="showChapter(7)">collections</button>
+      </nav>
+
+      <!-- Chapter 1: os Module -->
+      <section class="chapter active">
+        <h2>🗂️ os – Operating System Services</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex (Exploring the Standard Library)</div>
+            <div class="dialogue-text">
+              Sam, I need to work with files and folders in my programs. What's the best way?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam (Python Expert)</div>
+            <div class="dialogue-text">
+              The <code>os</code> module is your bridge to the operating system! It's like having a remote control for your computer's file system. You can navigate folders, create files, and manage paths safely across different operating systems!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Show me what it can do!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let's explore the file system together:
+              
+              <div class="code"><pre><span class="keyword">import</span> os
+
+<span class="comment"># Where are we right now?</span>
+<span class="function">print</span>(<span class="string">"Current directory:"</span>, os.<span class="function">getcwd</span>())
+
+<span class="comment"># List files and folders</span>
+<span class="function">print</span>(<span class="string">"\nDirectory contents:"</span>)
+<span class="keyword">for</span> item <span class="keyword">in</span> os.<span class="function">listdir</span>():
+    <span class="function">print</span>(<span class="string">" -"</span>, item)
+
+<span class="comment"># Create a directory (safely)</span>
+folder = <span class="string">"my_project"</span>
+<span class="keyword">if</span> <span class="keyword">not</span> os.path.<span class="function">exists</span>(folder):
+    os.<span class="function">mkdir</span>(folder)
+    <span class="function">print</span>(<span class="string">f"\nCreated folder: {folder}"</span>)
+
+<span class="comment"># Build paths the smart way (works on Windows/Mac/Linux!)</span>
+file_path = os.path.<span class="function">join</span>(folder, <span class="string">"data.txt"</span>)
+<span class="function">print</span>(<span class="string">"Safe path:"</span>, file_path)
+
+<span class="comment"># Write to a file</span>
+<span class="keyword">with</span> <span class="function">open</span>(file_path, <span class="string">"w"</span>) <span class="keyword">as</span> f:
+    f.<span class="function">write</span>(<span class="string">"Hello from Python!"</span>)
+
+<span class="comment"># Get file info</span>
+size = os.path.<span class="function">getsize</span>(file_path)
+<span class="function">print</span>(<span class="string">f"File size: {size} bytes"</span>)
+
+<span class="comment"># Clean up</span>
+os.<span class="function">remove</span>(file_path)
+os.<span class="function">rmdir</span>(folder)
+<span class="function">print</span>(<span class="string">"Cleaned up!"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📁 Common os Operations</h3>
+            <ul>
+              <li><code>os.getcwd()</code> - Current directory</li>
+              <li><code>os.listdir()</code> - List contents</li>
+              <li><code>os.mkdir()</code> - Create folder</li>
+              <li><code>os.remove()</code> - Delete file</li>
+              <li><code>os.path.join()</code> - Build paths</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Why Use os?</h3>
+            <ul>
+              <li>Cross-platform compatibility</li>
+              <li>Safe path handling</li>
+              <li>File system navigation</li>
+              <li>Environment variables</li>
+              <li>Process management</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Pro Tip!</strong>
+          Always use os.path.join() for building file paths. It automatically uses the correct separator (/ or \) for your operating system!
+        </div>
+      </section>
+
+      <!-- Chapter 2: sys Module -->
+      <section class="chapter">
+        <h2>⚙️ sys – System-Specific Parameters</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              What's the difference between <code>os</code> and <code>sys</code>?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              While <code>os</code> deals with your operating system and files, <code>sys</code> is about the Python interpreter itself! It's like looking under Python's hood - you can see version info, command-line arguments, and how Python is configured on your system.
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              When would I need that information?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let me show you practical uses:
+              
+              <div class="code"><pre><span class="keyword">import</span> sys
+
+<span class="comment"># Python version info</span>
+<span class="function">print</span>(<span class="string">"Python version:"</span>, sys.version)
+<span class="function">print</span>(<span class="string">"Version info:"</span>, sys.version_info)
+<span class="function">print</span>(<span class="string">"Platform:"</span>, sys.platform)
+
+<span class="comment"># Command-line arguments</span>
+<span class="comment"># When you run: python script.py arg1 arg2</span>
+<span class="function">print</span>(<span class="string">"\nCommand line args:"</span>, sys.argv)
+
+<span class="comment"># Python's module search path</span>
+<span class="function">print</span>(<span class="string">"\nPython looks for modules in:"</span>)
+<span class="keyword">for</span> path <span class="keyword">in</span> sys.path[:<span class="number">3</span>]:  <span class="comment"># First 3 paths</span>
+    <span class="function">print</span>(<span class="string">" -"</span>, path)
+
+<span class="comment"># Exit with a message (useful in scripts)</span>
+<span class="keyword">def</span> <span class="function">check_python_version</span>():
+    <span class="keyword">if</span> sys.version_info < (<span class="number">3</span>, <span class="number">6</span>):
+        sys.<span class="function">exit</span>(<span class="string">"Error: Python 3.6+ required!"</span>)
+    <span class="function">print</span>(<span class="string">"Python version OK!"</span>)
+
+<span class="function">check_python_version</span>()
+
+<span class="comment"># Memory size of objects</span>
+my_list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="function">print</span>(<span class="string">f"\nList size: {sys.getsizeof(my_list)} bytes"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Script Tip!</strong>
+          sys.argv is super useful for command-line tools. sys.argv[0] is always your script name, and sys.argv[1:] are the arguments passed to it!
+        </div>
+      </section>
+
+      <!-- Chapter 3: math Module -->
+      <section class="chapter">
+        <h2>➗ math – Mathematical Functions</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Python can already do math with +, -, *, /. Why do I need a math module?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The <code>math</code> module is like upgrading from a basic calculator to a scientific one! You get trigonometry, logarithms, constants like π, and advanced functions. Perfect for geometry, physics, statistics, and any serious mathematical work!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Show me some cool math tricks!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let's explore mathematical wonders:
+              
+              <div class="code"><pre><span class="keyword">import</span> math
+
+<span class="comment"># Mathematical constants</span>
+<span class="function">print</span>(<span class="string">"π ="</span>, math.pi)
+<span class="function">print</span>(<span class="string">"e ="</span>, math.e)
+<span class="function">print</span>(<span class="string">"τ (tau) ="</span>, math.tau)  <span class="comment"># 2π</span>
+
+<span class="comment"># Roots and powers</span>
+<span class="function">print</span>(<span class="string">"\nsqrt(16) ="</span>, math.<span class="function">sqrt</span>(<span class="number">16</span>))
+<span class="function">print</span>(<span class="string">"2^10 ="</span>, math.<span class="function">pow</span>(<span class="number">2</span>, <span class="number">10</span>))
+<span class="function">print</span>(<span class="string">"hypot(3,4) ="</span>, math.<span class="function">hypot</span>(<span class="number">3</span>, <span class="number">4</span>))  <span class="comment"># √(3²+4²)</span>
+
+<span class="comment"># Rounding functions</span>
+<span class="function">print</span>(<span class="string">"\nfloor(3.7) ="</span>, math.<span class="function">floor</span>(<span class="number">3.7</span>))  <span class="comment"># Round down</span>
+<span class="function">print</span>(<span class="string">"ceil(3.1) ="</span>, math.<span class="function">ceil</span>(<span class="number">3.1</span>))    <span class="comment"># Round up</span>
+<span class="function">print</span>(<span class="string">"trunc(3.9) ="</span>, math.<span class="function">trunc</span>(<span class="number">3.9</span>))  <span class="comment"># Remove decimals</span>
+
+<span class="comment"># Trigonometry (radians)</span>
+angle = math.pi / <span class="number">6</span>  <span class="comment"># 30 degrees</span>
+<span class="function">print</span>(<span class="string">"\nsin(30°) ="</span>, math.<span class="function">sin</span>(angle))
+<span class="function">print</span>(<span class="string">"cos(30°) ="</span>, math.<span class="function">cos</span>(angle))
+
+<span class="comment"># Convert degrees ↔ radians</span>
+<span class="function">print</span>(<span class="string">"180° in radians:"</span>, math.<span class="function">radians</span>(<span class="number">180</span>))
+<span class="function">print</span>(<span class="string">"π radians in degrees:"</span>, math.<span class="function">degrees</span>(math.pi))
+
+<span class="comment"># Factorial and combinations</span>
+<span class="function">print</span>(<span class="string">"\n5! ="</span>, math.<span class="function">factorial</span>(<span class="number">5</span>))
+<span class="function">print</span>(<span class="string">"C(5,2) ="</span>, math.<span class="function">comb</span>(<span class="number">5</span>, <span class="number">2</span>))  <span class="comment"># Choose 2 from 5</span>
+<span class="function">print</span>(<span class="string">"P(5,2) ="</span>, math.<span class="function">perm</span>(<span class="number">5</span>, <span class="number">2</span>))  <span class="comment"># Permutations</span>
+
+<span class="comment"># Logarithms</span>
+<span class="function">print</span>(<span class="string">"\nlog(e) ="</span>, math.<span class="function">log</span>(math.e))  <span class="comment"># Natural log</span>
+<span class="function">print</span>(<span class="string">"log10(100) ="</span>, math.<span class="function">log10</span>(<span class="number">100</span>))
+<span class="function">print</span>(<span class="string">"log2(8) ="</span>, math.<span class="function">log2</span>(<span class="number">8</span>))</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📐 Essential Functions</h3>
+            <ul>
+              <li>sqrt(), pow() - Roots & powers</li>
+              <li>sin(), cos(), tan() - Trigonometry</li>
+              <li>floor(), ceil() - Rounding</li>
+              <li>factorial() - n!</li>
+              <li>log(), log10() - Logarithms</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Real-World Uses</h3>
+            <ul>
+              <li>Game physics calculations</li>
+              <li>Data science & statistics</li>
+              <li>Engineering simulations</li>
+              <li>Graphics & animations</li>
+              <li>Financial calculations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Remember!</strong>
+          Trigonometric functions use radians, not degrees. Use math.radians() and math.degrees() to convert between them!
+        </div>
+      </section>
+
+      <!-- Chapter 4: random Module -->
+      <section class="chapter">
+        <h2>🎲 random – Random Number Generation</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I want to add some unpredictability to my programs. How do I generate random numbers?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The <code>random</code> module is your dice roller, card shuffler, and lottery picker all in one! It generates pseudo-random numbers - they're not truly random but perfect for games, simulations, and testing. Think of it as controlled chaos!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Can I make the randomness predictable for testing?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Yes! That's the beauty of pseudo-random numbers. Let me show you:
+              
+              <div class="code"><pre><span class="keyword">import</span> random
+
+<span class="comment"># Set seed for reproducible results</span>
+random.<span class="function">seed</span>(<span class="number">42</span>)  <span class="comment"># Same seed = same "random" numbers!</span>
+
+<span class="comment"># Random float between 0 and 1</span>
+<span class="function">print</span>(<span class="string">"random():"</span>, random.<span class="function">random</span>())
+
+<span class="comment"># Random float in a range</span>
+<span class="function">print</span>(<span class="string">"uniform(1, 10):"</span>, random.<span class="function">uniform</span>(<span class="number">1</span>, <span class="number">10</span>))
+
+<span class="comment"># Random integer (inclusive on both ends!)</span>
+dice_roll = random.<span class="function">randint</span>(<span class="number">1</span>, <span class="number">6</span>)
+<span class="function">print</span>(<span class="string">f"Dice roll: {dice_roll}"</span>)
+
+<span class="comment"># Random choice from a list</span>
+colors = [<span class="string">"red"</span>, <span class="string">"green"</span>, <span class="string">"blue"</span>, <span class="string">"yellow"</span>]
+<span class="function">print</span>(<span class="string">"Random color:"</span>, random.<span class="function">choice</span>(colors))
+
+<span class="comment"># Multiple random choices (no repeats)</span>
+lottery = random.<span class="function">sample</span>(<span class="function">range</span>(<span class="number">1</span>, <span class="number">50</span>), k=<span class="number">6</span>)
+<span class="function">print</span>(<span class="string">"Lottery numbers:"</span>, <span class="function">sorted</span>(lottery))
+
+<span class="comment"># Shuffle a list in-place</span>
+deck = <span class="function">list</span>(<span class="function">range</span>(<span class="number">1</span>, <span class="number">11</span>))
+random.<span class="function">shuffle</span>(deck)
+<span class="function">print</span>(<span class="string">"Shuffled deck:"</span>, deck)
+
+<span class="comment"># Weighted choices (some more likely)</span>
+weather = [<span class="string">"sunny"</span>, <span class="string">"cloudy"</span>, <span class="string">"rainy"</span>]
+weights = [<span class="number">60</span>, <span class="number">30</span>, <span class="number">10</span>]  <span class="comment"># 60% sunny, 30% cloudy, 10% rainy</span>
+today = random.<span class="function">choices</span>(weather, weights=weights, k=<span class="number">1</span>)[<span class="number">0</span>]
+<span class="function">print</span>(<span class="string">f"Today's weather: {today}"</span>)
+
+<span class="comment"># Random password generator</span>
+<span class="keyword">import</span> string
+chars = string.ascii_letters + string.digits + <span class="string">"!@#$%"</span>
+password = <span class="string">''</span>.<span class="function">join</span>(random.<span class="function">choices</span>(chars, k=<span class="number">12</span>))
+<span class="function">print</span>(<span class="string">f"Random password: {password}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🎯 Common Functions</h3>
+            <ul>
+              <li><code>random()</code> - Float 0.0 to 1.0</li>
+              <li><code>randint(a,b)</code> - Integer a to b</li>
+              <li><code>choice(seq)</code> - Pick one item</li>
+              <li><code>shuffle(list)</code> - Mix in-place</li>
+              <li><code>sample(seq,k)</code> - Pick k unique</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎮 Fun Uses</h3>
+            <ul>
+              <li>Game mechanics (dice, cards)</li>
+              <li>Random test data</li>
+              <li>Simulations & modeling</li>
+              <li>Password generation</li>
+              <li>Random sampling</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Testing Tip!</strong>
+          Always use random.seed() when you need reproducible results. This is crucial for debugging and testing!
+        </div>
+      </section>
+
+      <!-- Chapter 5: json Module -->
+      <section class="chapter">
+        <h2>🌐 json – Working with JSON Data</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              I keep hearing about JSON everywhere. What is it exactly?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              JSON (JavaScript Object Notation) is the universal language of data exchange! It's how web APIs talk, how config files are stored, and how different programs share data. Python's <code>json</code> module is your translator between Python objects and JSON text!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              So it converts between Python and text?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Exactly! Watch how seamlessly it works:
+              
+              <div class="code"><pre><span class="keyword">import</span> json
+
+<span class="comment"># Python data structure</span>
+data = {
+    <span class="string">"name"</span>: <span class="string">"Alex"</span>,
+    <span class="string">"age"</span>: <span class="number">25</span>,
+    <span class="string">"skills"</span>: [<span class="string">"Python"</span>, <span class="string">"SQL"</span>, <span class="string">"JSON"</span>],
+    <span class="string">"active"</span>: <span class="keyword">True</span>,
+    <span class="string">"score"</span>: <span class="keyword">None</span>,
+    <span class="string">"address"</span>: {
+        <span class="string">"city"</span>: <span class="string">"New York"</span>,
+        <span class="string">"zip"</span>: <span class="string">"10001"</span>
+    }
+}
+
+<span class="comment"># Convert to JSON string</span>
+json_string = json.<span class="function">dumps</span>(data)
+<span class="function">print</span>(<span class="string">"Compact JSON:"</span>)
+<span class="function">print</span>(json_string)
+
+<span class="comment"># Pretty formatting for humans</span>
+pretty_json = json.<span class="function">dumps</span>(data, indent=<span class="number">2</span>, sort_keys=<span class="keyword">True</span>)
+<span class="function">print</span>(<span class="string">"\nPretty JSON:"</span>)
+<span class="function">print</span>(pretty_json)
+
+<span class="comment"># Save to file</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">"user_data.json"</span>, <span class="string">"w"</span>) <span class="keyword">as</span> f:
+    json.<span class="function">dump</span>(data, f, indent=<span class="number">2</span>)
+<span class="function">print</span>(<span class="string">"\nSaved to user_data.json"</span>)
+
+<span class="comment"># Read from file</span>
+<span class="keyword">with</span> <span class="function">open</span>(<span class="string">"user_data.json"</span>, <span class="string">"r"</span>) <span class="keyword">as</span> f:
+    loaded_data = json.<span class="function">load</span>(f)
+<span class="function">print</span>(<span class="string">"Loaded from file:"</span>, loaded_data[<span class="string">"name"</span>])
+
+<span class="comment"># Parse JSON string</span>
+json_text = <span class="string">'{"product": "laptop", "price": 999.99}'</span>
+parsed = json.<span class="function">loads</span>(json_text)
+<span class="function">print</span>(<span class="string">f"\nProduct: {parsed['product']}, Price: ${parsed['price']}"</span>)
+
+<span class="comment"># Working with API responses (simulated)</span>
+api_response = <span class="string">'''
+{
+    "users": [
+        {"id": 1, "name": "Alice"},
+        {"id": 2, "name": "Bob"}
+    ],
+    "total": 2
+}
+'''</span>
+data = json.<span class="function">loads</span>(api_response)
+<span class="keyword">for</span> user <span class="keyword">in</span> data[<span class="string">"users"</span>]:
+    <span class="function">print</span>(<span class="string">f"User {user['id']}: {user['name']}"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📝 JSON ↔ Python</h3>
+            <ul>
+              <li>dict ↔ object {}</li>
+              <li>list ↔ array []</li>
+              <li>str ↔ string ""</li>
+              <li>int/float ↔ number</li>
+              <li>True/False ↔ true/false</li>
+              <li>None ↔ null</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🔧 Key Functions</h3>
+            <ul>
+              <li><code>dumps()</code> - Object to string</li>
+              <li><code>loads()</code> - String to object</li>
+              <li><code>dump()</code> - Object to file</li>
+              <li><code>load()</code> - File to object</li>
+              <li>Use indent= for pretty print</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>API Tip!</strong>
+          Most web APIs return JSON. Master this module and you can work with any REST API!
+        </div>
+      </section>
+
+      <!-- Chapter 6: time Module -->
+      <section class="chapter">
+        <h2>⏱️ time – Time Access and Conversions</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              How do I measure how long my code takes to run?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The <code>time</code> module is your stopwatch! It works with timestamps (seconds since 1970), can pause your program, and measure performance. It's simple but powerful for basic timing needs!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Why seconds since 1970? That seems random!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              That's the Unix epoch - the birthday of Unix time! January 1, 1970, at 00:00:00 UTC. Let me show you practical uses:
+              
+              <div class="code"><pre><span class="keyword">import</span> time
+
+<span class="comment"># Current timestamp</span>
+now = time.<span class="function">time</span>()
+<span class="function">print</span>(<span class="string">f"Seconds since 1970: {now}"</span>)
+<span class="function">print</span>(<span class="string">f"That's {now / (365.25 * 24 * 3600):.1f} years!"</span>)
+
+<span class="comment"># Measure execution time</span>
+start = time.<span class="function">time</span>()
+
+<span class="comment"># Do some work</span>
+total = <span class="number">0</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1000000</span>):
+    total += i
+
+end = time.<span class="function">time</span>()
+<span class="function">print</span>(<span class="string">f"\nCalculation took: {end - start:.4f} seconds"</span>)
+
+<span class="comment"># More accurate timing with perf_counter</span>
+start = time.<span class="function">perf_counter</span>()
+time.<span class="function">sleep</span>(<span class="number">0.1</span>)  <span class="comment"># Pause for 0.1 seconds</span>
+end = time.<span class="function">perf_counter</span>()
+<span class="function">print</span>(<span class="string">f"Sleep took: {end - start:.4f} seconds"</span>)
+
+<span class="comment"># Human-readable time</span>
+<span class="function">print</span>(<span class="string">f"\nCurrent time: {time.ctime()}"</span>)
+<span class="function">print</span>(<span class="string">f"UTC time: {time.gmtime()}"</span>)
+<span class="function">print</span>(<span class="string">f"Local time: {time.localtime()}"</span>)
+
+<span class="comment"># Format time nicely</span>
+local = time.<span class="function">localtime</span>()
+formatted = time.<span class="function">strftime</span>(<span class="string">"%Y-%m-%d %H:%M:%S"</span>, local)
+<span class="function">print</span>(<span class="string">f"Formatted: {formatted}"</span>)
+
+<span class="comment"># Progress indicator with sleep</span>
+<span class="function">print</span>(<span class="string">"\nProgress: "</span>, end=<span class="string">""</span>)
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">5</span>):
+    <span class="function">print</span>(<span class="string">"."</span>, end=<span class="string">""</span>, flush=<span class="keyword">True</span>)
+    time.<span class="function">sleep</span>(<span class="number">0.2</span>)
+<span class="function">print</span>(<span class="string">" Done!"</span>)
+
+<span class="comment"># CPU time (doesn't include sleep)</span>
+cpu_start = time.<span class="function">process_time</span>()
+<span class="comment"># Do CPU-intensive work</span>
+result = <span class="function">sum</span>(<span class="function">range</span>(<span class="number">1000000</span>))
+cpu_end = time.<span class="function">process_time</span>()
+<span class="function">print</span>(<span class="string">f"\nCPU time used: {cpu_end - cpu_start:.4f} seconds"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Performance Tip!</strong>
+          Use time.perf_counter() for measuring short durations - it's more accurate than time.time() for benchmarking!
+        </div>
+      </section>
+
+      <!-- Chapter 7: datetime Module -->
+      <section class="chapter">
+        <h2>📅 datetime – Dates and Times</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              If we have the <code>time</code> module, why do we need <code>datetime</code>?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              While <code>time</code> deals with raw timestamps, <code>datetime</code> gives you human-friendly dates and times! It's like upgrading from Unix timestamps to a calendar and clock. You can work with dates, do date math, format timestamps beautifully, and handle timezones!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              That sounds much more practical for real applications!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Absolutely! Let me show you the power of proper date handling:
+              
+              <div class="code"><pre><span class="keyword">from</span> datetime <span class="keyword">import</span> date, time, datetime, timedelta
+
+<span class="comment"># Today's date</span>
+today = date.<span class="function">today</span>()
+<span class="function">print</span>(<span class="string">f"Today: {today}"</span>)
+<span class="function">print</span>(<span class="string">f"Year: {today.year}, Month: {today.month}, Day: {today.day}"</span>)
+
+<span class="comment"># Current date and time</span>
+now = datetime.<span class="function">now</span>()
+<span class="function">print</span>(<span class="string">f"\nNow: {now}"</span>)
+<span class="function">print</span>(<span class="string">f"Time: {now.hour}:{now.minute}:{now.second}"</span>)
+
+<span class="comment"># Create specific dates</span>
+birthday = date(<span class="number">2000</span>, <span class="number">5</span>, <span class="number">15</span>)
+deadline = datetime(<span class="number">2025</span>, <span class="number">12</span>, <span class="number">31</span>, <span class="number">23</span>, <span class="number">59</span>, <span class="number">59</span>)
+<span class="function">print</span>(<span class="string">f"\nBirthday: {birthday}"</span>)
+<span class="function">print</span>(<span class="string">f"Deadline: {deadline}"</span>)
+
+<span class="comment"># Date arithmetic with timedelta</span>
+tomorrow = today + timedelta(days=<span class="number">1</span>)
+last_week = today - timedelta(weeks=<span class="number">1</span>)
+<span class="function">print</span>(<span class="string">f"\nTomorrow: {tomorrow}"</span>)
+<span class="function">print</span>(<span class="string">f"Last week: {last_week}"</span>)
+
+<span class="comment"># Calculate age</span>
+age = today - birthday
+<span class="function">print</span>(<span class="string">f"Age in days: {age.days}"</span>)
+<span class="function">print</span>(<span class="string">f"Age in years: {age.days // 365}"</span>)
+
+<span class="comment"># Complex time calculations</span>
+meeting = datetime.<span class="function">now</span>() + timedelta(
+    days=<span class="number">2</span>, 
+    hours=<span class="number">3</span>, 
+    minutes=<span class="number">30</span>
+)
+<span class="function">print</span>(<span class="string">f"\nMeeting in 2 days, 3.5 hours: {meeting}"</span>)
+
+<span class="comment"># Format dates nicely</span>
+<span class="function">print</span>(<span class="string">"\nFormatted dates:"</span>)
+<span class="function">print</span>(now.<span class="function">strftime</span>(<span class="string">"%B %d, %Y"</span>))  <span class="comment"># January 15, 2025</span>
+<span class="function">print</span>(now.<span class="function">strftime</span>(<span class="string">"%d/%m/%Y"</span>))   <span class="comment"># 15/01/2025</span>
+<span class="function">print</span>(now.<span class="function">strftime</span>(<span class="string">"%Y-%m-%d %H:%M:%S"</span>))  <span class="comment"># ISO format</span>
+<span class="function">print</span>(now.<span class="function">strftime</span>(<span class="string">"%A, %B %d at %I:%M %p"</span>))  <span class="comment"># Tuesday, January 15 at 02:30 PM</span>
+
+<span class="comment"># Parse dates from strings</span>
+date_string = <span class="string">"2025-03-15 14:30:00"</span>
+parsed = datetime.<span class="function">strptime</span>(date_string, <span class="string">"%Y-%m-%d %H:%M:%S"</span>)
+<span class="function">print</span>(<span class="string">f"\nParsed: {parsed}"</span>)
+
+<span class="comment"># Day of week</span>
+days = [<span class="string">"Monday"</span>, <span class="string">"Tuesday"</span>, <span class="string">"Wednesday"</span>, <span class="string">"Thursday"</span>, 
+        <span class="string">"Friday"</span>, <span class="string">"Saturday"</span>, <span class="string">"Sunday"</span>]
+<span class="function">print</span>(<span class="string">f"Today is: {days[today.weekday()]}"</span>)
+
+<span class="comment"># Time until deadline</span>
+time_left = deadline - now
+<span class="function">print</span>(<span class="string">f"\nTime until deadline: {time_left.days} days"</span>)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>📆 Core Classes</h3>
+            <ul>
+              <li><code>date</code> - Calendar date</li>
+              <li><code>time</code> - Time of day</li>
+              <li><code>datetime</code> - Date + time</li>
+              <li><code>timedelta</code> - Time duration</li>
+              <li><code>timezone</code> - Timezone info</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>🎯 Common Uses</h3>
+            <ul>
+              <li>Log timestamps</li>
+              <li>Schedule tasks</li>
+              <li>Calculate ages/durations</li>
+              <li>Format dates for display</li>
+              <li>Parse date strings</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Format Codes!</strong>
+          %Y=year, %m=month, %d=day, %H=hour(24), %I=hour(12), %M=minute, %S=second, %A=weekday, %B=month name
+        </div>
+      </section>
+
+      <!-- Chapter 8: collections Module -->
+      <section class="chapter">
+        <h2>🧰 collections – Specialized Data Structures</h2>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Don't we already have lists and dictionaries? Why do we need more?
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              The <code>collections</code> module is like having specialized tools instead of just a Swiss Army knife! While lists and dicts are great, sometimes you need a Counter for frequencies, a defaultdict for automatic defaults, or a deque for fast queue operations. These make your code cleaner and faster!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              Show me these specialized tools in action!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              Let's explore the power tools of Python:
+              
+              <div class="code"><pre><span class="keyword">from</span> collections <span class="keyword">import</span> Counter, defaultdict, namedtuple, deque, OrderedDict
+
+<span class="comment"># 1. Counter - Count things automatically!</span>
+words = <span class="string">"the quick brown fox jumps over the lazy dog the fox"</span>.<span class="function">split</span>()
+word_count = <span class="function">Counter</span>(words)
+<span class="function">print</span>(<span class="string">"Word frequencies:"</span>, word_count)
+<span class="function">print</span>(<span class="string">"Most common 3:"</span>, word_count.<span class="function">most_common</span>(<span class="number">3</span>))
+
+<span class="comment"># Count letters</span>
+letters = <span class="function">Counter</span>(<span class="string">"mississippi"</span>)
+<span class="function">print</span>(<span class="string">"\nLetter count:"</span>, letters)
+
+<span class="comment"># Counter arithmetic</span>
+inventory1 = <span class="function">Counter</span>(apples=<span class="number">3</span>, oranges=<span class="number">1</span>)
+inventory2 = <span class="function">Counter</span>(apples=<span class="number">1</span>, oranges=<span class="number">2</span>, bananas=<span class="number">2</span>)
+total = inventory1 + inventory2
+<span class="function">print</span>(<span class="string">"Combined inventory:"</span>, total)
+
+<span class="comment"># 2. defaultdict - Never worry about missing keys!</span>
+<span class="comment"># Regular dict would raise KeyError</span>
+dd = <span class="function">defaultdict</span>(list)
+dd[<span class="string">"fruits"</span>].<span class="function">append</span>(<span class="string">"apple"</span>)
+dd[<span class="string">"fruits"</span>].<span class="function">append</span>(<span class="string">"banana"</span>)
+dd[<span class="string">"vegetables"</span>].<span class="function">append</span>(<span class="string">"carrot"</span>)
+<span class="function">print</span>(<span class="string">"\ndefaultdict:"</span>, <span class="function">dict</span>(dd))
+
+<span class="comment"># Group items easily</span>
+students = [
+    (<span class="string">"Alice"</span>, <span class="string">"Math"</span>),
+    (<span class="string">"Bob"</span>, <span class="string">"Physics"</span>),
+    (<span class="string">"Alice"</span>, <span class="string">"Physics"</span>),
+    (<span class="string">"Charlie"</span>, <span class="string">"Math"</span>)
+]
+by_subject = <span class="function">defaultdict</span>(list)
+<span class="keyword">for</span> name, subject <span class="keyword">in</span> students:
+    by_subject[subject].<span class="function">append</span>(name)
+<span class="function">print</span>(<span class="string">"Students by subject:"</span>, <span class="function">dict</span>(by_subject))
+
+<span class="comment"># 3. namedtuple - Readable tuples with field names!</span>
+<span class="comment"># Instead of using indices like point[0], point[1]</span>
+Point = <span class="function">namedtuple</span>(<span class="string">"Point"</span>, [<span class="string">"x"</span>, <span class="string">"y"</span>])
+p1 = <span class="function">Point</span>(<span class="number">3</span>, <span class="number">4</span>)
+p2 = <span class="function">Point</span>(<span class="number">10</span>, <span class="number">20</span>)
+<span class="function">print</span>(<span class="string">f"\nPoint 1: x={p1.x}, y={p1.y}"</span>)
+<span class="function">print</span>(<span class="string">f"Distance from origin: {(p1.x**2 + p1.y**2)**0.5}"</span>)
+
+<span class="comment"># Create a Person record</span>
+Person = <span class="function">namedtuple</span>(<span class="string">"Person"</span>, <span class="string">"name age city"</span>)
+alice = <span class="function">Person</span>(<span class="string">"Alice"</span>, <span class="number">30</span>, <span class="string">"NYC"</span>)
+<span class="function">print</span>(<span class="string">f"{alice.name} is {alice.age} years old"</span>)
+
+<span class="comment"># 4. deque - Double-ended queue (fast at both ends!)</span>
+<span class="comment"># Lists are slow for operations at the beginning</span>
+dq = <span class="function">deque</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])
+dq.<span class="function">append</span>(<span class="number">4</span>)        <span class="comment"># Add to right</span>
+dq.<span class="function">appendleft</span>(<span class="number">0</span>)    <span class="comment"># Add to left</span>
+<span class="function">print</span>(<span class="string">"\nDeque:"</span>, dq)
+
+<span class="comment"># Rotate elements</span>
+dq.<span class="function">rotate</span>(<span class="number">2</span>)  <span class="comment"># Rotate right by 2</span>
+<span class="function">print</span>(<span class="string">"Rotated:"</span>, dq)
+
+<span class="comment"># Limited size deque (keeps last N items)</span>
+recent = <span class="function">deque</span>(maxlen=<span class="number">3</span>)
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">5</span>):
+    recent.<span class="function">append</span>(i)
+    <span class="function">print</span>(<span class="string">f"Added {i}, deque: {list(recent)}"</span>)
+
+<span class="comment"># 5. OrderedDict - Remember insertion order (useful pre-Python 3.7)</span>
+od = <span class="function">OrderedDict</span>()
+od[<span class="string">"first"</span>] = <span class="number">1</span>
+od[<span class="string">"second"</span>] = <span class="number">2</span>
+od[<span class="string">"third"</span>] = <span class="number">3</span>
+od.<span class="function">move_to_end</span>(<span class="string">"first"</span>)  <span class="comment"># Move to end</span>
+<span class="function">print</span>(<span class="string">"\nOrdered after move:"</span>, <span class="function">list</span>(od.keys()))</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <h3>🔧 Specialized Tools</h3>
+            <ul>
+              <li><code>Counter</code> - Count frequencies</li>
+              <li><code>defaultdict</code> - Auto defaults</li>
+              <li><code>namedtuple</code> - Named fields</li>
+              <li><code>deque</code> - Fast both ends</li>
+              <li><code>ChainMap</code> - Multiple dicts</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>💡 When to Use</h3>
+            <ul>
+              <li>Counter: Word frequencies, votes</li>
+              <li>defaultdict: Grouping data</li>
+              <li>namedtuple: Readable records</li>
+              <li>deque: Queues, recent history</li>
+              <li>OrderedDict: Preserve order</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Performance Tip!</strong>
+          deque is O(1) for append/pop at both ends, while list is O(n) at the beginning. Use deque for queues!
+        </div>
+
+        <div class="conversation">
+          <div class="avatar alex">👦</div>
+          <div class="dialogue">
+            <div class="character-name">Alex</div>
+            <div class="dialogue-text">
+              These standard library modules are amazing! I had no idea Python came with so much built-in!
+            </div>
+          </div>
+        </div>
+
+        <div class="conversation">
+          <div class="avatar sam">👧</div>
+          <div class="dialogue">
+            <div class="character-name">Sam</div>
+            <div class="dialogue-text">
+              And this is just the beginning! The Python standard library is huge - there are modules for networking, databases, compression, encryption, and much more. Master these essentials first, then explore based on your needs. Remember: "Batteries included" is Python's philosophy! 🔋
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pager">
+        <button class="btn" onclick="previousChapter()" disabled id="prevBtn">
+          ← Previous
+        </button>
+        <button class="btn primary" onclick="nextChapter()" id="nextBtn">
+          Next →
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    let currentChapter = 0;
+    const chapters = document.querySelectorAll('.chapter');
+    const tabs = document.querySelectorAll('.tab');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function updateState(index) {
+      // Update chapters
+      chapters.forEach((chapter, i) => {
+        chapter.classList.toggle('active', i === index);
+      });
+      
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+      
+      // Update navigation buttons
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === chapters.length - 1;
+      
+      // Update progress bar
+      const progress = ((index + 1) / chapters.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Smooth scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      currentChapter = index;
+    }
+
+    function showChapter(index) {
+      if (index >= 0 && index < chapters.length) {
+        updateState(index);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < chapters.length - 1) {
+        updateState(currentChapter + 1);
+      }
+    }
+
+    function previousChapter() {
+      if (currentChapter > 0) {
+        updateState(currentChapter - 1);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && !e.shiftKey && !e.ctrlKey) {
+        previousChapter();
+      } else if (e.key === 'ArrowRight' && !e.shiftKey && !e.ctrlKey) {
+        nextChapter();
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          nextChapter();
+        } else {
+          previousChapter();
+        }
+      }
+    }
+
+    // Initialize
+    updateState(0);
+  </script>
+</body>
+</html>
